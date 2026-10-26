@@ -1249,3 +1249,95 @@
   grid-column: 2;
   color: var(--texto-3);
 }
+
+/* «¿Qué quieres ver y cuándo?» */
+.que-ver h2 {
+  margin: 0 0 4px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+.chips-especies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.chip-especie {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font: 600 0.9rem var(--f-cuerpo);
+  cursor: pointer;
+}
+.chip-especie img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+.chip-especie.mas {
+  padding: 6px 12px;
+}
+.chip-especie[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--c-fauna) 22%, var(--superficie));
+  border-color: var(--c-fauna);
+}
+.campo-mes {
+  max-width: 260px;
+}
+.resultados-que-ver {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.resultados-que-ver li {
+  display: grid;
+  grid-template-columns: 2em 1fr minmax(60px, 120px);
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+}
+.resultados-que-ver .puesto {
+  font: 700 1.2rem var(--f-mono);
+  color: var(--texto-3);
+}
+.resultados-que-ver p {
+  margin: 2px 0 0;
+}
+.especies-ok {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 0.9rem;
+}
+.especies-ok .no {
+  color: var(--texto-3);
+}
+.barra-facilidad {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--superficie-2);
+  overflow: hidden;
+}
+.barra-facilidad i {
+  display: block;
+  height: 100%;
+  background: var(--c-fauna);
+}
+@media (max-width: 600px) {
+  .resultados-que-ver li {
+    grid-template-columns: 2em 1fr;
+  }
+  .barra-facilidad {
+    grid-column: 2;
+  }
+}
+.chip-especie:not(:has(img)) {
+  padding-left: 12px;
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MESES } from "@/lib/fechas";
+import QueVer from "@/features/safaris/componentes/QueVer";
 import ExploradorSafaris from "@/features/safaris/componentes/ExploradorSafaris";
 import {
   cargarMundo,
@@ -57,6 +58,8 @@ export default function PaginaSafaris() {
           lodge o el operador.
         </p>
       </header>
+
+      <QueVer mesHoy={mesHoy} />
 
       {ahora.length > 0 && (
         <section className="seccion">

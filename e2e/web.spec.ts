@@ -109,3 +109,26 @@ test("safaris del mundo: ficha de un parque fuera del catálogo con cómo llegar
   await expect(page.locator(".rejilla-safaris li").first()).toBeVisible();
   expect(errores).toEqual([]);
 });
+
+test("qué ver y cuándo: elegir especies y mes da parques con esas especies", async ({ page }, info) => {
+  const errores = vigilar(page);
+  await page.goto("/");
+  const grupo = page.getByRole("group", { name: "Animales" });
+  const visible = await grupo
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!visible, "sin datos de safaris");
+  await grupo.getByRole("button", { name: "León", exact: true }).click();
+  await grupo.getByRole("button", { name: "Guepardo", exact: true }).click();
+  await page.locator(".campo-mes select").selectOption("7");
+  await expect(page).toHaveURL(/ver=.*mes=7|mes=7.*ver=/);
+  const primero = page.locator(".resultados-que-ver li").first();
+  await expect(primero).toContainText("✓ León");
+  await expect(primero).toContainText("✓ Guepardo");
+  await primero.screenshot({ path: `${CAPTURAS}/${info.project.name}-que-ver.png` });
+  // el enlace lleva a la ficha del parque
+  await primero.getByRole("link").click();
+  await expect(page.locator("h1")).toBeVisible();
+  expect(errores).toEqual([]);
+});
