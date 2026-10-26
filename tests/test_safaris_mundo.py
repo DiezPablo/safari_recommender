@@ -29,6 +29,9 @@ def test_llegar_a_kruger():
     assert any(x["internacional"] for x in ll["aeropuertos"])  # y el gran aeropuerto internacional más cercano
     nombres = [p["nombre"] for p in ll["pistas"]]
     assert "Letaba Rest Camp Airstrip" in nombres and "Mossel Bay Airport" not in nombres
+    # con el país del parque, solo aeropuertos de ese país; si no hay ninguno cerca, todos
+    assert a.llegar(-24.0, 31.5, 79, "ZA")["aeropuertos"][0]["iata"] == "PHW"
+    assert a.llegar(-24.0, 31.5, 79, "XX")["aeropuertos"] == ll["aeropuertos"]
 
 
 def test_clima_de_la_nasa(monkeypatch):

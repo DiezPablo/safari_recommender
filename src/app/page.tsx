@@ -8,7 +8,7 @@ import {
   cargarRecientes,
   cargarSafaris,
   enTemporada,
-  nombreEspecieMundo,
+  nombreEstrella,
   nombreTaxon,
   puntuacionAhora,
   slugEspecie,
@@ -34,7 +34,7 @@ export default function PaginaSafaris() {
   const total = mundo?.parques.length ?? parques.length;
   const paisesMundo = new Set((mundo?.parques ?? []).map((p) => p.pais)).size;
   const especies = Object.keys(mundo?.estrella ?? {})
-    .map((k) => ({ clave: Number(k), nombre: nombreEspecieMundo(mundo!, k) }))
+    .map((k) => ({ clave: Number(k), nombre: nombreEstrella(k) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   return (
     <main className="calendario fauna safaris">

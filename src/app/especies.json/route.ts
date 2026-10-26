@@ -1,7 +1,7 @@
 // Datos para «¿Qué quieres ver y cuándo?»: para cada especie estrella, los parques del mundo donde más se ha
 // observado. Se genera en el build (estático) a partir de safaris_mundo.json y del catálogo, que da el nombre en
 // español y la foto de iNaturalist.
-import { cargarMundo, cargarSafaris, slugEspecie } from "@/features/safaris/datos";
+import { cargarMundo, cargarSafaris, nombreEstrella, slugEspecie } from "@/features/safaris/datos";
 
 export const dynamic = "force-static";
 
@@ -33,11 +33,6 @@ const PRIMERAS = [
   "Elephas maximus",
 ];
 
-/** «Oso Pardo» → «Oso pardo» (los nombres comunes de GBIF e iNaturalist mezclan mayúsculas). */
-function capitalizar(nombre: string): string {
-  return nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
-}
-
 export function GET() {
   const mundo = cargarMundo();
   const listaCatalogo = cargarSafaris()?.especies ?? [];
@@ -61,7 +56,7 @@ export function GET() {
     especies.push({
       clave: Number(clave),
       cientifico,
-      nombre: capitalizar(c?.nombre ?? mundo?.especies[clave]?.n ?? cientifico),
+      nombre: nombreEstrella(clave),
       slug: c ? slugEspecie(c) : null,
       foto: c?.foto?.url.replace("/medium.", "/square.") ?? null,
       n_parques: lista.length,

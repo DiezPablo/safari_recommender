@@ -4,6 +4,8 @@ import Link from "next/link";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { INICIALES, MESES } from "@/lib/fechas";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
+import BotonComparar from "./BotonComparar";
+import { nombreEstrella } from "@/features/safaris/datos";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
 import {
@@ -107,6 +109,7 @@ export default function FichaMundo({
             )}
           </p>
           <p className="enlaces">
+            <BotonComparar id={p.id} />
             <a href="#organiza">Organiza tu viaje ↓</a>
             <a
               href={`https://www.inaturalist.org/observations?lat=${p.lat}&lng=${p.lon}&radius=${p.radio_km}`}
@@ -126,7 +129,7 @@ export default function FichaMundo({
             {estrella.map(([k, n]) => {
               const cientifico = mundo.estrella[k];
               const s = conFicha[cientifico];
-              const texto = `${nombreEspecieMundo(mundo, k)} (${n.toLocaleString("es-ES")})`;
+              const texto = `${nombreEstrella(k)} (${n.toLocaleString("es-ES")})`;
               return s ? (
                 <Link key={k} href={`/especie/${s}`}>
                   {texto}

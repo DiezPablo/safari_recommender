@@ -2,7 +2,7 @@
 import "server-only";
 import { leerDatos } from "@/lib/datos";
 import type { EspecieSafari, Mundo, Parque, ParqueMundo, Recientes, Safaris } from "@/features/safaris/modelo";
-import { slugEspecie } from "@/features/safaris/modelo";
+import { capitalizar, slugEspecie } from "@/features/safaris/modelo";
 
 export * from "@/features/safaris/modelo";
 
@@ -57,4 +57,14 @@ export function parquesMundoDe(cientifico: string, max = 25): { p: ParqueMundo; 
     .filter((x) => x.n >= 3)
     .sort((a, b) => b.n - a.n)
     .slice(0, max);
+}
+
+/** Nombre en español de una especie estrella del mundo (clave de GBIF): el del catálogo, si lo tiene. */
+export function nombreEstrella(clave: number | string): string {
+  const m = cargarMundo();
+  const cientifico = m?.estrella[String(clave)];
+  const c = cientifico ? cargarSafaris()?.especies.find((e) => e.cientifico === cientifico) : undefined;
+  if (c?.nombre) return capitalizar(c.nombre);
+  const n = m?.especies[String(clave)]?.n;
+  return n ? capitalizar(n) : (cientifico ?? "Especie sin nombre común");
 }

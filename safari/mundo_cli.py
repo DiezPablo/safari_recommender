@@ -205,7 +205,7 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
         p["lluvia_mm"] = c["lluvia_mm"] if c else None
         p["meses_secos"] = practico.meses_secos(c)
         p["epoca"] = practico.epoca(p["lat"], p.get("temporada"), p["lluvia_mm"], p["meses"])
-        p["llegar"] = aeropuertos.llegar(p["lat"], p["lon"], p["radio_km"])
+        p["llegar"] = aeropuertos.llegar(p["lat"], p["lon"], p["radio_km"], paises.get(p["pais"] or "", {}).get("iso"))
         p["foto"] = fotos.get(p.pop("img")) if p.get("img") else p.pop("img", None)
         if o is not None:
             p["osm"] = o
@@ -238,6 +238,7 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
         "paises": {
             q: {
                 "nombre": d.get("n"),
+                "iso": d.get("iso"),
                 "continente": mundo.CONTINENTE.get(d.get("cont", ""), d.get("cont")),
                 "moneda": d.get("mon"),
                 "idiomas": d["idiomas"][:3],

@@ -50,6 +50,10 @@ def km(a: tuple[float, float], b: tuple[float, float]) -> float:
     return 6371 * 2 * math.asin(math.sqrt(h))
 
 
+# más allá, mejor un aeropuerto del país vecino que uno del propio (islas, enclaves)
+MAX_KM_PAIS = 800
+
+
 class Aeropuertos:
     """Aeropuertos con vuelos regulares y pistas pequeñas, con búsqueda por rejilla de 1°."""
 
@@ -72,6 +76,7 @@ class Aeropuertos:
                     "iata": f["iata_code"] or None,
                     "ciudad": f["municipality"] or None,
                     "tipo": f["type"],
+                    "pais": f.get("iso_country") or None,
                 }
             except ValueError:
                 continue
@@ -80,9 +85,15 @@ class Aeropuertos:
             elif f["type"] == "small_airport":
                 self.pistas.setdefault((math.floor(a["lat"]), math.floor(a["lon"])), []).append(a)
 
-    def llegar(self, lat: float, lon: float, radio_km: float) -> dict:
+    def llegar(self, lat: float, lon: float, radio_km: float, pais: str | None = None) -> dict:
+        """Aeropuerto regular más cercano y el internacional, mejor del mismo país que el parque (ISO): cruzar
+        una frontera por tierra en safari rara vez es práctico (Serengeti → Mara Serena, en Kenia)."""
         p = (lat, lon)
         cercanos = sorted(self.regulares, key=lambda a: km(p, (a["lat"], a["lon"])))
+        if pais:
+            propios = [a for a in cercanos if a["pais"] == pais]
+            if propios and km(p, (propios[0]["lat"], propios[0]["lon"])) <= MAX_KM_PAIS:
+                cercanos = propios
         grande = next((a for a in cercanos if a["tipo"] == "large_airport"), None)
         salida = {"aeropuertos": []}
         for a in [cercanos[0], grande] if cercanos else []:

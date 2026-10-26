@@ -208,6 +208,8 @@ export interface ParqueMundo {
 
 export interface Pais {
   nombre: string | null;
+  /** código ISO 3166-1 alfa-2 */
+  iso?: string | null;
   continente: string | null;
   moneda: string | null;
   idiomas: string[];
@@ -246,6 +248,9 @@ export interface FilaIndice {
   em?: MotivoEpoca | null;
 }
 
+/** Parques que caben en el comparador. */
+export const MAX_COMPARAR = 4;
+
 export type MotivoEpoca = "recomendada" | "estación seca" | "menos lluvia" | "más avistamientos";
 
 export const TEXTO_MOTIVO: Record<MotivoEpoca, string> = {
@@ -273,6 +278,11 @@ export function buenaEpoca(f: Pick<FilaIndice, "t" | "sec" | "la" | "ep">): numb
   if (f.t?.length) return f.t;
   if (Math.abs(f.la) <= 23.5 && f.sec.length > 0 && f.sec.length < 12) return f.sec;
   return null;
+}
+
+/** «Oso Pardo» → «Oso pardo» (los nombres comunes de GBIF e iNaturalist mezclan mayúsculas). */
+export function capitalizar(nombre: string): string {
+  return nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
 }
 
 export function nombreEspecieMundo(m: Pick<Mundo, "especies">, clave: number | string): string {

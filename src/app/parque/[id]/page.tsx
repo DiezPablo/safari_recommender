@@ -5,6 +5,7 @@ import MapaEventos from "@/ui/mapa/MapaEventos";
 import { MESES } from "@/lib/fechas";
 import AnoSafari from "@/features/safaris/componentes/AnoSafari";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
+import BotonComparar from "@/features/safaris/componentes/BotonComparar";
 import FichaMundo from "@/features/safaris/componentes/FichaMundo";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
@@ -130,6 +131,7 @@ export default async function PaginaParque({ params }: Props) {
             {p.meses.includes(mesHoy + 1) && <b> · ahora es buena época</b>}
           </p>
           <p className="enlaces">
+            <BotonComparar id={p.id} />
             {p.web && (
               <a href={p.web} target="_blank" rel="noopener">
                 Web oficial ↗

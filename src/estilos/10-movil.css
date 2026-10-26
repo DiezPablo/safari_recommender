@@ -10,8 +10,10 @@
     padding: 6px 9px;
     font-size: 0.86rem;
   }
-  .marca b {
-    font-size: 1.08rem;
+  /* el icono ya lleva a la portada: sin la marca ni «Parques» caben los enlaces y el tema */
+  .marca b,
+  .cabecera nav > a.nav-inicio {
+    display: none;
   }
   .cabecera nav {
     gap: 0;

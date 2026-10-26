@@ -132,3 +132,23 @@ test("qué ver y cuándo: elegir especies y mes da parques con esas especies", a
   await expect(page.locator("h1")).toBeVisible();
   expect(errores).toEqual([]);
 });
+
+test("comparador: dos parques lado a lado, añadir otro desde el buscador y quitarlo", async ({ page }, info) => {
+  const errores = vigilar(page);
+  await page.goto("/comparar?p=serengeti,kruger");
+  const cabeceras = page.locator(".tabla-comparar thead th");
+  test.skip(!(await cabeceras.count()), "sin datos de safaris");
+  await expect(cabeceras).toHaveCount(2);
+  await expect(page.locator(".tabla-comparar tbody th", { hasText: "León" })).toBeVisible();
+  await page.getByLabel("Añadir un parque").fill("masai");
+  await page.locator(".opciones-comparar button", { hasText: "Masái Mara" }).first().click();
+  await expect(cabeceras).toHaveCount(3);
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-comparar.png`, fullPage: true });
+  await cabeceras.nth(0).getByRole("link", { name: "Quitar" }).click();
+  await expect(cabeceras).toHaveCount(2);
+  // desde la ficha, «+ Comparar» lo guarda
+  await page.goto("/parque/etosha");
+  await page.getByRole("button", { name: "+ Comparar" }).click();
+  await expect(page.getByRole("button", { name: "✓ En el comparador" })).toBeVisible();
+  expect(errores).toEqual([]);
+});

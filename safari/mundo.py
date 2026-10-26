@@ -261,12 +261,13 @@ def detalles(qids: list[str], lote: int = 250) -> dict[str, dict]:
 
 
 def paises(qids: list[str]) -> dict[str, dict]:
-    """Nombre en español, continente, moneda e idiomas oficiales de cada país."""
+    """Nombre en español, código ISO, continente, moneda e idiomas oficiales de cada país."""
     valores = " ".join(f"wd:{q}" for q in sorted(set(qids)))
     filas = _sparql(
-        f"""SELECT ?p ?n ?cont ?mon ?idi WHERE {{
+        f"""SELECT ?p ?n ?iso ?cont ?mon ?idi WHERE {{
           VALUES ?p {{ {valores} }}
           OPTIONAL {{ ?p rdfs:label ?n FILTER(lang(?n) = "es") }}
+          OPTIONAL {{ ?p wdt:P297 ?iso }}
           OPTIONAL {{ ?p wdt:P30 ?c. ?c rdfs:label ?cont FILTER(lang(?cont) = "es") }}
           OPTIONAL {{ ?p wdt:P38 ?m. ?m rdfs:label ?mon FILTER(lang(?mon) = "es") }}
           OPTIONAL {{ ?p wdt:P37 ?i. ?i rdfs:label ?idi FILTER(lang(?idi) = "es") }}
@@ -275,7 +276,7 @@ def paises(qids: list[str]) -> dict[str, dict]:
     salida: dict[str, dict] = {}
     for b in filas:
         d = salida.setdefault(_qid(b["p"]["value"]), {"idiomas": []})
-        for campo in ("n", "cont", "mon"):
+        for campo in ("n", "iso", "cont", "mon"):
             if campo in b and campo not in d:
                 d[campo] = b[campo]["value"]
         if "idi" in b and b["idi"]["value"] not in d["idiomas"]:

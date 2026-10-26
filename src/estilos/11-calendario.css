@@ -1341,3 +1341,140 @@
 .chip-especie:not(:has(img)) {
   padding-left: 12px;
 }
+
+/* Comparador */
+.boton-comparar {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.boton-comparar button {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font: 600 0.9rem var(--f-cuerpo);
+  cursor: pointer;
+}
+.boton-comparar button[aria-pressed="true"] {
+  border-color: var(--c-fauna);
+  background: color-mix(in srgb, var(--c-fauna) 18%, var(--superficie));
+}
+.anadir-comparar {
+  position: relative;
+  max-width: 420px;
+  margin: 0 0 16px;
+}
+.anadir-comparar input {
+  width: 100%;
+}
+.opciones-comparar {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+  background: var(--superficie);
+}
+.opciones-comparar button {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  cursor: pointer;
+}
+.opciones-comparar button:hover {
+  background: var(--superficie-2);
+}
+.tabla-desliza {
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+.tabla-comparar {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 0.92rem;
+}
+.tabla-comparar th,
+.tabla-comparar td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: top;
+}
+.tabla-comparar tbody th {
+  font-weight: 600;
+  color: var(--texto-2);
+  min-width: 9em;
+}
+.tabla-comparar thead th {
+  min-width: 11em;
+  vertical-align: bottom;
+}
+.tabla-comparar thead img {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: var(--radio-m);
+  margin-bottom: 6px;
+}
+.tabla-comparar thead small,
+.tabla-comparar td small {
+  display: block;
+  color: var(--texto-3);
+  font-weight: 400;
+}
+.tabla-comparar .quitar {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+.tabla-comparar .separador th {
+  padding-top: 18px;
+  font: 700 0.75rem var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--texto-3);
+}
+.tabla-comparar td.mejor {
+  font-weight: 700;
+  color: var(--c-fauna);
+}
+.tabla-comparar td.no {
+  color: var(--texto-3);
+}
+.mini-ano {
+  display: inline-flex;
+  gap: 2px;
+}
+.mini-ano i {
+  width: 1.3em;
+  text-align: center;
+  font: 600 0.7rem/1.6 var(--f-mono);
+  font-style: normal;
+  border-radius: 3px;
+  background: var(--superficie-2);
+  color: var(--texto-3);
+}
+.mini-ano i.si {
+  background: var(--c-fauna);
+  color: #fff;
+}
+.tabla-comparar tbody th[scope="row"] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--fondo);
+}
+@media (max-width: 600px) {
+  .tabla-comparar tbody th {
+    min-width: 7.5em;
+    font-size: 0.85rem;
+  }
+}

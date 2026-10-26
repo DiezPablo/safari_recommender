@@ -45,8 +45,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <small className="solo-ancho">Dónde y cuándo ver cada animal, en todo el mundo</small>
             </Link>
             <nav>
-              <Link href="/">Parques</Link>
+              <Link href="/" className="nav-inicio">
+                Parques
+              </Link>
               <Link href="/especies">Especies</Link>
+              <Link href="/comparar">Comparar</Link>
               <Link href="/guia">Guía</Link>
               <SelectorTema />
             </nav>

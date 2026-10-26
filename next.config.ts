@@ -9,6 +9,7 @@ const config: NextConfig = {
   // (ISR), leyendo los datos comprimidos de datos/*.gz en la función
   outputFileTracingIncludes: {
     "/parque/[id]": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz", "./datos/safaris_recientes.json.gz"],
+    "/comparar": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz"],
   },
 };
 
