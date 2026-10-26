@@ -1,0 +1,44 @@
+# Safaris — contexto para Claude Code
+
+Web de safaris en todo el mundo: **dónde y cuándo ver cada animal y cómo organizarlo**. Parques nacionales y
+reservas con fauna (unos 3500), qué se ve y cuándo, lo visto en los últimos 30 días, cómo llegar (aeropuertos y
+pistas), alojamientos y operadores locales. Datos abiertos, gratis, **sin comisiones** y **sin IA/LLM** (decisión
+del usuario). Nació dentro de Rasante (DiezPablo/photo_recommender) y se separó el 26-10-2026. Decisiones y
+problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y hoja de ruta en `docs/hoja-de-ruta.md`.
+
+## Piezas
+- Pipeline Python, paquete `safari/` (`python -m safari …`):
+  - `catalogo` (65 destacados escritos a mano en `recursos/safaris.csv`), `inat` (iNaturalist), `entorno`
+    (Wikidata, ERA5 vía Open-Meteo, alojamientos de OSM) → `safaris.json`; `--recientes` → `safaris_recientes.json`.
+  - `--mundo`: `mundo` (candidatos de Wikidata cribados con GBIF), `practico` (aeropuertos de OurAirports, lluvia
+    de NASA POWER, época, OSM por tandas, operadores de la ciudad de acceso), `mundo_cli` → `safaris_mundo.json` y
+    `safaris_indice.json`. Incremental: `--minutos` fija el tiempo de peticiones nuevas; después solo caché.
+  - `comun` (caché `CacheJson`, sesión HTTP, `escribir_json` sin NaN), `commons` (Wikimedia Commons), `gbif`.
+- Web Next.js 16 (App Router) en `src/`: `app/` (`/`, `/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`),
+  `features/safaris` (componentes, modelo, `datos.ts` solo servidor), `ui/` (mapa Leaflet, iconos, tema), `lib/`
+  (`datos.ts`: lee `datos/*.gz`; `almacen.ts`; `fechas.ts`), `estilos/`.
+  Los 65 destacados se generan en el build; el resto, al visitarlos (ISR) con los `.gz` en la función.
+- Workflows: `pruebas.yml` (ruff + pytest; tsc + ESLint + Prettier + build + Playwright), `safaris.yml`
+  (semanal), `safaris_mundo.yml` (diario, incremental con caché), `recientes.yml` (dos veces al día).
+  Los datos no van en git: se suben a la release `datos` (`.github/scripts/publicar_release.sh`, que no publica
+  si nada cambió) y solo se hace commit de `public/datos/version.json`, que redespliega Vercel. El prebuild los
+  descarga comprimidos a `datos/*.gz` (fuera de `public/`; si la release de este repo aún no los tiene, los de
+  Rasante). En `public/datos` solo va `safaris_indice.json`. Vercel guarda 30 días de despliegues: cuidado con
+  su tamaño y número.
+
+## Probar
+- `make check` (ruff, pytest sin red con respuestas reales en `tests/fixtures`, tsc, ESLint, Prettier).
+- `npm run build && npx playwright test` (móvil y escritorio, capturas en `capturas/`).
+- En el contenedor de Claude Code la salida va por proxy: Playwright sirve en la IP de la máquina (ver
+  `playwright.config.ts`); Python necesita `REQUESTS_CA_BUNDLE=/root/.ccr/ca-bundle.crt`. Desde el contenedor
+  GBIF, Overpass, Open-Meteo y Commons limitan mucho: el cálculo real corre en Actions.
+
+## Convenciones
+- Python 3.12; código, comentarios y textos de la web en español. ruff y Prettier deciden el formato.
+- Secretos solo por variables de entorno (ahora no hace falta ninguno); nunca en código ni commits.
+- JSON publicados sin NaN (`safari.comun.ficheros.escribir_json`).
+- Respetar límites: caché en `cache/` (no cambiar el formato de `CacheJson`), ≤ 1 petición/s a iNaturalist,
+  `Retry-After`, espejos de Overpass, User-Agent descriptivo.
+- Ética: nunca ubicaciones exactas ni recientes de especies amenazadas (rinocerontes): las observaciones de
+  lince, oso o rinoceronte ya llegan generalizadas y la web solo muestra zonas.
+- `git pull` antes de push: Actions hace commits de `public/datos/version.json`.

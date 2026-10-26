@@ -1,0 +1,14 @@
+/* Safaris — estilos globales (heredados de Rasante). Cada área en src/estilos/; el orden de importación es el de la cascada.
+   Dos colores con sentido fotográfico: hora dorada (notas) y hora azul (interfaz). Temas: claro, oscuro y
+   «noche» (solo rojos, para no perder la adaptación a la oscuridad en el campo). */
+@import "../estilos/01-tokens.css";
+@import "../estilos/02-base.css";
+@import "../estilos/03-cabecera.css";
+@import "../estilos/04-portada.css";
+@import "../estilos/05-ranking.css";
+@import "../estilos/06-mapa.css";
+@import "../estilos/07-ficha.css";
+@import "../estilos/08-pie-y-textos.css";
+@import "../estilos/09-rutas.css";
+@import "../estilos/11-calendario.css";
+@import "../estilos/10-movil.css";

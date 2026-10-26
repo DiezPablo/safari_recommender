@@ -1,0 +1,1251 @@
+/* Calendario de eventos: meses, cielo del mes, tarjetas de evento, barra anual y página de evento. */
+
+.calendario {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+  padding: 24px 16px 48px;
+}
+.calendario > .titular {
+  order: 0; /* en la portada el titular lleva orden propio */
+}
+@media (min-width: 1000px) {
+  .calendario {
+    padding: 24px 24px 48px;
+  }
+}
+
+/* Colores por categoría */
+.cat-flora {
+  --c-cat: var(--c-flora);
+}
+.cat-otono {
+  --c-cat: var(--c-otono);
+}
+.cat-fauna {
+  --c-cat: var(--c-fauna);
+}
+.cat-paisaje {
+  --c-cat: var(--c-paisaje);
+}
+.cat-agua {
+  --c-cat: var(--c-agua);
+}
+.cat-nieve {
+  --c-cat: var(--c-nieve);
+}
+.punto-cat {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c-cat, var(--texto-3));
+  vertical-align: 1px;
+}
+
+/* Selector de mes: enlaces (funciona sin JavaScript) */
+.meses {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+@media (min-width: 700px) {
+  .meses {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+.meses a {
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font: 600 0.85rem var(--f-cuerpo);
+  text-transform: capitalize;
+  color: var(--texto-2);
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+.meses a:hover {
+  background: var(--superficie-2);
+}
+.meses a.hoy {
+  border-color: var(--borde);
+}
+.meses a[aria-current="page"] {
+  background: var(--texto);
+  color: var(--fondo);
+}
+
+.calendario-grid {
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 900px) {
+  .calendario-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+.mapa-mes {
+  padding: 0;
+  overflow: hidden;
+}
+.mapa-mes .mapa-caja {
+  height: 420px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* El cielo del mes */
+.lista-cielo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.lista-cielo li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  align-items: start;
+  line-height: 1.4;
+}
+.lista-cielo li::first-letter {
+  text-transform: uppercase;
+}
+.lista-cielo small {
+  display: block;
+  color: var(--texto-2);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+.lista-cielo [class^="icono-"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+}
+.icono-luna.llena {
+  background: var(--luna);
+}
+.icono-luna.nueva {
+  border: 2px solid var(--luna);
+}
+.icono-vl {
+  background: linear-gradient(135deg, transparent 30%, var(--vl) 30% 70%, transparent 70%);
+  box-shadow: inset 0 0 0 2px var(--vl);
+}
+.icono-vl.apagado {
+  opacity: 0.35;
+}
+.icono-meteoro {
+  border-radius: 2px !important;
+  background:
+    linear-gradient(225deg, var(--texto-2) 0 18%, transparent 18%),
+    linear-gradient(225deg, transparent 40%, var(--texto-2) 40% 46%, transparent 46%);
+}
+.icono-meteoro.buena {
+  outline: 2px solid var(--suma);
+  outline-offset: 1px;
+}
+.icono-meteoro.mala {
+  opacity: 0.45;
+}
+.icono-eclipse {
+  background: radial-gradient(circle, var(--texto) 55%, var(--sol) 58% 70%, transparent 72%);
+}
+
+/* Tarjetas de evento */
+.naturaleza-mes {
+  display: grid;
+  gap: 16px;
+}
+.naturaleza-mes > h2 {
+  padding: 0 4px;
+}
+.grupo-categoria {
+  display: grid;
+  gap: 10px;
+}
+.titulo-categoria {
+  font: 650 1rem var(--f-cuerpo);
+  padding: 4px 4px 0;
+}
+.rejilla-eventos {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+.tarjeta-evento {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 16px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--c-cat);
+  border-radius: var(--radio-m);
+}
+.tarjeta-evento .rotulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.en-pico {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-cat) 16%, var(--superficie));
+  color: var(--texto);
+  letter-spacing: 0.04em;
+}
+.tarjeta-evento h3 {
+  font: 680 1.08rem/1.25 var(--f-cuerpo);
+  letter-spacing: -0.01em;
+}
+.tarjeta-evento h3 a {
+  color: var(--texto);
+  text-decoration: none;
+}
+.tarjeta-evento h3 a::after {
+  /* toda la tarjeta es clicable sin anidar enlaces */
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.tarjeta-evento {
+  position: relative;
+}
+.tarjeta-evento:hover {
+  box-shadow: var(--sombra);
+}
+.tarjeta-evento .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font: 500 0.82rem var(--f-cuerpo);
+  color: var(--texto-2);
+}
+.tarjeta-evento .descripcion {
+  font-size: 0.9rem;
+  color: var(--texto-2);
+  line-height: 1.45;
+}
+
+/* Barra de los doce meses */
+.barra-anual {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  max-width: 520px;
+}
+.barra-anual span {
+  height: 22px;
+  border-radius: 4px;
+  background: var(--superficie-2);
+  font: 600 0.68rem/22px var(--f-cuerpo);
+  text-align: center;
+  color: var(--texto-3);
+}
+.barra-anual .activo {
+  background: color-mix(in srgb, var(--c-cat) 35%, var(--superficie));
+  color: var(--texto);
+}
+.barra-anual .pico {
+  background: var(--c-cat);
+  color: var(--superficie);
+}
+.barra-anual .actual {
+  box-shadow: inset 0 -3px 0 var(--texto);
+}
+.barra-anual.compacta span {
+  height: 6px;
+  border-radius: 3px;
+}
+.barra-anual.compacta .actual {
+  box-shadow: 0 0 0 1px var(--texto);
+}
+
+/* Página de un evento */
+.evento .ficha-cab .rotulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.entradilla {
+  font-size: 1.12rem;
+  line-height: 1.45;
+  color: var(--texto-2);
+  max-width: 60ch;
+}
+.temporada {
+  display: grid;
+  gap: 10px;
+}
+.temporada p::first-letter {
+  text-transform: uppercase;
+}
+.leyenda-mapa .leyenda-area {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--c-cat, var(--acento));
+}
+.leyenda-mapa .leyenda-spot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--n-top);
+}
+.leyenda-mapa i.salida-ruta {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.salida-ruta {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--t-gr);
+  border: 1.5px solid var(--superficie);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--texto) 25%, transparent);
+}
+.lista-cercanos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+.lista-cercanos li {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-cercanos a {
+  font-weight: 600;
+  color: var(--texto);
+}
+.lista-cercanos small {
+  display: block;
+  color: var(--texto-2);
+  margin-top: 2px;
+}
+
+/* Avisos: lista de zonas para suscribirse */
+.lista-zonas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+.lista-zonas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-zonas li > span {
+  flex: 1;
+  font-weight: 600;
+}
+.lista-zonas .boton {
+  text-decoration: none;
+}
+.enlace-ics {
+  font: 500 0.8rem var(--f-datos);
+  color: var(--texto-3);
+}
+.pasos {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  line-height: 1.5;
+}
+.aviso-suscripcion {
+  color: var(--texto-2);
+}
+.aviso-suscripcion a {
+  font-weight: 600;
+  color: var(--acento);
+}
+
+/* Aviso de aurora: solo con tormenta geomagnética fuerte */
+.aviso-aurora {
+  padding: 14px 16px;
+  border-radius: var(--radio-m);
+  border: 1px solid color-mix(in srgb, var(--c-fauna) 50%, var(--borde));
+  background: color-mix(in srgb, var(--c-fauna) 12%, var(--superficie));
+  line-height: 1.5;
+}
+.aviso-aurora a {
+  color: var(--texto);
+  font-weight: 600;
+}
+.sello-starlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sello-starlight::before {
+  content: "✦";
+  color: var(--vl);
+}
+.icono-aurora {
+  background: linear-gradient(0deg, var(--c-fauna), transparent);
+  opacity: 0.35;
+}
+.icono-aurora.norte,
+.icono-aurora.espana {
+  opacity: 1;
+}
+
+/* Climatología: doce meses teñidos según la frecuencia (relativa al mejor mes de cada fila) */
+.tabla-clima {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
+  font: 600 0.78rem var(--f-datos);
+}
+.tabla-clima thead th {
+  font: 600 0.7rem var(--f-cuerpo);
+  color: var(--texto-3);
+  text-align: center;
+}
+.tabla-clima tbody th {
+  font: 600 0.8rem var(--f-cuerpo);
+  text-align: left;
+  white-space: nowrap;
+  padding-right: 8px;
+  color: var(--texto-2);
+}
+.tabla-clima td {
+  text-align: center;
+  padding: 7px 0;
+  min-width: 28px;
+  border-radius: 6px;
+  color: var(--texto);
+  background: color-mix(in srgb, var(--c-serie) calc(var(--f) * 70%), var(--superficie-2));
+}
+.tabla-clima .actual {
+  outline: 2px solid var(--texto);
+  outline-offset: -1px;
+}
+.tabla-clima thead .actual {
+  outline: none;
+  color: var(--texto);
+}
+.serie-atardecer {
+  --c-serie: var(--n-top);
+}
+.serie-amanecer {
+  --c-serie: var(--n-buena);
+}
+.serie-noche {
+  --c-serie: var(--vl);
+}
+.serie-niebla {
+  --c-serie: var(--luna);
+}
+.mejores-meses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 0.88rem;
+  color: var(--texto-2);
+}
+.rejilla-zonas {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.rejilla-zonas h3 {
+  font: 650 0.95rem var(--f-cuerpo);
+  margin-bottom: 6px;
+}
+.rejilla-zonas ol {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+}
+.rejilla-zonas a {
+  font-weight: 600;
+  color: var(--texto);
+}
+.rejilla-zonas small {
+  display: block;
+  color: var(--texto-2);
+}
+
+/* Alineaciones de sol y luna con los picos del horizonte */
+.alineaciones h3 {
+  font: 650 0.95rem var(--f-cuerpo);
+  margin: 6px 0;
+}
+.alineaciones ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.alineaciones li {
+  padding-left: 22px;
+  position: relative;
+  line-height: 1.45;
+}
+.alineaciones li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.alineacion-sol::before {
+  background: var(--sol);
+}
+.alineacion-luna::before {
+  background: var(--luna);
+}
+.alineaciones li span {
+  display: block;
+  color: var(--texto-2);
+  font-size: 0.9rem;
+}
+.tabla-clima .corto {
+  display: none;
+}
+@media (max-width: 520px) {
+  .tabla-clima {
+    border-spacing: 2px;
+    font-size: 0.7rem;
+  }
+  .tabla-clima td {
+    min-width: 0;
+    padding: 6px 0;
+    border-radius: 4px;
+  }
+  .tabla-clima tbody th {
+    font-size: 0.72rem;
+    padding-right: 4px;
+  }
+  /* el nombre largo sigue ahí para los lectores de pantalla */
+  .tabla-clima .largo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .tabla-clima .corto {
+    display: inline;
+  }
+}
+
+/* Planificador de viaje */
+.form-viaje {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+.form-viaje .campo {
+  flex: 1 1 160px;
+}
+.form-viaje input[type="date"] {
+  width: 100%;
+  font: inherit;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+  background: var(--superficie);
+  color: var(--texto);
+}
+.acciones-viaje {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.boton-principal {
+  background: var(--texto) !important;
+  color: var(--fondo) !important;
+  border-color: var(--texto) !important;
+}
+.resumen-viaje {
+  padding: 0 4px;
+  color: var(--texto-2);
+}
+.resumen-viaje a {
+  color: var(--acento);
+  font-weight: 600;
+}
+.dias-viaje {
+  display: grid;
+  gap: 14px;
+}
+.tarjeta-dia-viaje {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+.tarjeta-dia-viaje header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+}
+.tarjeta-dia-viaje h2 {
+  font: 700 1.25rem var(--f-cuerpo);
+  letter-spacing: -0.02em;
+}
+.tarjeta-dia-viaje h2::first-letter {
+  text-transform: uppercase;
+}
+.etiqueta-fuente {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font: 600 0.72rem var(--f-cuerpo);
+  background: var(--superficie-2);
+  color: var(--texto-2);
+}
+.etiqueta-fuente.previsto {
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+.luna-dia {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--texto-3);
+}
+.plan-momentos {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+}
+.plan-momento {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 12px 14px;
+  border-radius: var(--radio-m);
+  background: var(--superficie-2);
+  border-top: 3px solid var(--c-momento, var(--borde));
+}
+.plan-amanecer {
+  --c-momento: var(--n-buena);
+}
+.plan-atardecer {
+  --c-momento: var(--n-top);
+}
+.plan-noche {
+  --c-momento: var(--vl);
+}
+.plan-spot {
+  font: 650 1rem var(--f-cuerpo);
+  color: var(--texto);
+}
+.plan-momento small {
+  color: var(--texto-2);
+  line-height: 1.4;
+}
+.plan-ruta a,
+.plan-ruta-dia a,
+.plan-extras a {
+  color: var(--texto);
+  font-weight: 600;
+}
+.plan-ruta-dia {
+  font-size: 0.92rem;
+}
+.plan-extras {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--texto-2);
+}
+
+/* Logística: aparcamientos, agua, refugios… */
+.lista-logistica {
+  margin: 0;
+  display: grid;
+  gap: 10px 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+.lista-logistica dt {
+  font: 600 0.7rem var(--f-cuerpo);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-3);
+  margin-bottom: 2px;
+}
+.lista-logistica dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--texto-2);
+  line-height: 1.45;
+}
+.lista-logistica a {
+  color: var(--texto);
+  font-weight: 600;
+}
+.mapa-viaje {
+  height: 380px;
+}
+.parada-viaje {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 700 0.75rem var(--f-cuerpo);
+  color: #fff;
+  border: 2px solid var(--superficie);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+}
+
+/* Fauna: buscador, lista de especies y observaciones por mes */
+.explorador-fauna {
+  display: grid;
+  gap: 16px;
+}
+.filtros-fauna {
+  display: grid;
+  gap: 12px;
+}
+.filtros-fauna input[type="search"] {
+  width: 100%;
+}
+.fauna-grid {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 1000px) {
+  .fauna-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+  .fauna-grid .mapa-mes {
+    position: sticky;
+    top: 84px;
+  }
+}
+.lista-fauna {
+  grid-template-columns: 1fr;
+}
+.especies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.especies li {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: var(--radio-s);
+  overflow: hidden;
+}
+.barra-especie {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--c-fauna) 18%, transparent);
+  z-index: -1;
+}
+.especies li {
+  z-index: 0;
+}
+.especies i {
+  color: var(--texto-3);
+  font-size: 0.85rem;
+}
+.meses-fauna {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  height: 120px;
+  align-items: end;
+}
+.meses-fauna > div {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  text-align: center;
+}
+.meses-fauna span {
+  align-self: end;
+  background: var(--c-fauna);
+  border-radius: 4px 4px 0 0;
+  opacity: 0.8;
+}
+.meses-fauna .actual span {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--texto);
+}
+.meses-fauna small {
+  font-size: 0.7rem;
+  color: var(--texto-3);
+}
+
+/* Pestañas entre los dos calendarios (paisaje y fauna) y entre lugares y calendario de fauna */
+.pestanas {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  width: fit-content;
+}
+.pestanas a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font: 600 0.88rem var(--f-cuerpo);
+  color: var(--texto-2);
+  text-decoration: none;
+}
+.pestanas a[aria-current="page"] {
+  background: var(--superficie);
+  color: var(--texto);
+  box-shadow: var(--sombra);
+}
+.aviso-fauna {
+  display: block;
+  padding: 12px 16px;
+  border-radius: var(--radio-m);
+  border-left: 4px solid var(--c-fauna);
+  background: var(--superficie);
+  color: var(--texto-2);
+  text-decoration: none;
+}
+.aviso-fauna b {
+  color: var(--texto);
+}
+.rejilla-eventos.una-columna {
+  grid-template-columns: 1fr;
+}
+.columnas-temporada {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.columnas-temporada h3 {
+  font: 650 0.95rem var(--f-cuerpo);
+  margin-bottom: 6px;
+}
+.columnas-temporada h3 a {
+  color: var(--texto);
+}
+
+/* Especies emblemáticas: rejilla de tarjetas con foto y ficha con zonas */
+.rejilla-especies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+}
+.tarjeta-especie {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  overflow: hidden;
+}
+.tarjeta-especie img,
+.tarjeta-especie .sin-foto {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--superficie-2);
+}
+.tarjeta-especie > div {
+  padding: 10px 12px 12px;
+}
+.tarjeta-especie h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.tarjeta-especie p {
+  margin: 2px 0 0;
+}
+.tarjeta-especie i {
+  color: var(--texto-3);
+  font-size: 0.85rem;
+}
+.tarjeta-especie .meta {
+  color: var(--texto-2);
+  font-size: 0.85rem;
+}
+.cabecera-especie {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 800px) {
+  .cabecera-especie {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+}
+.cabecera-especie figure {
+  margin: 0;
+}
+.cabecera-especie img {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radio);
+}
+.cabecera-especie figcaption {
+  font-size: 0.75rem;
+  color: var(--texto-3);
+  margin-top: 4px;
+}
+.cabecera-especie .meta {
+  color: var(--texto-2);
+}
+.zonas-especie {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.zonas-especie li {
+  position: relative;
+  z-index: 0;
+  padding: 6px 10px;
+  border-radius: var(--radio-s);
+  overflow: hidden;
+}
+.sugerencia-especie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.sugerencia-especie a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-fauna) 16%, var(--superficie));
+  color: var(--texto);
+  text-decoration: none;
+}
+
+/* Dron: sello en la ficha del spot y zonas que le afectan */
+.sello-dron {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--texto);
+  background: color-mix(in srgb, var(--color-dron) 22%, var(--superficie));
+}
+.dron-no {
+  --color-dron: #c0392b;
+}
+.dron-permiso {
+  --color-dron: #d68910;
+}
+.dron-condiciones {
+  --color-dron: #b7950b;
+}
+.dron-libre {
+  --color-dron: #27ae60;
+}
+.punto-dron {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-dron);
+}
+.zonas-dron {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.zonas-dron summary {
+  cursor: pointer;
+}
+.zonas-dron small {
+  color: var(--texto-3);
+}
+.texto-dron {
+  white-space: pre-line;
+  font-size: 0.9rem;
+  color: var(--texto-2);
+  margin: 6px 0 0 18px;
+}
+
+/* Mareas del día en la ficha del spot */
+.mareas {
+  margin: 12px 0 0;
+}
+.mareas small {
+  color: var(--texto-3);
+}
+.dron {
+  scroll-margin-top: 90px; /* que la cabecera fija no tape el título al llegar desde el sello */
+}
+
+/* Safaris: tarjetas, chips, el año del parque, avistamientos recientes y alojamientos */
+.en-temporada {
+  color: var(--c-fauna);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.fuera-temporada {
+  color: var(--texto-3);
+  font-size: 0.85rem;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  font-size: 0.85rem;
+}
+.enlaces-especies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.ano-safari {
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+.fila-ano {
+  display: grid;
+  grid-template-columns: 7.5em repeat(12, 1fr);
+  gap: 3px;
+  align-items: end;
+}
+.fila-ano > span:first-child {
+  color: var(--texto-2);
+  align-self: center;
+}
+.cabecera-ano span {
+  text-align: center;
+  color: var(--texto-3);
+}
+.cabecera-ano .actual {
+  color: var(--texto);
+  font-weight: 700;
+}
+.temporada-si,
+.temporada-no {
+  height: 14px;
+  border-radius: 4px;
+}
+.temporada-si {
+  background: var(--c-fauna);
+}
+.temporada-no {
+  background: var(--superficie-2);
+}
+.barra-ano {
+  height: 40px;
+  display: flex;
+  align-items: flex-end;
+}
+.barra-ano i {
+  display: block;
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: color-mix(in srgb, var(--c-fauna) 70%, transparent);
+}
+.barra-ano.lluvia i {
+  background: color-mix(in srgb, #3b82c4 70%, transparent);
+}
+.fila-ano.numeros span:not(:first-child) {
+  text-align: center;
+  color: var(--texto-2);
+}
+.lista-visto {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.lista-visto li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lista-visto img,
+.lista-visto .sin-foto {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--superficie-2);
+  flex: none;
+}
+.lista-visto small,
+.lista-especies-safari small,
+.lista-alojamientos small {
+  color: var(--texto-3);
+}
+.grupos-safari {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.grupos-safari h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+.lista-especies-safari {
+  margin: 0;
+  padding-left: 1.4em;
+  display: grid;
+  gap: 3px;
+}
+.lista-alojamientos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+.lista-alojamientos li {
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+  display: grid;
+  gap: 4px;
+}
+.lista-alojamientos .enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 0.9rem;
+}
+.lista-reservar {
+  padding-left: 1.2em;
+  display: grid;
+  gap: 6px;
+}
+.guia-safari .seccion h2 {
+  margin-top: 0;
+}
+.tipos-safari dt {
+  font-weight: 700;
+  margin-top: 10px;
+}
+.tipos-safari dd {
+  margin: 2px 0 0;
+}
+.rejilla-estrella {
+  grid-template-columns: repeat(auto-fill, minmax(min(46%, 180px), 1fr));
+}
+.rejilla-estrella .tarjeta-especie h3 {
+  font-size: 0.95rem;
+}
+.campo-casilla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: end;
+  padding-bottom: 10px;
+}
+.organiza-grid {
+  display: grid;
+  gap: 8px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.organiza h3 {
+  font-size: 1rem;
+  margin: 14px 0 6px;
+}
+.lista-organiza {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.lista-organiza li {
+  display: grid;
+  gap: 2px;
+}
+.lista-organiza small {
+  color: var(--texto-3);
+}
+.lista-organiza .enlaces,
+.organiza .lista-alojamientos .enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 0.9rem;
+}
+.empresas-safari {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borde);
+}
+.lista-checks {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 4px;
+}
+.cinco-grandes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+}
+.cinco-grandes li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radio-s);
+  background: var(--superficie-2);
+}
+.cinco-grandes li.si span {
+  color: var(--c-fauna);
+  font-weight: 700;
+}
+.cinco-grandes li.no {
+  opacity: 0.6;
+}
+.cinco-grandes small {
+  grid-column: 2;
+  color: var(--texto-3);
+}

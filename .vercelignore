@@ -1,0 +1,9 @@
+cache
+tests
+e2e
+__pycache__
+safari
+pyproject.toml
+*.py
+docs
+capturas
