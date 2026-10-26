@@ -24,7 +24,7 @@ then
   exit 0
 fi
 gh release view datos >/dev/null 2>&1 || \
-  gh release create datos --title "Datos de previsión" --notes "Ficheros que publica GitHub Actions (se sobrescriben en cada actualización)." --prerelease
+  gh release create datos --title "Datos de safaris" --notes "Ficheros que publica GitHub Actions (se sobrescriben en cada actualización)." --prerelease
 gzip -kf9 "$@"
 gh release upload datos "$@" $(printf '%s.gz ' "$@") --clobber
 echo "Subidos: $*"

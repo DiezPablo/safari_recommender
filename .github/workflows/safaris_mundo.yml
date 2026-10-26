@@ -60,7 +60,13 @@ jobs:
           path: cache
           key: safaris-mundo-v1-${{ github.run_id }}
 
+      - name: ¿Empeora lo publicado?
+        id: control
+        run: |
+          if python .github/scripts/no_empeora.py salida/safaris_mundo.json; then echo "publicar=si" >> "$GITHUB_OUTPUT"; fi
+
       - name: Publicar
+        if: steps.control.outputs.publicar == 'si'
         run: |
           .github/scripts/publicar_release.sh "Safaris del mundo ($(date -u +%Y-%m-%d))" \
             salida/safaris_mundo.json salida/safaris_indice.json

@@ -132,3 +132,11 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   Mara Triangle) y ñus de los últimos 30 días pedidos en directo a iNaturalist desde el navegador (CORS
   abierto). Los del cráter del Ngorongoro (residentes) se pintan aparte. No hay datos abiertos de collares GPS
   en tiempo real.
+
+## 26-10-2026 · Primeras ejecuciones en el repo nuevo
+
+- La caché de Actions de Rasante no se comparte con este repo: `safaris_mundo` vuelve a empezar de cero y tarda
+  varios días en cubrir los ~3500 parques. Mientras, la web usa los datos de la release de Rasante (fallback de
+  `scripts/descargar-datos.mjs`). Para no sustituirlos por un resultado a medias,
+  `.github/scripts/no_empeora.py` solo deja publicar si el nuevo `safaris_mundo.json` tiene al menos el 95 % de
+  los parques del publicado (este repo o, si aún no hay, Rasante).
