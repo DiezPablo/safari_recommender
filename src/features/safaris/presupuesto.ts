@@ -83,7 +83,10 @@ export function calcular(etapas: EtapaPresupuesto[], personas: number, mes: numb
       concepto: `Tasas: ${e.nombre}`,
       porPersona: tasaPorPersona(t, e.noches, mes) + (porVehiculo * vehiculos) / personas,
       origen: "oficial",
-      detalle: [t.nota, ...(t.extras ?? []).map((x) => `${x.concepto}: ${x.usd.toLocaleString("es-ES")} USD por ${x.por}`)]
+      detalle: [
+        t.nota,
+        ...(t.extras ?? []).map((x) => `${x.concepto}: ${x.usd.toLocaleString("es-ES")} USD por ${x.por}`),
+      ]
         .filter(Boolean)
         .join(" · "),
     });
