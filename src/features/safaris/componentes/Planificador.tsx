@@ -63,7 +63,13 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
         </label>
         <label className="campo">
           <span className="rotulo">Días</span>
-          <input type="number" min={2} max={30} value={dias} onChange={(e) => actualizar({ dias: e.target.value })} />
+          <select value={dias} onChange={(e) => actualizar({ dias: e.target.value })}>
+            {Array.from({ length: 29 }, (_, i) => i + 2).map((d) => (
+              <option key={d} value={d}>
+                {d} días
+              </option>
+            ))}
+          </select>
         </label>
         <label className="campo">
           <span className="rotulo">Mes del viaje</span>

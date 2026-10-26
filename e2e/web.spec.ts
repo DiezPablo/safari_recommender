@@ -185,6 +185,8 @@ test("planificador: país, días y animales dan un circuito con noches y traslad
   await expect(page.locator(".traslado").first()).toBeVisible();
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-planificar.png`, fullPage: true });
   // demasiados parques para pocos días: avisa
+  await page.getByLabel("Días").selectOption("7");
+  await expect(page.locator(".plan h2")).toContainText("7 días en Tanzania");
   await page.goto("/planificar?pais=Kenia&dias=3&ritmo=intenso");
   await expect(page.locator(".plan h2")).toContainText("3 días en Kenia");
   expect(errores).toEqual([]);
@@ -218,15 +220,22 @@ test("presupuesto: tasas oficiales del plan, tus precios, solicitud y comparar o
   await expect(tabla.locator("tr", { hasText: "Tasas: Tarangire" })).toContainText("118 USD");
   await expect(tabla.locator("tr", { hasText: "Tasas: Serengeti" })).toContainText("460 USD");
   await expect(tabla.locator("tr", { hasText: "Tasas: Cráter del Ngorongoro" })).toContainText("218 USD");
+  // vaciar un campo y escribir otro número (en el móvil saltaba a otro valor al borrar)
+  const personas = page.getByLabel("Personas");
+  await personas.fill("");
+  await expect(personas).toHaveValue("");
+  await personas.pressSequentially("4");
+  await expect(personas).toHaveValue("4");
+  await expect(page).toHaveURL(/personas=4/);
   // cambiar el alojamiento cambia el total
   const antes = await page.locator(".resumen-presupuesto h2").innerText();
   await page.getByLabel("USD por persona y noche").fill("120");
   await expect(page.locator(".resumen-presupuesto h2")).not.toHaveText(antes);
   await expect(page.locator("textarea.solicitud")).toHaveValue(/Serengeti: 3 noches/);
-  // una oferta sin tasas suma las tasas para compararla
+  // una oferta sin tasas suma las tasas para compararla (4 personas: el cráter, 295 USD por vehículo, entre 4)
   await page.getByRole("button", { name: "+ Añadir oferta" }).click();
   await page.getByLabel("Oferta 1: incluye tasas de los parques").uncheck();
-  await expect(page.locator(".comparable").first()).toContainText("+ Tasas 797 USD");
+  await expect(page.locator(".comparable").first()).toContainText("+ Tasas 723 USD");
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-presupuesto.png`, fullPage: true });
   expect(errores).toEqual([]);
 });

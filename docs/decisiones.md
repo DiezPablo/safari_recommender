@@ -174,3 +174,13 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - Solicitud estándar para mandar a 3-4 operadores (mismas preguntas: qué incluye, vehículo privado, alojamientos
   concretos, pagos y recargos, licencia) y comparador de ofertas que suma lo que cada una no incluye.
 - Revisar `tasas.ts` cada año (SANParks cambia en noviembre; UWA publicó tarifas hasta junio de 2026).
+
+## 26-10-2026 · «Especie sin nombre común» y campos numéricos en el móvil
+
+- El `safaris_mundo.json` publicado el 26-10-2026 (ejecución de Rasante con el código anterior) salió con
+  `especies` vacío: los nombres se pedían al final y se agotó el tiempo. El código actual los pide justo después
+  de las aves y sin límite; además `no_empeora.py` ya no deja publicar si falta el nombre de más del 5 % de las
+  especies usadas.
+- En el móvil, al vaciar un campo numérico (días del planificador, personas o noches del presupuesto) el valor
+  saltaba a otro y no dejaba escribir. Los días son ahora un desplegable y el resto usa `src/ui/CampoNumero.tsx`,
+  que solo aplica el número cuando es válido.

@@ -20,6 +20,7 @@ import {
 } from "@/features/safaris/presupuesto";
 import { TASAS } from "@/features/safaris/tasas";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
+import CampoNumero from "@/ui/CampoNumero";
 import BuscadorParques from "./BuscadorParques";
 
 const CLAVE_SUPUESTOS = "safaris.supuestos";
@@ -63,12 +64,7 @@ function Numero({
   return (
     <label className="campo">
       <span className="rotulo">{etiqueta}</span>
-      <input
-        type="number"
-        min={min}
-        value={valor}
-        onChange={(e) => onCambio(Math.max(min, Number(e.target.value) || 0))}
-      />
+      <CampoNumero valor={valor} min={min} onCambio={onCambio} />
       {ayuda && <small className="ayuda">{ayuda}</small>}
     </label>
   );
@@ -142,15 +138,12 @@ export default function Presupuesto({ mesHoy }: { mesHoy: number }) {
             <li key={e.id}>
               <Link href={`/parque/${e.id}`}>{e.nombre}</Link>
               <label>
-                <input
-                  type="number"
+                <CampoNumero
+                  valor={e.noches}
                   min={1}
                   max={30}
-                  value={e.noches}
                   aria-label={`Noches en ${e.nombre}`}
-                  onChange={(ev) =>
-                    ponerEtapas(crudas.map((x, j) => (j === i ? { ...x, noches: Number(ev.target.value) || 1 } : x)))
-                  }
+                  onCambio={(v) => ponerEtapas(crudas.map((x, j) => (j === i ? { ...x, noches: v } : x)))}
                 />{" "}
                 noches
               </label>
@@ -361,12 +354,10 @@ export default function Presupuesto({ mesHoy }: { mesHoy: number }) {
                         />
                       </td>
                       <td>
-                        <input
-                          type="number"
-                          min={0}
-                          value={o.precio}
+                        <CampoNumero
+                          valor={o.precio}
                           aria-label="Precio por persona"
-                          onChange={(e) => mas({ precio: Number(e.target.value) || 0 })}
+                          onCambio={(v) => mas({ precio: v })}
                         />
                       </td>
                       {INCLUYE.map(([k, t]) => (
