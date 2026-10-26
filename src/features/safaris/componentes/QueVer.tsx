@@ -3,24 +3,14 @@
 // verlas, por las observaciones reales de cada especie (GBIF) y la buena época del parque. Lo que nadie hace:
 // los calendarios de las agencias son texto y solo de sus destinos.
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { type DatosEspecies, useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import { MESES } from "@/lib/fechas";
 import { buenaEpoca, type FilaIndice } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
-interface EspecieQueVer {
-  clave: number;
-  cientifico: string;
-  nombre: string;
-  slug: string | null;
-  foto: string | null;
-  n_parques: number;
-}
-
-type Datos = { especies: EspecieQueVer[]; parques: Record<string, [string, number][]> };
-
 /** Parques ordenados por cuántas de las especies elegidas tienen, buena época en el mes y facilidad media. */
-function ordenar(datos: Datos | null, indice: Map<string, FilaIndice> | null, elegidas: number[], mes: number) {
+function ordenar(datos: DatosEspecies | null, indice: Map<string, FilaIndice> | null, elegidas: number[], mes: number) {
   if (!datos || !indice || !elegidas.length) return [];
   // facilidad de cada especie en cada parque: observaciones frente al parque donde más se ve (0-1)
   const porParque = new Map<string, Map<number, number>>();
@@ -51,23 +41,11 @@ const MAX_ELEGIDAS = 4;
 const RESULTADOS = 12;
 
 export default function QueVer({ mesHoy }: { mesHoy: number }) {
-  const [datos, setDatos] = useState<Datos | null>(null);
-  const [indice, setIndice] = useState<Map<string, FilaIndice> | null>(null);
+  const { especies: datos, indice } = useDatosNavegador();
   const [verTodas, setVerTodas] = useState(false);
   const [parametros, actualizar] = useParametrosUrl();
   const elegidas = (parametros.get("ver") ?? "").split(",").filter(Boolean).map(Number);
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
-
-  useEffect(() => {
-    fetch("/especies.json")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(setDatos)
-      .catch(() => {});
-    fetch("/datos/safaris_indice.json")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d: { parques: FilaIndice[] }) => setIndice(new Map(d.parques.map((p) => [p.id, p]))))
-      .catch(() => {});
-  }, []);
 
   function alternar(clave: number) {
     const nuevas = elegidas.includes(clave)

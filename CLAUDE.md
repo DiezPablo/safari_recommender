@@ -14,7 +14,8 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
     de NASA POWER, época, OSM por tandas, operadores de la ciudad de acceso), `mundo_cli` → `safaris_mundo.json` y
     `safaris_indice.json`. Incremental: `--minutos` fija el tiempo de peticiones nuevas; después solo caché.
   - `comun` (caché `CacheJson`, sesión HTTP, `escribir_json` sin NaN), `commons` (Wikimedia Commons), `gbif`.
-- Web Next.js 16 (App Router) en `src/`: `app/` (`/`, `/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`),
+- Web Next.js 16 (App Router) en `src/`: `app/` (`/`, `/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`, `/comparar`, `/migracion`,
+  `/planificar`),
   `features/safaris` (componentes, modelo, `datos.ts` solo servidor), `ui/` (mapa Leaflet, iconos, tema), `lib/`
   (`datos.ts`: lee `datos/*.gz`; `almacen.ts`; `fechas.ts`), `estilos/`.
   Los 65 destacados se generan en el build; el resto, al visitarlos (ISR) con los `.gz` en la función.

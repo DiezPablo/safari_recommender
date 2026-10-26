@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { MESES } from "@/lib/fechas";
+import { buscarZonas } from "@/features/safaris/zonas";
 import { buenaEpoca, CONTINENTES, type FilaIndice } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
@@ -48,6 +49,7 @@ export default function ExploradorSafaris({
     if (!filas) return [];
     const q = normal(texto.trim());
     const clave = especie ? Number(especie) : null;
+    const deZonas = new Set(buscarZonas(texto).map((z) => z.parque));
     return filas
       .map((f) => ({ f, epoca: buenaEpoca(f)?.includes(mes + 1) ?? false }))
       .filter(
@@ -55,10 +57,13 @@ export default function ExploradorSafaris({
           (!continente || f.c === continente) &&
           (clave === null || f.e.includes(clave)) &&
           (!soloEpoca || epoca) &&
-          (!q || normal(`${f.n} ${f.p ?? ""}`).includes(q)),
+          (!q || deZonas.has(f.id) || normal(`${f.n} ${f.p ?? ""}`).includes(q)),
       )
       .sort((a, b) => Number(b.epoca) - Number(a.epoca) || Number(b.f.d) - Number(a.f.d) || b.f.s - a.f.s);
   }, [filas, texto, continente, especie, soloEpoca, mes]);
+
+  const zonas = buscarZonas(texto);
+  const nombres = new Map((filas ?? []).map((f) => [f.id, f.n]));
 
   const puntos = useMemo(
     () =>
@@ -130,6 +135,17 @@ export default function ExploradorSafaris({
           </label>
         </div>
       </div>
+
+      {zonas.length > 0 && (
+        <ul className="zonas-busqueda">
+          {zonas.map((z) => (
+            <li key={z.nombre}>
+              <b>{z.nombre}</b> está en <Link href={`/parque/${z.parque}`}>{nombres.get(z.parque) ?? z.parque}</Link>.{" "}
+              {z.nota}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="fauna-grid">
         <section className="seccion">

@@ -164,3 +164,43 @@ test("migración: zona del mes, cambiar de mes y lo visto en iNaturalist", async
   await esperarTeselas(page);
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-migracion.png`, fullPage: true });
 });
+
+test("planificador: país, días y animales dan un circuito con noches y traslados", async ({ page }, info) => {
+  const errores = vigilar(page);
+  await page.goto("/planificar?pais=Tanzania&dias=10&mes=7&ritmo=normal");
+  const etapas = page.locator(".etapas-plan > li");
+  const hay = await etapas
+    .first()
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await page.getByRole("group", { name: "Animales" }).getByRole("button", { name: "León", exact: true }).click();
+  await expect(page).toHaveURL(/ver=/);
+  await expect(page.locator(".plan h2")).toContainText("10 días en Tanzania: 3 parques");
+  await expect(etapas).toHaveCount(3);
+  // noches: 9 en total, repartidas
+  const noches = await page.locator(".etapa .rotulo").allInnerTexts();
+  expect(noches.reduce((a, t) => a + parseInt(t), 0)).toBe(9);
+  await expect(page.locator(".traslado").first()).toBeVisible();
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-planificar.png`, fullPage: true });
+  // demasiados parques para pocos días: avisa
+  await page.goto("/planificar?pais=Kenia&dias=3&ritmo=intenso");
+  await expect(page.locator(".plan h2")).toContainText("3 días en Kenia");
+  expect(errores).toEqual([]);
+});
+
+test("buscar zonas que no son parques: Ndutu lleva al Ngorongoro", async ({ page }) => {
+  await page.goto("/?q=ndutu");
+  const zona = page.locator(".zonas-busqueda li").first();
+  const hay = await zona
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await expect(zona).toContainText("Ndutu está en");
+  await expect(page.locator(".rejilla-safaris li", { hasText: "Ngorongoro" }).first()).toBeVisible();
+  await page.goto("/comparar");
+  await page.getByLabel("Añadir un parque").fill("Ndutu");
+  await expect(page.locator(".opciones-comparar button", { hasText: "Ngorongoro" })).toBeVisible();
+});

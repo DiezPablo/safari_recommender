@@ -67,6 +67,9 @@ export default function PaginaSafaris() {
           <b>La gran migración en {MESES[mesHoy]}:</b> {MIGRACION[mesHoy].zona}.{" "}
           <Link href="/migracion">Dónde está y dónde la han visto este mes →</Link>
         </p>
+        <p>
+          <b>¿Ya sabes a qué país?</b> <Link href="/planificar">Planifica la ruta: parques, noches y traslados →</Link>
+        </p>
       </section>
 
       {ahora.length > 0 && (

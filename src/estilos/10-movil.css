@@ -12,7 +12,8 @@
   }
   /* el icono ya lleva a la portada: sin la marca ni «Parques» caben los enlaces y el tema */
   .marca b,
-  .cabecera nav > a.nav-inicio {
+  .cabecera nav > a.nav-inicio,
+  .cabecera nav > a.nav-ancho {
     display: none;
   }
   .cabecera nav {

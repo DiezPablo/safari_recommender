@@ -1549,3 +1549,82 @@
 .tabla-migracion tr.actual {
   background: color-mix(in srgb, var(--c-fauna) 12%, transparent);
 }
+
+/* Planificador */
+.formulario-plan {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.formulario-plan input,
+.formulario-plan select {
+  width: 100%;
+}
+.plan h2 {
+  margin: 0 0 8px;
+}
+.avisos-plan,
+.aviso-plan {
+  margin: 0 0 12px;
+  padding: 10px 14px 10px 30px;
+  border-left: 3px solid var(--c-fauna);
+  background: var(--superficie-2);
+  border-radius: 0 var(--radio-m) var(--radio-m) 0;
+}
+.aviso-plan {
+  padding-left: 14px;
+}
+.etapas-plan {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.etapas-plan .traslado {
+  margin: 0;
+  padding: 8px 0 8px 18px;
+  border-left: 2px dashed var(--borde);
+  margin-left: 22px;
+  color: var(--texto-2);
+  font-size: 0.9rem;
+}
+.etapas-plan .traslado.volar {
+  color: var(--c-fauna);
+  font-weight: 600;
+}
+.etapa {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+  background: var(--superficie);
+}
+.etapa img {
+  width: 96px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.etapa h3 {
+  margin: 2px 0;
+  font-size: 1.1rem;
+}
+.etapa p {
+  margin: 2px 0;
+}
+.etapa > div:only-child {
+  grid-column: 1 / -1;
+}
+
+.zonas-busqueda {
+  margin: 0 0 12px;
+  padding: 10px 14px 10px 30px;
+  border-left: 3px solid var(--c-fauna);
+  background: var(--superficie-2);
+  border-radius: 0 var(--radio-m) var(--radio-m) 0;
+}
+.zonas-busqueda li + li {
+  margin-top: 4px;
+}

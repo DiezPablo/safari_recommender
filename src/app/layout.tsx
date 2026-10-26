@@ -48,10 +48,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" className="nav-inicio">
                 Parques
               </Link>
-              <Link href="/especies">Especies</Link>
+              <Link href="/planificar">Planificar</Link>
               <Link href="/migracion">Migración</Link>
               <Link href="/comparar">Comparar</Link>
-              <Link href="/guia">Guía</Link>
+              <Link href="/especies" className="nav-ancho">
+                Especies
+              </Link>
+              <Link href="/guia" className="nav-ancho">
+                Guía
+              </Link>
               <SelectorTema />
             </nav>
           </div>

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { type FilaIndice, MAX_COMPARAR } from "@/features/safaris/modelo";
+import { buscarZonas } from "@/features/safaris/zonas";
 import { useComparador } from "./BotonComparar";
 
 function normalizar(t: string): string {
@@ -21,11 +22,12 @@ export default function AnadirComparar({ ids }: { ids: string[] }) {
       .catch(() => {});
   }, []);
   const q = normalizar(texto.trim());
+  const deZonas = new Set(buscarZonas(texto).map((z) => z.parque));
   const opciones =
     q.length < 2
       ? []
       : indice
-          .filter((f) => !ids.includes(f.id) && normalizar(`${f.n} ${f.p ?? ""}`).includes(q))
+          .filter((f) => !ids.includes(f.id) && (deZonas.has(f.id) || normalizar(`${f.n} ${f.p ?? ""}`).includes(q)))
           .sort((a, b) => b.s - a.s)
           .slice(0, 8);
   if (ids.length >= MAX_COMPARAR)

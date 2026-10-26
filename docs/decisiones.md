@@ -140,3 +140,24 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   `scripts/descargar-datos.mjs`). Para no sustituirlos por un resultado a medias,
   `.github/scripts/no_empeora.py` solo deja publicar si el nuevo `safaris_mundo.json` tiene al menos el 95 % de
   los parques del publicado (este repo o, si aún no hay, Rasante).
+
+## 26-10-2026 · Planificador de ruta
+
+- `/planificar` (en el navegador, estado en la URL): país, días, mes, ritmo (2-4 noches por parque) y especies.
+  Elección voraz: interés del parque (log de su puntuación, ×0,6 fuera de época, ×1,15 si es destacado) + 2 ×
+  facilidad de cada especie aún no cubierta, dividido por (1 + distancia al circuito / 800 km) para que salgan
+  circuitos compactos. Se descartan los parques solapados (< 40 km o uno dentro del otro) y los contenedores
+  (reservas de la biosfera que engloban parques), salvo los destacados: el Masái Mara o Kruger contienen
+  reservas privadas pequeñas y son el destino.
+- Orden por vecino más próximo probando cada inicio; traslados en línea recta ×1,3 a 50 km/h; más de 6 h →
+  avioneta o vuelo interno. Avisos: paradas de una noche, demasiada carretera, fuera de época, especies sin cubrir.
+- Probado con el índice real: Tanzania 10 días → Tarangire, Ngorongoro, Serengeti; Kenia 7 → Masái Mara y
+  Amboseli; Botsuana 9 → Makgadikgadi, Moremi, Chobe.
+
+## 26-10-2026 · Zonas que no son parques (Ndutu)
+
+- Buscar «Ndutu» no daba nada: es una zona del área de conservación del Ngorongoro, no un espacio protegido en
+  Wikidata. Igual Seronera, Grumeti, Kogatende, Mara Triangle, Sabi Sands, Savuti, Khwai, Mfuwe, los campamentos
+  de Kruger y Etosha o Porto Jofre. `src/features/safaris/zonas.ts` las lista a mano con su parque y una nota; el
+  buscador de la portada y el del comparador las encuentran y muestran a qué parque pertenecen. Ampliarla cuando
+  falte alguna.
