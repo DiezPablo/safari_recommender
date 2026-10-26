@@ -169,26 +169,34 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
             </li>
           ))}
         </ol>
-        {plan.etapas.length > 1 && (
+        {plan.etapas.length > 0 && (
           <p className="enlaces">
+            {plan.etapas.length > 1 && (
+              <Link
+                href={`/comparar?p=${plan.etapas
+                  .slice(0, MAX_COMPARAR)
+                  .map((e) => e.f.id)
+                  .join(",")}`}
+                onClick={() =>
+                  escribirAlmacen(
+                    "safaris.comparar",
+                    plan.etapas
+                      .slice(0, MAX_COMPARAR)
+                      .map((e) => e.f.id)
+                      .join(","),
+                  )
+                }
+              >
+                Comparar estos parques →
+              </Link>
+            )}
             <Link
-              href={`/comparar?p=${plan.etapas
-                .slice(0, MAX_COMPARAR)
-                .map((e) => e.f.id)
-                .join(",")}`}
-              onClick={() =>
-                escribirAlmacen(
-                  "safaris.comparar",
-                  plan.etapas
-                    .slice(0, MAX_COMPARAR)
-                    .map((e) => e.f.id)
-                    .join(","),
-                )
-              }
+              href={`/presupuesto?p=${plan.etapas.map((e) => `${e.f.id}:${e.noches}`).join(",")}&mes=${mes}&vuelos=${
+                plan.etapas.filter((e) => e.traslado?.volar).length
+              }`}
             >
-              Comparar estos parques →
+              Calcular el presupuesto →
             </Link>
-            <Link href="/guia">Cómo pedir presupuesto a operadores →</Link>
           </p>
         )}
         <p className="nota-pie">

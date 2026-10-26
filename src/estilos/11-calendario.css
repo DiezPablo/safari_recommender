@@ -1628,3 +1628,114 @@
 .zonas-busqueda li + li {
   margin-top: 4px;
 }
+
+/* Presupuesto */
+.presupuesto h2 small {
+  font-size: 0.6em;
+  color: var(--texto-3);
+  font-weight: 500;
+}
+.etapas-presupuesto {
+  margin: 12px 0;
+  padding-left: 1.4em;
+}
+.etapas-presupuesto li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 4px 0;
+}
+.etapas-presupuesto input {
+  width: 4.5em;
+}
+.etapas-presupuesto small {
+  color: var(--texto-3);
+}
+button.quitar {
+  border: 0;
+  background: none;
+  color: var(--texto-2);
+  text-decoration: underline;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.campo .ayuda {
+  color: var(--texto-3);
+  font-size: 0.8rem;
+}
+.tabla-presupuesto {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.tabla-presupuesto th,
+.tabla-presupuesto td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: top;
+}
+.tabla-presupuesto th {
+  font-weight: 500;
+}
+.tabla-presupuesto th small {
+  display: block;
+  color: var(--texto-3);
+  font-size: 0.8rem;
+}
+.tabla-presupuesto td:nth-child(2) {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.origen {
+  font-size: 0.75rem;
+  padding: 1px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.origen.oficial {
+  background: color-mix(in srgb, var(--c-fauna) 20%, transparent);
+}
+.origen.estimación {
+  background: var(--superficie-2);
+  color: var(--texto-2);
+}
+textarea.solicitud {
+  width: 100%;
+  font: 0.9rem/1.5 var(--f-mono);
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-m);
+  background: var(--superficie);
+  color: var(--texto);
+  margin-bottom: 8px;
+}
+.tabla-ofertas {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.tabla-ofertas th,
+.tabla-ofertas td {
+  padding: 6px;
+  border-bottom: 1px solid var(--borde);
+  text-align: center;
+  vertical-align: middle;
+}
+.tabla-ofertas th:first-child,
+.tabla-ofertas td:first-child {
+  text-align: left;
+}
+.tabla-ofertas input:not([type="checkbox"]) {
+  width: 8em;
+}
+.tabla-ofertas .comparable {
+  text-align: right;
+  min-width: 10em;
+}
+.tabla-ofertas .comparable small {
+  display: block;
+  color: var(--texto-3);
+}

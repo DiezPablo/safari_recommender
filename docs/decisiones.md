@@ -161,3 +161,16 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   de Kruger y Etosha o Porto Jofre. `src/features/safaris/zonas.ts` las lista a mano con su parque y una nota; el
   buscador de la portada y el del comparador las encuentran y muestran a qué parque pertenecen. Ampliarla cuando
   falte alguna.
+
+## 26-10-2026 · Presupuesto sin sorpresas
+
+- `/presupuesto?p=parque:noches,…&personas=&mes=&vuelos=` (el planificador enlaza con su plan). Las tasas de
+  ~20 destacados están en `src/features/safaris/tasas.ts` con fuente y vigencia (revisadas el 26-10-2026: TANAPA
+  vía Roadtrip Africa, KWS oct. 2025, Narok 2026, SANParks nov. 2026, MEFT abr. 2026, Zambia 2025, ZimParks 2023,
+  UWA 2024-26, Akagera 2025, permisos de gorilas y Galápagos). Ruaha no: las fuentes no coinciden. Rand, dólar
+  namibio y pula se convierten a 18, 18 y 13,5 por dólar. Se cobran por periodo de 24 h (un día por noche).
+- El resto (alojamiento, vehículo, vuelos, propinas, visado, seguro, imprevistos) son valores de partida que el
+  usuario cambia; se guardan en su navegador y la tabla distingue «tarifa oficial» de «tu estimación».
+- Solicitud estándar para mandar a 3-4 operadores (mismas preguntas: qué incluye, vehículo privado, alojamientos
+  concretos, pagos y recargos, licencia) y comparador de ofertas que suma lo que cada una no incluye.
+- Revisar `tasas.ts` cada año (SANParks cambia en noviembre; UWA publicó tarifas hasta junio de 2026).

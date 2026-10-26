@@ -204,3 +204,29 @@ test("buscar zonas que no son parques: Ndutu lleva al Ngorongoro", async ({ page
   await page.getByLabel("Añadir un parque").fill("Ndutu");
   await expect(page.locator(".opciones-comparar button", { hasText: "Ngorongoro" })).toBeVisible();
 });
+
+test("presupuesto: tasas oficiales del plan, tus precios, solicitud y comparar ofertas", async ({ page }, info) => {
+  const errores = vigilar(page);
+  await page.goto("/presupuesto?p=tarangire:2,ngorongoro:1,serengeti:3&personas=2&mes=7");
+  const tabla = page.locator(".tabla-presupuesto");
+  const hay = await tabla
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  // tasas: Tarangire 2 × 59, Ngorongoro 70,8 + cráter 295/2, Serengeti 3 × (82,6 + 70,8)
+  await expect(tabla.locator("tr", { hasText: "Tasas: Tarangire" })).toContainText("118 USD");
+  await expect(tabla.locator("tr", { hasText: "Tasas: Serengeti" })).toContainText("460 USD");
+  await expect(tabla.locator("tr", { hasText: "Tasas: Cráter del Ngorongoro" })).toContainText("218 USD");
+  // cambiar el alojamiento cambia el total
+  const antes = await page.locator(".resumen-presupuesto h2").innerText();
+  await page.getByLabel("USD por persona y noche").fill("120");
+  await expect(page.locator(".resumen-presupuesto h2")).not.toHaveText(antes);
+  await expect(page.locator("textarea.solicitud")).toHaveValue(/Serengeti: 3 noches/);
+  // una oferta sin tasas suma las tasas para compararla
+  await page.getByRole("button", { name: "+ Añadir oferta" }).click();
+  await page.getByLabel("Oferta 1: incluye tasas de los parques").uncheck();
+  await expect(page.locator(".comparable").first()).toContainText("+ Tasas 797 USD");
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-presupuesto.png`, fullPage: true });
+  expect(errores).toEqual([]);
+});

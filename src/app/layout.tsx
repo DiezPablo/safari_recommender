@@ -50,7 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
               <Link href="/planificar">Planificar</Link>
               <Link href="/migracion">Migración</Link>
-              <Link href="/comparar">Comparar</Link>
+              <Link href="/presupuesto">Presupuesto</Link>
+              <Link href="/comparar" className="nav-ancho">
+                Comparar
+              </Link>
               <Link href="/especies" className="nav-ancho">
                 Especies
               </Link>

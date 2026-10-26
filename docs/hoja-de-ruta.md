@@ -23,7 +23,7 @@
    parques (`/comparar`) y migración (`/migracion`: calendario + ñus vistos en 30 días en iNaturalist).
 2. ~~**Planificador de ruta**~~ (hecho, `/planificar`; sin vuelos reales ni precios todavía): región, días y especies → circuito con noches, traslados (coche o avioneta), época y
    avisos de itinerario poco realista.
-3. **Presupuestos sin sorpresas**: calculadora transparente (tasas por día, alojamiento, vuelos internos,
+3. ~~**Presupuestos sin sorpresas**~~ (hecho, `/presupuesto`; tasas de ~20 destacados): calculadora transparente (tasas por día, alojamiento, vuelos internos,
    propinas, visado), solicitud estándar para pedir presupuesto a 3-4 operadores y comparador de las ofertas
    recibidas (en el navegador).
 4. **Lista por país**: visado, vacunas y malaria (fuentes oficiales), moneda, equipaje de avioneta, enchufes.
