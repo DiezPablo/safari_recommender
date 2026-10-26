@@ -19,8 +19,8 @@
 
 ## Prioridades
 
-1. **Decidir** (lo que nadie tiene): portada «¿Qué quieres ver y cuándo?» (especies + mes → ranking de parques
-   por facilidad real), comparador de 2-3 parques, seguimiento de la migración (calendario + ñus vistos en 30 días).
+1. ~~**Decidir**~~ (hecho, 26-10-2026): portada «¿Qué quieres ver y cuándo?» (`/`), comparador de hasta 4
+   parques (`/comparar`) y migración (`/migracion`: calendario + ñus vistos en 30 días en iNaturalist).
 2. **Planificador de ruta**: región, días y especies → circuito con noches, traslados (coche o avioneta), época y
    avisos de itinerario poco realista.
 3. **Presupuestos sin sorpresas**: calculadora transparente (tasas por día, alojamiento, vuelos internos,

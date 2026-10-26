@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MESES } from "@/lib/fechas";
+import { MIGRACION } from "@/features/safaris/migracion";
 import QueVer from "@/features/safaris/componentes/QueVer";
 import ExploradorSafaris from "@/features/safaris/componentes/ExploradorSafaris";
 import {
@@ -60,6 +61,13 @@ export default function PaginaSafaris() {
       </header>
 
       <QueVer mesHoy={mesHoy} />
+
+      <section className="seccion aviso-migracion">
+        <p>
+          <b>La gran migración en {MESES[mesHoy]}:</b> {MIGRACION[mesHoy].zona}.{" "}
+          <Link href="/migracion">Dónde está y dónde la han visto este mes →</Link>
+        </p>
+      </section>
 
       {ahora.length > 0 && (
         <section className="seccion">

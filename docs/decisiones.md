@@ -112,3 +112,23 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   web con rutas en la raíz (`/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`) y los mismos estilos.
 - Datos: la release de este repo empieza vacía y la caché de Actions también (el cribado mundial tarda días
   otra vez). Mientras tanto, el prebuild descarga los datos de la release de Rasante.
+
+## 26-10-2026 · «Qué ver y cuándo», comparador y migración
+
+- **Portada por especies y mes.** `/especies.json` (ruta estática generada en el build desde
+  `safaris_mundo.json`) da, por especie estrella, sus 80 parques con más observaciones; el navegador lo cruza con
+  `safaris_indice.json`. Orden: cuántas de las especies elegidas tiene, luego si el mes es buena época y luego la
+  facilidad media (√(obs / obs del mejor parque), para que los parques muy visitados no lo tapen todo). Primero
+  van los animales más buscados (lista fija); el resto, en el orden del catálogo.
+- **Comparador** (`/comparar?p=…`, dinámico, lee los `.gz` en la función): hasta 4 parques; la lista se guarda
+  en el navegador («+ Comparar» en las fichas). Ojo: una constante exportada desde un módulo `"use client"` no es
+  un valor en el servidor (es una referencia de cliente); las compartidas van en `modelo.ts`.
+- **Nombres de las especies estrella**: `mundo.especies` no siempre las trae; `nombreEstrella` usa el del
+  catálogo.
+- **Aeropuertos del mismo país**: el Serengeti salía con Mara Serena (Kenia) como aeropuerto más cercano. Ahora
+  `llegar` recibe el ISO del país (P297 de Wikidata) y usa los aeropuertos de ese país si hay alguno a menos de
+  800 km. Se nota tras la próxima ejecución de `safaris_mundo`.
+- **Migración**: calendario mes a mes escrito a mano (`src/features/safaris/migracion.ts`, ciclo de TANAPA y
+  Mara Triangle) y ñus de los últimos 30 días pedidos en directo a iNaturalist desde el navegador (CORS
+  abierto). Los del cráter del Ngorongoro (residentes) se pintan aparte. No hay datos abiertos de collares GPS
+  en tiempo real.

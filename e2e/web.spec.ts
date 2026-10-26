@@ -152,3 +152,15 @@ test("comparador: dos parques lado a lado, añadir otro desde el buscador y quit
   await expect(page.getByRole("button", { name: "✓ En el comparador" })).toBeVisible();
   expect(errores).toEqual([]);
 });
+
+test("migración: zona del mes, cambiar de mes y lo visto en iNaturalist", async ({ page }, info) => {
+  await page.goto("/migracion");
+  await expect(page.locator("h1")).toHaveText("La gran migración, mes a mes");
+  await page.getByRole("group", { name: "Mes" }).getByRole("button", { name: /^ago/ }).click();
+  await expect(page.locator(".tarjeta-mes h2")).toContainText("Río Mara");
+  await expect(page.locator(".mapa-caja[data-listo=si]")).toBeVisible();
+  // la consulta en directo termina (con datos o con el aviso de error), nunca se queda cargando
+  await expect(page.locator(".visto-migracion")).not.toContainText("Cargando", { timeout: 20000 });
+  await esperarTeselas(page);
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-migracion.png`, fullPage: true });
+});

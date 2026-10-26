@@ -49,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Parques
               </Link>
               <Link href="/especies">Especies</Link>
+              <Link href="/migracion">Migración</Link>
               <Link href="/comparar">Comparar</Link>
               <Link href="/guia">Guía</Link>
               <SelectorTema />

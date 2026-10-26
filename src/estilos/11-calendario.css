@@ -1478,3 +1478,74 @@
     font-size: 0.85rem;
   }
 }
+
+/* Migración */
+.meses-migracion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.meses-migracion button {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font: 600 0.85rem var(--f-cuerpo);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.meses-migracion button[aria-pressed="true"] {
+  background: var(--c-fauna);
+  border-color: var(--c-fauna);
+  color: #fff;
+}
+.tarjeta-mes {
+  margin: 0 0 12px;
+}
+.tarjeta-mes h2 {
+  margin: 2px 0 4px;
+}
+.tarjeta-mes p {
+  margin: 4px 0;
+}
+.migracion .mapa-caja {
+  height: min(60vh, 480px);
+}
+.leyenda-migracion .pto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.pto.zona {
+  background: var(--c-fauna);
+  opacity: 0.6;
+}
+.pto.visto {
+  background: var(--acento);
+}
+.pto.crater {
+  background: var(--texto-3);
+}
+.tabla-migracion {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.tabla-migracion th,
+.tabla-migracion td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: top;
+}
+.tabla-migracion tbody th {
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.tabla-migracion tr.actual {
+  background: color-mix(in srgb, var(--c-fauna) 12%, transparent);
+}
