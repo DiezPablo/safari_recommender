@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { MESES } from "@/lib/fechas";
 import { escribirAlmacen, useParametrosUrl } from "@/lib/almacen";
-import { MAX_COMPARAR } from "@/features/safaris/modelo";
+import { esDestino, MAX_COMPARAR } from "@/features/safaris/modelo";
 import { facilidades, NOCHES_RITMO, planificar, type Ritmo } from "@/features/safaris/planificar";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 
@@ -26,7 +26,7 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
 
   if (!datos || !indice) return <p className="nota-pie">Cargando parques…</p>;
 
-  const filas = [...indice.values()];
+  const filas = [...indice.values()].filter(esDestino);
   // países ordenados por interés total de sus parques (los de safari primero)
   const interes = new Map<string, number>();
   for (const f of filas) if (f.p) interes.set(f.p, (interes.get(f.p) ?? 0) + f.s);

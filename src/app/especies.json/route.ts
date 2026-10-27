@@ -47,6 +47,7 @@ export function GET() {
   const parques: Record<string, [string, number][]> = {};
   for (const [clave, cientifico] of Object.entries(mundo?.estrella ?? {})) {
     const lista = (mundo?.parques ?? [])
+      .filter((p) => p.nivel !== "C")
       .map((p) => [p.id, p.estrella[clave] ?? 0] as [string, number])
       .filter(([, n]) => n >= MIN_OBS)
       .sort((a, b) => b[1] - a[1])

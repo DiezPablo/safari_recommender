@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MapaEventos from "@/ui/mapa/MapaEventos";
-import { MESES } from "@/lib/fechas";
 import AnoSafari from "@/features/safaris/componentes/AnoSafari";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
 import BotonComparar from "@/features/safaris/componentes/BotonComparar";
+import ResumenParque from "@/features/safaris/componentes/ResumenParque";
 import FichaMundo from "@/features/safaris/componentes/FichaMundo";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
@@ -126,10 +126,6 @@ export default async function PaginaParque({ params }: Props) {
               </span>
             ))}
           </p>
-          <p className="meta">
-            Mejor época: {p.meses.length === 12 ? "todo el año" : p.meses.map((m) => MESES[m - 1]).join(", ")}
-            {p.meses.includes(mesHoy + 1) && <b> · ahora es buena época</b>}
-          </p>
           <p className="enlaces">
             <BotonComparar id={p.id} />
             {p.web && (
@@ -152,6 +148,22 @@ export default async function PaginaParque({ params }: Props) {
           </p>
         </div>
       </header>
+
+      <ResumenParque
+        id={p.id}
+        epoca={p.meses}
+        mesHoy={mesHoy}
+        especies={estrella
+          .map((e) => ({
+            nombre: nombreTaxon(e),
+            n: p.conteo_estrella?.[String(e.taxon)] ?? 0,
+            href: `/especie/${slugEspecie(e)}`,
+          }))
+          .sort((a, b) => b.n - a.n)}
+        tasaTexto={p.tasa}
+        mundo={enMundo}
+        pais={p.pais}
+      />
 
       {estrella.length > 0 && (
         <section className="seccion">
@@ -201,7 +213,9 @@ export default async function PaginaParque({ params }: Props) {
 
       {p.especies && (
         <section className="seccion">
-          <h2 className="rotulo">Lo que más se ve</h2>
+          <h2 className="rotulo" id="lo-que-se-ve">
+            Lo que más se ve
+          </h2>
           <div className="grupos-safari">
             {GRUPOS.map(([g, titulo, max]) =>
               p.especies?.[g]?.length ? (

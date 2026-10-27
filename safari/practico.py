@@ -27,8 +27,14 @@ OVERPASS = (
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.openstreetmap.fr/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
 )
 CACHE = CacheJson(prefijo="practico_", max_edad_s=80 * 86400)
+# consultas a Overpass que fallaron hace poco: no se repiten cada día (se comían el tiempo de la ejecución)
+FALLOS = CacheJson(prefijo="fallo_", max_edad_s=5 * 86400)
+# fallos seguidos y respuestas de cada espejo en esta ejecución: los que fallan pasan al final de la cola
+SALUD = {url: {"fallos": 0, "ok": 0, "error": 0} for url in OVERPASS}
+MAX_FALLOS_SEGUIDOS = 5
 _SESION = sesion()
 DIAS_MES = (31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 MESES_POWER = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
@@ -182,6 +188,90 @@ def url_web(v: str | None) -> str | None:
     return v if re.match(r"^https?://", v, re.IGNORECASE) else f"https://{v}"
 
 
+def overpass(consulta: str, timeout: int = 70) -> dict | None:
+    """Una consulta a Overpass: cada espejo una vez, primero los que van bien; None si fallan todos (y se recuerda
+    unos días). Antes eran dos vueltas a tres espejos con 100 s de espera y pausas: hasta 11 min por parque."""
+    if FALLOS.leer(consulta) is not None:
+        return None
+    sanos = [u for u in OVERPASS if SALUD[u]["fallos"] < MAX_FALLOS_SEGUIDOS] or list(OVERPASS)
+    for url in sorted(sanos, key=lambda u: SALUD[u]["fallos"]):
+        try:
+            r = _SESION.post(url, data={"data": consulta}, timeout=timeout)
+            if r.status_code == 429:
+                time.sleep(min(int(r.headers.get("Retry-After", 10) or 10), 60))
+                r = _SESION.post(url, data={"data": consulta}, timeout=timeout)
+            r.raise_for_status()
+            datos = r.json()
+        except (requests.RequestException, ValueError):
+            SALUD[url]["fallos"] += 1
+            SALUD[url]["error"] += 1
+            continue
+        SALUD[url]["fallos"] = 0
+        SALUD[url]["ok"] += 1
+        return datos
+    FALLOS.guardar(consulta, {"t": time.time()})
+    return None
+
+
+def resumen_espejos() -> str:
+    return ", ".join(f"{u.split('/')[2]}: {v['ok']} bien, {v['error']} mal" for u, v in SALUD.items())
+
+
+# Ciudad desde la que se organizan los safaris de cada destacado (agencias y operadores): el aeropuerto regular
+# más cercano no sirve (Serengeti → Mwanza o una pista de avioneta; los operadores están en Arusha)
+ACCESO: dict[str, tuple[str, float, float]] = {
+    **dict.fromkeys(("serengeti", "ngorongoro", "tarangire"), ("Arusha", -3.3869, 36.683)),
+    "ruaha": ("Iringa", -7.77, 35.69),
+    "nyerere": ("Dar es Salaam", -6.79, 39.21),
+    **dict.fromkeys(("masai-mara", "amboseli", "samburu"), ("Nairobi", -1.2864, 36.8172)),
+    "kruger": ("Mbombela", -25.47, 30.97),
+    "sabi-sand": ("Hazyview", -25.05, 31.13),
+    "hluhluwe-imfolozi": ("Hluhluwe", -28.02, 32.27),
+    "addo": ("Gqeberha", -33.96, 25.6),
+    "kgalagadi": ("Upington", -28.45, 21.25),
+    "pilanesberg": ("Rustenburg", -25.67, 27.24),
+    "madikwe": ("Johannesburgo", -26.2, 28.05),
+    "etosha": ("Windhoek", -22.56, 17.08),
+    **dict.fromkeys(("moremi", "makgadikgadi", "kalahari-central"), ("Maun", -19.98, 23.42)),
+    "chobe": ("Kasane", -17.8, 25.15),
+    "hwange": ("Victoria Falls", -17.93, 25.84),
+    "mana-pools": ("Harare", -17.83, 31.05),
+    **dict.fromkeys(("luangwa-sur", "bajo-zambeze", "kafue", "liuwa"), ("Lusaka", -15.39, 28.32)),
+    **dict.fromkeys(("bwindi", "reina-isabel", "murchison", "kibale", "kidepo"), ("Kampala", 0.3476, 32.5825)),
+    **dict.fromkeys(("volcanes", "akagera"), ("Kigali", -1.9441, 30.0619)),
+    "gorongosa": ("Beira", -19.84, 34.84),
+    "odzala": ("Brazzaville", -4.26, 15.28),
+    "simien": ("Gondar", 12.6, 37.47),
+    "bale": ("Adís Abeba", 9.03, 38.74),
+    "ranthambore": ("Sawai Madhopur", 26.02, 76.35),
+    **dict.fromkeys(("kanha", "bandhavgarh"), ("Jabalpur", 23.18, 79.95)),
+    "tadoba": ("Nagpur", 21.15, 79.09),
+    "corbett": ("Ramnagar", 29.39, 79.13),
+    "kaziranga": ("Guwahati", 26.14, 91.74),
+    "sundarbans": ("Calcuta", 22.57, 88.36),
+    "chitwan": ("Sauraha", 27.58, 84.5),
+    "yala": ("Tissamaharama", 6.28, 81.29),
+    "wilpattu": ("Colombo", 6.93, 79.85),
+    "minneriya": ("Habarana", 8.04, 80.75),
+    "tanjung-puting": ("Pangkalan Bun", -2.68, 111.62),
+    "kinabatangan": ("Sandakan", 5.84, 118.12),
+    "komodo": ("Labuan Bajo", -8.49, 119.89),
+    "pantanal": ("Cuiabá", -15.6, -56.1),
+    "yellowstone": ("Bozeman", 45.68, -111.04),
+    **dict.fromkeys(("denali", "katmai"), ("Anchorage", 61.22, -149.9)),
+    "churchill": ("Churchill", 58.77, -94.17),
+    "galapagos": ("Puerto Ayora", -0.74, -90.31),
+    "manu": ("Cusco", -13.53, -71.97),
+    "tambopata": ("Puerto Maldonado", -12.59, -69.19),
+    "corcovado": ("Puerto Jiménez", 8.53, -83.3),
+    "tortuguero": ("Tortuguero", 10.54, -83.5),
+    "torres-del-paine": ("Puerto Natales", -51.73, -72.51),
+    "valdes": ("Puerto Madryn", -42.77, -65.04),
+    "kakadu": ("Darwin", -12.46, 130.84),
+    "isla-canguro": ("Kingscote", -35.66, 137.64),
+}
+
+
 OPERADOR = re.compile(r"safari|tour|travel|expedi|adventure|trek|wildlife|holiday|viaje", re.IGNORECASE)
 
 
@@ -200,15 +290,8 @@ def operadores_ciudad(lat: float, lon: float, nombre_ciudad: str | None = None) 
     if datos is None:
         if sin_tiempo():
             return None
-        time.sleep(2)
-        for url in OVERPASS:
-            try:
-                r = _SESION.post(url, data={"data": consulta}, timeout=80)
-                r.raise_for_status()
-                datos = r.json()
-                break
-            except (requests.RequestException, ValueError):
-                continue
+        time.sleep(1)  # los espejos públicos piden no saturarlos
+        datos = overpass(consulta)
         if datos is None:
             return None
         CACHE.guardar(clave, datos)
@@ -293,19 +376,8 @@ def osm(lat: float, lon: float, radio_km: float, solo_cache: bool = False) -> di
     if datos is None:
         if solo_cache or sin_tiempo():
             return None
-        time.sleep(2)  # los espejos públicos piden no saturarlos
-        for intento in range(2):
-            for url in OVERPASS:
-                try:
-                    r = _SESION.post(url, data={"data": consulta}, timeout=100)
-                    r.raise_for_status()
-                    datos = r.json()
-                    break
-                except (requests.RequestException, ValueError):
-                    continue
-            if datos is not None:
-                break
-            time.sleep(30 * (intento + 1))
+        time.sleep(1)  # los espejos públicos piden no saturarlos
+        datos = overpass(consulta, timeout=90)
         if datos is None:
             return None
         CACHE.guardar(clave, datos)

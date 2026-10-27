@@ -32,3 +32,27 @@
 
 Pendiente de decidir: cómo se mantiene si lo usa mucha gente (afiliación choca con «sin comisiones»; donaciones;
 plan para operadores). Todo lo anterior funciona con datos abiertos y sin servidor.
+
+## Revisión de producto (27-10-2026)
+
+Recorrido de la web en producción (móvil y escritorio) y de los datos publicados:
+
+- Fallaba lo práctico: operadores en la ciudad de acceso en el 0 % de los parques, en la zona en el 8 %,
+  alojamientos en el 12 %; el Serengeti decía «Aún no tenemos operadores». → Arreglado (ver decisiones).
+- Ruido: 39 % de parques europeos, especies fuera de su área, zoos. → Niveles A/B/C y filtro por defecto.
+- Fichas larguísimas (Serengeti: ~11 500 px en móvil). → Resumen arriba; queda acortar (alojamientos plegados,
+  secciones con anclas).
+- Navegación duplicada (menú + pestañas, «Guía» y «Cómo organizarlo»): ordenarla por el camino del viajero
+  (Inspírate → Elige → Planifica → Organiza).
+
+Siguientes, por valor:
+1. Frecuencia de avistamientos por especie, parque y mes (histogramas de iNaturalist): «en agosto en el Mara,
+   león muy probable, leopardo probable».
+2. «Mi viaje»: un plan guardado (ruta, noches, presupuesto, ofertas, lista) compartible por URL e imprimible.
+3. Lista práctica por país (visado, fiebre amarilla y malaria, moneda, enchufe, equipaje de avioneta,
+   propinas, seguridad).
+4. Perfiles: con niños, por tu cuenta en coche (Kruger, Etosha, Kgalagadi), fotografía, a pie, presupuesto
+   bajo.
+5. Temporada verde: ahorro frente a lo que se ve.
+6. Avisos sin cuentas (RSS o `.ics`), lista personal de animales vistos, páginas de respuesta en español con
+   plantillas y frescura de cada dato.

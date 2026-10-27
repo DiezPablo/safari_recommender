@@ -197,6 +197,8 @@ export interface ParqueMundo {
   meses_secos: number[];
   epoca?: { meses: number[]; motivo: MotivoEpoca | null };
   puntuacion: number;
+  /** A destacados, B destinos de fauna, C el resto (safari.refinar); falta en datos anteriores */
+  nivel?: Nivel;
   /** país y continente del catálogo curado, si Wikidata no los da */
   pais_nombre?: string;
   continente?: string;
@@ -204,6 +206,8 @@ export interface ParqueMundo {
   osm?: { alojamientos: LugarOsm[]; operadores: LugarOsm[]; puertas: LugarOsm[]; pueblos: LugarOsm[] };
   /** agencias y operadores de la ciudad del aeropuerto de acceso (OSM) */
   operadores_ciudad?: { ciudad: string; lista: (LugarOsm & { safari: boolean })[] };
+  /** ciudad desde la que se organiza (la de los operadores), aunque OSM no tenga ninguno */
+  acceso?: { ciudad: string; lat: number; lon: number };
 }
 
 export interface Pais {
@@ -246,6 +250,15 @@ export interface FilaIndice {
   /** mejor época de todos los parques (meses 1-12) y de dónde sale */
   ep?: number[];
   em?: MotivoEpoca | null;
+  /** A destacados, B destinos de fauna, C el resto de espacios protegidos (ocultos por defecto) */
+  nv?: Nivel;
+}
+
+export type Nivel = "A" | "B" | "C";
+
+/** Los de nivel C (espacios protegidos con poca fauna emblemática) no se proponen salvo que se busquen. */
+export function esDestino(f: Pick<FilaIndice, "nv">): boolean {
+  return f.nv !== "C";
 }
 
 /** Parques que caben en el comparador. */

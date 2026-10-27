@@ -6,8 +6,10 @@ Uso:
 
 from __future__ import annotations
 
-import math
+import gzip
+import json
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
@@ -18,6 +20,7 @@ from safari import entorno, mundo, practico
 from safari import gbif as gbif_nombres
 from safari.catalogo import cargar
 from safari.comun.ficheros import escribir_json
+from safari.refinar import puntuacion, refinar
 
 _ERRORES = (requests.RequestException, KeyError, ValueError, RuntimeError)
 EXTERIORES = "https://www.exteriores.gob.es/"
@@ -38,12 +41,6 @@ def _en_paralelo(funcion, elementos, hilos: int, etiqueta: str):
             if n and n % 500 == 0:
                 print(f"  {etiqueta}: {n}/{len(elementos)} ({time.time() - t0:.0f} s)", flush=True)
     return salida
-
-
-def puntuacion(n_especies: int, obs: int, n_estrella: int = 0) -> float:
-    """Más peso a las especies emblemáticas (lo que se va a ver en un safari) que a la riqueza total, que en
-    los trópicos se llena de murciélagos y roedores."""
-    return round(25 * n_estrella + min(n_especies, 80) * math.log10(obs + 10) / 2, 1)
 
 
 def claves_estrella(curados: list[dict]) -> dict[int, str]:
@@ -125,6 +122,16 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
 
     det = mundo.detalles([x["qid"] for x in elegidos if x["qid"]])
     paises = mundo.paises([x["pais"] for x in elegidos if x["pais"]])
+    paises_salida = {
+        q: {
+            "nombre": d.get("n"),
+            "iso": d.get("iso"),
+            "continente": mundo.CONTINENTE.get(d.get("cont", ""), d.get("cont")),
+            "moneda": d.get("mon"),
+            "idiomas": d["idiomas"][:3],
+        }
+        for q, d in paises.items()
+    }
     parques = []
     for x in elegidos:
         d = det.get(x["qid"] or "", {})
@@ -191,8 +198,25 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
     except _ERRORES as e:
         print(f"  sin fotos de Commons: {e}", flush=True)
         fotos = {}
-    # OSM por tandas: primero los más importantes; el resto, de la caché si ya se pidió otra vez
-    orden = sorted(range(len(parques)), key=lambda i: (not parques[i]["destacado"], -parques[i]["puntuacion"]))
+    for p, a, c in zip(parques, aves, climas, strict=True):
+        p["aves"] = (a or {}).get("especies", [])[:10]
+        p["lluvia_mm"] = c["lluvia_mm"] if c else None
+        p["meses_secos"] = practico.meses_secos(c)
+        p["epoca"] = practico.epoca(p["lat"], p.get("temporada"), p["lluvia_mm"], p["meses"])
+        p["llegar"] = aeropuertos.llegar(p["lat"], p["lon"], p["radio_km"], paises.get(p["pais"] or "", {}).get("iso"))
+        p["foto"] = fotos.get(p.pop("img")) if p.get("img") else p.pop("img", None)
+
+    # nivel de cada parque (A destacados, B destinos de fauna, C el resto): decide qué se pide a OSM
+    refinar({"paises": paises_salida, "estrella": {str(k): c for k, c in estrella.items()}, "parques": parques})
+    orden = sorted(
+        (i for i, p in enumerate(parques) if p["nivel"] != "C"),
+        key=lambda i: (parques[i]["nivel"], -parques[i]["puntuacion"]),
+    )
+    print(f"  {len(orden)} parques de nivel A o B", flush=True)
+
+    operadores([parques[i] for i in orden])
+
+    # OSM por tandas: primero los destacados y los mejores de nivel B; el resto, de la caché si ya se pidió
     pedir_osm = set(orden[:osm_max])
     osm = _en_paralelo(
         lambda i: practico.osm(parques[i]["lat"], parques[i]["lon"], parques[i]["radio_km"], i not in pedir_osm),
@@ -200,55 +224,53 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
         2,
         "OSM",
     )
-    for p, a, c, o in zip(parques, aves, climas, osm, strict=True):
-        p["aves"] = (a or {}).get("especies", [])[:10]
-        p["lluvia_mm"] = c["lluvia_mm"] if c else None
-        p["meses_secos"] = practico.meses_secos(c)
-        p["epoca"] = practico.epoca(p["lat"], p.get("temporada"), p["lluvia_mm"], p["meses"])
-        p["llegar"] = aeropuertos.llegar(p["lat"], p["lon"], p["radio_km"], paises.get(p["pais"] or "", {}).get("iso"))
-        p["foto"] = fotos.get(p.pop("img")) if p.get("img") else p.pop("img", None)
+    for p, o in zip(parques, osm, strict=True):
         if o is not None:
             p["osm"] = o
     con_osm = sum(1 for p in parques if "osm" in p)
-    print(f"  OSM: {con_osm}/{len(parques)} parques", flush=True)
-
-    # operadores de la ciudad de acceso (la del aeropuerto regular más cercano), una consulta por aeropuerto
-    ciudades: dict[str, dict] = {}
-    for i in orden:
-        a = (parques[i]["llegar"]["aeropuertos"] or [None])[0]
-        if a and a["iata"] not in ciudades:
-            ciudades[a["iata"]] = a
-    lista_ciudades = list(ciudades.values())
-    ops = _en_paralelo(
-        lambda a: practico.operadores_ciudad(a["lat"], a["lon"], a["ciudad"]), lista_ciudades, 2, "operadores"
-    )
-    por_iata = {a["iata"]: o for a, o in zip(lista_ciudades, ops, strict=True) if o}
-    for p in parques:
-        a = (p["llegar"]["aeropuertos"] or [None])[0]
-        if a and por_iata.get(a["iata"]):
-            p["operadores_ciudad"] = {"ciudad": a["ciudad"] or a["nombre"], "lista": por_iata[a["iata"]]}
-    print(f"  operadores en {len(por_iata)}/{len(lista_ciudades)} ciudades de acceso", flush=True)
+    print(f"  OSM: {con_osm}/{len(parques)} parques; espejos: {practico.resumen_espejos()}", flush=True)
 
     # fuera los animales domésticos de las listas
     domesticos = {int(k) for k, e in especies.items() if e["c"] in mundo.DOMESTICOS}
     for p in parques:
         p["mamiferos"] = [e for e in p["mamiferos"] if e[0] not in domesticos][:12]
         p["aves"] = [e for e in p["aves"] if e[0] not in domesticos]
-    return {
-        "paises": {
-            q: {
-                "nombre": d.get("n"),
-                "iso": d.get("iso"),
-                "continente": mundo.CONTINENTE.get(d.get("cont", ""), d.get("cont")),
-                "moneda": d.get("mon"),
-                "idiomas": d["idiomas"][:3],
-            }
-            for q, d in paises.items()
-        },
-        "especies": especies,
-        "estrella": {str(k): c for k, c in estrella.items()},
-        "parques": parques,
-    }
+    return refinar(
+        {
+            "paises": paises_salida,
+            "especies": especies,
+            "estrella": {str(k): c for k, c in estrella.items()},
+            "parques": parques,
+        }
+    )
+
+
+def acceso(p: dict) -> tuple[str, float, float] | None:
+    """Ciudad desde la que se organiza el safari: la de ACCESO en los destacados y la del aeropuerto regular más
+    cercano en el resto."""
+    if p.get("id") in practico.ACCESO:
+        return practico.ACCESO[p["id"]]
+    a = (p["llegar"]["aeropuertos"] or [None])[0]
+    return (a["ciudad"] or a["nombre"], a["lat"], a["lon"]) if a and a.get("lat") is not None else None
+
+
+def operadores(parques: list[dict]) -> None:
+    """Agencias y operadores de la ciudad de acceso de cada parque (una consulta a OSM por ciudad, compartida).
+    Va antes que el resto de OSM, que se comía el tiempo: el 26-10-2026 salieron 0 de 1105 ciudades."""
+    ciudades = list(dict.fromkeys(c for p in parques if (c := acceso(p))))
+    ops = _en_paralelo(lambda c: practico.operadores_ciudad(c[1], c[2], c[0]), ciudades, 2, "operadores")
+    por_ciudad = {c: o for c, o in zip(ciudades, ops, strict=True) if o}
+    for p in parques:
+        c = acceso(p)
+        if c:
+            # la ciudad, aunque OSM no tenga operadores: la web enlaza una búsqueda allí
+            p["acceso"] = {"ciudad": c[0], "lat": c[1], "lon": c[2]}
+        if c and por_ciudad.get(c):
+            p["operadores_ciudad"] = {"ciudad": c[0], "lista": por_ciudad[c]}
+    print(
+        f"  operadores en {len(por_ciudad)}/{len(ciudades)} ciudades de acceso; {practico.resumen_espejos()}",
+        flush=True,
+    )
 
 
 def indice(datos: dict) -> list[dict]:
@@ -268,6 +290,7 @@ def indice(datos: dict) -> list[dict]:
                 "s": p["puntuacion"],
                 "m": p["n_mamiferos"],
                 "e": [int(k) for k in p["estrella"]],
+                "nv": p.get("nivel", "C"),
                 "sec": p["meses_secos"],
                 "ep": p["epoca"]["meses"],
                 "em": p["epoca"]["motivo"],
@@ -303,3 +326,22 @@ def main(
     )
     escribir_json(indice_salida, {"generado": date.today().isoformat(), "parques": indice(datos)})
     print(f"{salida}: {len(datos['parques'])} parques ({time.time() - t0:.0f} s)")
+
+
+def refinar_fichero(
+    entrada: Path, salida: Path, indice_salida: Path, minutos: float | None = None, con_operadores: bool = True
+) -> None:
+    """Niveles y especies estrella de un safaris_mundo.json ya calculado (p. ej. el de Rasante mientras la caché
+    de este repo se llena) y, si hay tiempo, los operadores de la ciudad de acceso de los parques A y B."""
+    crudo = entrada.read_bytes()
+    datos = json.loads(gzip.decompress(crudo) if crudo[:2] == b"\x1f\x8b" else crudo)
+    refinar(datos)
+    if con_operadores:
+        if minutos:
+            mundo.LIMITE[0] = time.time() + minutos * 60
+        orden = sorted((p for p in datos["parques"] if p["nivel"] != "C"), key=lambda p: (p["nivel"], -p["puntuacion"]))
+        operadores(orden)
+    escribir_json(salida, datos)
+    escribir_json(indice_salida, {"generado": datos.get("generado"), "parques": indice(datos)})
+    niveles = Counter(p["nivel"] for p in datos["parques"])
+    print(f"{salida}: {len(datos['parques'])} parques ({', '.join(f'{k}: {v}' for k, v in sorted(niveles.items()))})")

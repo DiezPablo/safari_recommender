@@ -2,7 +2,7 @@
 // navegador con el índice mundial y las observaciones de cada especie (/especies.json). Las distancias son en
 // línea recta corregidas (×1,3 por carretera) y las velocidades, las de pistas africanas: es una primera
 // aproximación para saber si un viaje es realista, no un itinerario cerrado.
-import { buenaEpoca, type FilaIndice } from "@/features/safaris/modelo";
+import { buenaEpoca, esDestino, type FilaIndice } from "@/features/safaris/modelo";
 import { distanciaKm } from "@/lib/fechas";
 
 export type Ritmo = "tranquilo" | "normal" | "intenso";
@@ -83,7 +83,7 @@ export function planificar({
 }): Plan {
   const noches = Math.max(1, dias - 1);
   const n = Math.max(1, Math.min(MAX_PARQUES, Math.round(noches / NOCHES_RITMO[ritmo])));
-  const delPais = indice.filter((f) => f.p === pais && f.s > 0);
+  const delPais = indice.filter((f) => f.p === pais && f.s > 0 && esDestino(f));
   // fuera los contenedores (reservas de la biosfera, áreas de conservación que engloban parques): si dentro hay
   // un parque más pequeño con interés parecido, el destino real es ese. Los destacados del catálogo nunca: el
   // Masái Mara o Kruger contienen reservas privadas pequeñas (Olare Orok, Sabi Sand) y son el destino

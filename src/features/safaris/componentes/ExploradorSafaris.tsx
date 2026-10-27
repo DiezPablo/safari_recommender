@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { MESES } from "@/lib/fechas";
 import { buscarZonas } from "@/features/safaris/zonas";
-import { buenaEpoca, CONTINENTES, type FilaIndice } from "@/features/safaris/modelo";
+import { esDestino, buenaEpoca, CONTINENTES, type FilaIndice } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
 const POR_PAGINA = 30;
@@ -36,6 +36,8 @@ export default function ExploradorSafaris({
   const continente = parametros.get("continente") ?? "";
   const especie = parametros.get("especie") ?? "";
   const soloEpoca = parametros.get("epoca") === "1";
+  // por defecto solo destinos de fauna (niveles A y B); buscando por nombre, todos
+  const todos = parametros.get("todos") === "1";
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
 
   useEffect(() => {
@@ -57,10 +59,12 @@ export default function ExploradorSafaris({
           (!continente || f.c === continente) &&
           (clave === null || f.e.includes(clave)) &&
           (!soloEpoca || epoca) &&
+          (todos || !!q || esDestino(f)) &&
           (!q || deZonas.has(f.id) || normal(`${f.n} ${f.p ?? ""}`).includes(q)),
       )
       .sort((a, b) => Number(b.epoca) - Number(a.epoca) || Number(b.f.d) - Number(a.f.d) || b.f.s - a.f.s);
-  }, [filas, texto, continente, especie, soloEpoca, mes]);
+  }, [filas, texto, continente, especie, soloEpoca, mes, todos]);
+  const ocultos = (filas ?? []).filter((f) => !esDestino(f)).length;
 
   const zonas = buscarZonas(texto);
   const nombres = new Map((filas ?? []).map((f) => [f.id, f.n]));
@@ -133,6 +137,18 @@ export default function ExploradorSafaris({
             />
             <span>Solo los que están en buena época</span>
           </label>
+          {ocultos > 0 && (
+            <label className="campo campo-casilla">
+              <input
+                type="checkbox"
+                checked={todos}
+                onChange={(e) => actualizar({ todos: e.target.checked ? "1" : null })}
+              />
+              <span>
+                Incluir {ocultos.toLocaleString("es-ES")} espacios protegidos más, con poca fauna emblemática registrada
+              </span>
+            </label>
+          )}
         </div>
       </div>
 

@@ -32,8 +32,10 @@ export default function PaginaSafaris() {
     .sort((a, b) => puntuacionAhora(b, mesHoy, recientes) - puntuacionAhora(a, mesHoy, recientes))
     .slice(0, 6);
   const mundo = cargarMundo();
-  const total = mundo?.parques.length ?? parques.length;
-  const paisesMundo = new Set((mundo?.parques ?? []).map((p) => p.pais)).size;
+  // destinos de fauna (niveles A y B); el resto de espacios protegidos solo sale si se busca
+  const destinos = (mundo?.parques ?? []).filter((p) => p.nivel !== "C");
+  const total = destinos.length || parques.length;
+  const paisesMundo = new Set(destinos.map((p) => p.pais)).size;
   const especies = Object.keys(mundo?.estrella ?? {})
     .map((k) => ({ clave: Number(k), nombre: nombreEstrella(k) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
@@ -41,7 +43,7 @@ export default function PaginaSafaris() {
     <main className="calendario fauna safaris">
       <header className="titular">
         <p className="rotulo">
-          {total.toLocaleString("es-ES")} parques y reservas · {paisesMundo || new Set(parques.map((p) => p.pais)).size}{" "}
+          {total.toLocaleString("es-ES")} destinos de fauna · {paisesMundo || new Set(parques.map((p) => p.pais)).size}{" "}
           países · Wikidata, GBIF, iNaturalist y OpenStreetMap
         </p>
         <h1>Safaris por el mundo</h1>

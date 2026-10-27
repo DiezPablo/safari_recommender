@@ -3,6 +3,7 @@
 Uso:
   python -m safari --salida public/datos/safaris.json
   python -m safari --recientes --salida public/datos/safaris_recientes.json
+  python -m safari --refinar safaris_mundo.json.gz --salida salida/safaris_mundo.json --indice salida/indice.json
 """
 
 from __future__ import annotations
@@ -135,7 +136,18 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--solo", help="ids de parques separados por comas (pruebas)")
     ap.add_argument("--sin-clima", action="store_true", help="sin climatología (desde el contenedor Open-Meteo limita)")
     ap.add_argument("--sin-alojamientos", action="store_true", help="sin OSM (desde el contenedor Overpass limita)")
+    ap.add_argument(
+        "--refinar",
+        type=Path,
+        metavar="ENTRADA",
+        help="aplica safari.refinar a un safaris_mundo.json (o .gz) ya calculado y escribe --salida e --indice",
+    )
     a = ap.parse_args(argv)
+    if a.refinar:
+        from safari import mundo_cli
+
+        mundo_cli.refinar_fichero(a.refinar, a.salida, a.indice, a.minutos, not a.sin_alojamientos)
+        return
     if a.mundo:
         from safari import mundo_cli
 

@@ -184,3 +184,26 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - En el móvil, al vaciar un campo numérico (días del planificador, personas o noches del presupuesto) el valor
   saltaba a otro y no dejaba escribir. Los días son ahora un desplegable y el resto usa `src/ui/CampoNumero.tsx`,
   que solo aplica el número cuando es válido.
+
+## 27-10-2026 · Operadores, ruido del catálogo y resumen de la ficha
+
+- **Operadores: 0 de 1105 ciudades.** La fase de OSM se comía las 4,5 h (cada parque podía gastar ~11 min en
+  reintentos: 2 vueltas × 3 espejos × 100 s + pausas, y los fallos se repetían cada día) y los operadores iban
+  después, ya sin tiempo. Ahora: `practico.overpass` prueba cada espejo una vez, aparta los que fallan en la
+  ejecución, recuerda 5 días las consultas fallidas (`cache/fallo_*`) y registra cuántas respuestas da cada
+  espejo; los operadores van antes que el resto de OSM; OSM solo para parques A y B. Ciudad de acceso escrita a
+  mano para los 65 destacados (`practico.ACCESO`: Arusha para el norte de Tanzania, Maun para el Okavango…);
+  en el resto, la del aeropuerto regular más cercano. Si OSM no tiene operadores, la ficha enlaza el directorio
+  de la asociación del país y una búsqueda de operadores de safari en la ciudad de acceso (Google Maps).
+- **Ruido**: 1363 de 3502 parques eran europeos y especies estrella aparecían fuera de su área (wapitís en
+  Suiza que eran ciervos comunes, leones en un parque de animales de Francia, búfalos domésticos en Grecia).
+  `safari/refinar.py` deja cada especie estrella solo en sus continentes nativos (los del catálogo +
+  `NATIVOS_EXTRA`), quita zoos y parques de fauna en cautividad y pone un nivel: A destacados (65), B destinos
+  de fauna (≥ 3 especies estrella con ≥ 5 observaciones o una con ≥ 50; 884) y C el resto (2553). La web
+  muestra por defecto A y B (buscador, planificador, «qué ver»); los C salen buscándolos por nombre o con la
+  casilla.
+- `python -m safari --refinar ENTRADA` aplica todo eso (y los operadores, con `--minutos`) a un
+  `safaris_mundo.json` ya calculado. Mientras la caché de este repo se llena, `safaris_mundo.yml` publica el de
+  Rasante refinado; se puede lanzar a mano con `solo_refinar` (150 min para operadores).
+- **Resumen arriba en cada ficha** (`ResumenParque`): cuándo ir, qué verás, entrada (de `tasas.ts`), cómo
+  llegar y con quién, con enlace a cada detalle.

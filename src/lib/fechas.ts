@@ -24,3 +24,26 @@ export function distanciaKm(a: { lat: number; lon: number }, b: { lat: number; l
     Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(((b.lon - a.lon) * r) / 2) ** 2;
   return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
+
+/** Meses (1-12) en tramos seguidos, contando el paso de diciembre a enero: [6,7,8,9,10] → «jun-oct»,
+ * [12,1,2,6,7] → «jun-jul, dic-feb». */
+export function rangoMeses(meses: number[]): string {
+  if (meses.length >= 12) return "todo el año";
+  const si = new Set(meses);
+  if (!si.size) return "";
+  const corto = (m: number) => MESES[m - 1].slice(0, 3);
+  // empezar en un mes que abra tramo (el anterior no está), para no partir el de diciembre-enero
+  const inicio = [...si].sort((a, b) => a - b).find((m) => !si.has(m === 1 ? 12 : m - 1)) ?? 1;
+  const tramos: string[] = [];
+  let desde: number | null = null;
+  for (let i = 0; i < 12; i++) {
+    const m = ((inicio - 1 + i) % 12) + 1;
+    const siguiente = (m % 12) + 1;
+    if (si.has(m) && desde === null) desde = m;
+    if (si.has(m) && !si.has(siguiente)) {
+      tramos.push(desde === m ? corto(m) : `${corto(desde!)}-${corto(m)}`);
+      desde = null;
+    }
+  }
+  return tramos.join(", ");
+}

@@ -1739,3 +1739,34 @@ textarea.solicitud {
   display: block;
   color: var(--texto-3);
 }
+
+/* Resumen de la ficha de parque */
+.resumen-parque dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px 18px;
+}
+.resumen-parque dt {
+  font: 600 0.72rem var(--f-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--texto-3);
+  margin-bottom: 2px;
+}
+.resumen-parque dd {
+  margin: 0;
+  font-weight: 600;
+}
+.resumen-parque dd small {
+  display: block;
+  font-weight: 400;
+  color: var(--texto-2);
+}
+.resumen-parque dd .corto {
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+.resumen-parque .en-temporada {
+  color: var(--c-fauna);
+}

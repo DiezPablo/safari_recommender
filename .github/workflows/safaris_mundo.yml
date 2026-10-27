@@ -8,6 +8,11 @@ on:
   schedule:
     - cron: "29 22 * * *" # de noche en Europa, lejos de Datos
   workflow_dispatch:
+    inputs:
+      solo_refinar:
+        description: "Sin calcular: solo refinar y publicar el de Rasante"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -49,10 +54,30 @@ jobs:
             safaris-v1-
 
       - name: Mundo
+        if: ${{ !inputs.solo_refinar }}
         timeout-minutes: 320
         run: >
           python -m safari --mundo --minutos 270 --osm-max 1200
           --salida salida/safaris_mundo.json --indice salida/safaris_indice.json
+
+      - name: ¿Empeora lo publicado?
+        id: control
+        if: ${{ !inputs.solo_refinar }}
+        run: |
+          if python .github/scripts/no_empeora.py salida/safaris_mundo.json; then echo "publicar=si" >> "$GITHUB_OUTPUT"; fi
+
+      # mientras la caché de este repo se llena (días), el de Rasante con los niveles y las especies refinados
+      - name: Si no, el de Rasante refinado
+        id: rasante
+        if: steps.control.outputs.publicar != 'si'
+        timeout-minutes: 170
+        run: |
+          curl -fsSL -o rasante.json.gz \
+            https://github.com/DiezPablo/photo_recommender/releases/download/datos/safaris_mundo.json.gz
+          # y los operadores de las ciudades de acceso que quepan en el tiempo (quedan en la caché 80 días)
+          python -m safari --refinar rasante.json.gz --minutos ${{ inputs.solo_refinar && 150 || 10 }} \
+            --salida salida/safaris_mundo.json --indice salida/safaris_indice.json
+          if python .github/scripts/no_empeora.py salida/safaris_mundo.json; then echo "publicar=si" >> "$GITHUB_OUTPUT"; fi
 
       - uses: actions/cache/save@v6
         if: always()
@@ -60,13 +85,8 @@ jobs:
           path: cache
           key: safaris-mundo-v1-${{ github.run_id }}
 
-      - name: ¿Empeora lo publicado?
-        id: control
-        run: |
-          if python .github/scripts/no_empeora.py salida/safaris_mundo.json; then echo "publicar=si" >> "$GITHUB_OUTPUT"; fi
-
       - name: Publicar
-        if: steps.control.outputs.publicar == 'si'
+        if: steps.control.outputs.publicar == 'si' || steps.rasante.outputs.publicar == 'si'
         run: |
           .github/scripts/publicar_release.sh "Safaris del mundo ($(date -u +%Y-%m-%d))" \
             salida/safaris_mundo.json salida/safaris_indice.json

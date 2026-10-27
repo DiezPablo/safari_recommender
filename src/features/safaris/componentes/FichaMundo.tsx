@@ -6,6 +6,7 @@ import { INICIALES, MESES } from "@/lib/fechas";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
 import BotonComparar from "./BotonComparar";
 import { nombreEstrella } from "@/features/safaris/datos";
+import ResumenParque from "./ResumenParque";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
 import {
@@ -99,14 +100,6 @@ export default function FichaMundo({
           </p>
           <p className="entradilla">
             {p.obs.toLocaleString("es-ES")} observaciones de mamíferos registradas desde 2010.
-            {epoca && (
-              <>
-                {" "}
-                Mejor época: {epoca.map((m) => MESES[m - 1]).join(", ")}
-                {motivo && <small> ({TEXTO_MOTIVO[motivo].toLowerCase()})</small>}
-                {epoca.includes(mesHoy + 1) && <b> · ahora es buena época</b>}.
-              </>
-            )}
           </p>
           <p className="enlaces">
             <BotonComparar id={p.id} />
@@ -121,6 +114,24 @@ export default function FichaMundo({
           </p>
         </div>
       </header>
+
+      <ResumenParque
+        id={p.id}
+        epoca={epoca}
+        mesHoy={mesHoy}
+        especies={
+          estrella.length
+            ? estrella.map(([k, n]) => {
+                const slug = conFicha[mundo.estrella[k]];
+                return { nombre: nombreEstrella(k), n, href: slug ? `/especie/${slug}` : undefined };
+              })
+            : // sin especies estrella (Madagascar, islas…): los mamíferos más vistos
+              p.mamiferos.map(([k, n]) => ({ nombre: nombreEspecieMundo(mundo, k), n }))
+        }
+        mundo={p}
+        pais={pais?.nombre}
+        motivo={motivo ? TEXTO_MOTIVO[motivo] : null}
+      />
 
       {estrella.length > 0 && (
         <section className="seccion">
@@ -182,7 +193,9 @@ export default function FichaMundo({
       </div>
 
       <section className="seccion">
-        <h2 className="rotulo">Lo que más se ve</h2>
+        <h2 className="rotulo" id="lo-que-se-ve">
+          Lo que más se ve
+        </h2>
         <div className="grupos-safari">
           {(
             [

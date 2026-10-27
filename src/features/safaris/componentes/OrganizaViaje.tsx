@@ -187,7 +187,7 @@ function EmpresasParaOrganizarlo({ p, pais }: { p: ParqueMundo; pais?: Pais }) {
           {ciudad && ciudad.lista.length > 0 && (
             <>
               <p>
-                <b>Operadores y agencias en {ciudad.ciudad}</b>, la ciudad del aeropuerto de acceso:
+                <b>Operadores y agencias en {ciudad.ciudad}</b>, desde donde se organizan los safaris de este parque:
               </p>
               <ul className="lista-organiza">
                 {ciudad.lista.map((x) => (
@@ -215,10 +215,34 @@ function EmpresasParaOrganizarlo({ p, pais }: { p: ParqueMundo; pais?: Pais }) {
             </>
           )}
           {!ciudad?.lista.length && !zona.length && (
-            <p>
-              Aún no tenemos operadores de esta zona. Los lodges de la lista suelen organizar los safaris de sus
-              huéspedes (vehículo, guía y traslados desde la pista de aterrizaje).
-            </p>
+            <>
+              <p>
+                OpenStreetMap aún no tiene operadores de esta zona con web o teléfono.
+                {asociacion && (
+                  <>
+                    {" "}
+                    Lo más fiable: el{" "}
+                    <a href={asociacion.url} target="_blank" rel="noopener">
+                      directorio de socios de {asociacion.sigla} ↗
+                    </a>
+                    .
+                  </>
+                )}
+              </p>
+              {p.acceso && (
+                <p>
+                  <a
+                    href={`https://www.google.com/maps/search/${encodeURIComponent("safari tour operator")}/@${p.acceso.lat},${p.acceso.lon},12z`}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Operadores de safari en {p.acceso.ciudad} (Google Maps) ↗
+                  </a>
+                  , con reseñas: es desde donde se suelen organizar los safaris de este parque.
+                </p>
+              )}
+              <p>Los lodges suelen organizar también los safaris de sus huéspedes (vehículo, guía y traslados).</p>
+            </>
           )}
         </div>
         <div>

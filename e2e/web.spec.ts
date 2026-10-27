@@ -239,3 +239,30 @@ test("presupuesto: tasas oficiales del plan, tus precios, solicitud y comparar o
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-presupuesto.png`, fullPage: true });
   expect(errores).toEqual([]);
 });
+
+test("ficha de parque: resumen arriba con época, especies, entrada, cómo llegar y con quién", async ({
+  page,
+}, info) => {
+  await page.goto("/parque/serengeti");
+  const resumen = page.getByRole("region", { name: "Resumen" });
+  await expect(resumen).toContainText("Cuándo ir");
+  await expect(resumen).toContainText("82,6 USD/día");
+  await expect(resumen).toContainText("Con licencia: TATO");
+  await expect(resumen.getByRole("link", { name: /operador/ })).toBeVisible();
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-resumen-parque.png` });
+});
+
+test("buscador: por defecto solo destinos de fauna; los demás espacios, a petición o buscándolos", async ({ page }) => {
+  await page.goto("/");
+  const casilla = page.getByLabel(/espacios protegidos más/);
+  const hay = await casilla
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "datos sin niveles");
+  const total = page.locator(".explorador-safaris h2.rotulo").first();
+  const antes = parseInt((await total.innerText()).replace(/\D/g, ""));
+  await casilla.check();
+  await expect(page).toHaveURL(/todos=1/);
+  await expect.poll(async () => parseInt((await total.innerText()).replace(/\D/g, ""))).toBeGreaterThan(antes);
+});
