@@ -278,3 +278,39 @@ test("frecuencia de avistamientos por mes en un destacado y en «qué ver»", as
   const mara = page.locator(".resultados-que-ver li", { hasText: "Masái Mara" });
   await expect(mara).toContainText("muy probable");
 });
+
+test("mi viaje: guardar desde el planificador, lista que se recuerda y enlace compartido", async ({
+  page,
+  browser,
+}, info) => {
+  const errores = vigilar(page);
+  await page.goto("/planificar?pais=Tanzania&dias=10&mes=7");
+  const guardar = page.getByRole("link", { name: "Guardar en Mi viaje →" });
+  const hay = await guardar
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await guardar.click();
+  await expect(page).toHaveURL(/\/viaje$/);
+  await expect(page.locator("h1")).toHaveText("Mi viaje");
+  await expect(page.locator(".etapas-plan > li")).toHaveCount(3);
+  await expect(page.locator(".resumen-viaje")).toContainText("10 días, 9 noches");
+  await expect(page.getByRole("heading", { name: "Qué verás en agosto" })).toBeVisible();
+  // la lista se recuerda al volver
+  await page.getByLabel(/Pasaporte/).check();
+  await page.reload();
+  await expect(page.getByLabel(/Pasaporte/)).toBeChecked();
+  await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-viaje.png`, fullPage: true });
+  // el enlace compartido se abre en otro navegador sin nada guardado
+  const url = await page.evaluate(() => {
+    const v = JSON.parse(localStorage.getItem("safaris.viaje")!);
+    return `/viaje?p=${v.etapas.map((e: { id: string; noches: number }) => `${e.id}:${e.noches}`).join(",")}&mes=${v.mes}&personas=2`;
+  });
+  const otro = await browser.newPage();
+  await otro.goto(new URL(url, page.url()).toString());
+  await expect(otro.getByText("Es un plan compartido")).toBeVisible();
+  await expect(otro.locator(".etapas-plan > li")).toHaveCount(3);
+  await otro.close();
+  expect(errores).toEqual([]);
+});

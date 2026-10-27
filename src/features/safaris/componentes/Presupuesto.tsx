@@ -22,30 +22,12 @@ import { TASAS } from "@/features/safaris/tasas";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import CampoNumero from "@/ui/CampoNumero";
 import BuscadorParques from "./BuscadorParques";
+import { CLAVE_OFERTAS, CLAVE_SUPUESTOS, EXTERIORES, guardarViaje, leerJson, VISADO } from "@/features/safaris/viaje";
 
-const CLAVE_SUPUESTOS = "safaris.supuestos";
-const CLAVE_OFERTAS = "safaris.ofertas";
 const MAX_OFERTAS = 4;
-
-/** Webs oficiales de visado electrónico (para el resto, las recomendaciones de viaje de Exteriores). */
-const VISADO: Record<string, string> = {
-  Kenia: "https://www.etakenya.go.ke/",
-  Tanzania: "https://visa.immigration.go.tz/",
-  Uganda: "https://visas.immigration.go.ug/",
-  Ruanda: "https://irembo.gov.rw/",
-};
-const EXTERIORES = "https://www.exteriores.gob.es/es/ServiciosAlCiudadano/Paginas/Recomendaciones-de-viaje.aspx";
 
 function usd(n: number): string {
   return `${Math.round(n).toLocaleString("es-ES")} USD`;
-}
-
-function leerJson<T>(texto: string | null, defecto: T): T {
-  try {
-    return texto ? { ...defecto, ...JSON.parse(texto) } : defecto;
-  } catch {
-    return defecto;
-  }
 }
 
 function Numero({
@@ -154,6 +136,17 @@ export default function Presupuesto({ mesHoy }: { mesHoy: number }) {
             </li>
           ))}
         </ol>
+        {crudas.length > 0 && (
+          <p className="enlaces">
+            <Link
+              href="/viaje"
+              className="boton"
+              onClick={() => guardarViaje({ nombre: "Mi safari", etapas: crudas, mes, personas, ver: [] })}
+            >
+              Guardar en Mi viaje →
+            </Link>
+          </p>
+        )}
         <BuscadorParques
           indice={[...indice.values()]}
           excluir={crudas.map((e) => e.id)}

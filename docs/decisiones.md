@@ -221,3 +221,13 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   animales vistosos se fotografían más).
 - Dónde: tabla especie × mes en la ficha de los destacados, nivel de este mes en el resumen y nivel del mes
   elegido en «¿Qué quieres ver y cuándo?». ~450 peticiones más a iNaturalist por ejecución semanal (≤ 1/s).
+
+## 27-10-2026 · Mi viaje
+
+- `/viaje`: el plan en una página (itinerario con traslados, qué verás en cada parque el mes del viaje con el
+  nivel de frecuencia, presupuesto con tus precios y lista «antes de ir» con casillas). Se guarda en el
+  navegador (`safaris.viaje`, `safaris.lista`), se comparte por URL (`/viaje?p=parque:noches,…&mes=&personas=
+  &ver=`; quien lo abre puede guardarlo como suyo) y se imprime (CSS de impresión sin menús ni botones).
+- Planificador y presupuesto tienen «Guardar en Mi viaje». Claves y utilidades compartidas en
+  `src/features/safaris/viaje.ts`. En el menú del móvil, «Mi viaje» sustituye a «Presupuesto» (se llega desde
+  el plan).

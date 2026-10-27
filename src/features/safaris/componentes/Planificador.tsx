@@ -7,6 +7,7 @@ import { escribirAlmacen, useParametrosUrl } from "@/lib/almacen";
 import { esDestino, MAX_COMPARAR } from "@/features/safaris/modelo";
 import { facilidades, NOCHES_RITMO, planificar, type Ritmo } from "@/features/safaris/planificar";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
+import { guardarViaje } from "@/features/safaris/viaje";
 
 const RITMOS: [Ritmo, string][] = [
   ["tranquilo", "Tranquilo (4 noches por parque)"],
@@ -196,6 +197,21 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
                 Comparar estos parques →
               </Link>
             )}
+            <Link
+              href="/viaje"
+              className="boton"
+              onClick={() =>
+                guardarViaje({
+                  nombre: `Safari en ${pais}`,
+                  etapas: plan.etapas.map((e) => ({ id: e.f.id, noches: e.noches })),
+                  mes,
+                  personas: 2,
+                  ver: elegidas,
+                })
+              }
+            >
+              Guardar en Mi viaje →
+            </Link>
             <Link
               href={`/presupuesto?p=${plan.etapas.map((e) => `${e.f.id}:${e.noches}`).join(",")}&mes=${mes}&vuelos=${
                 plan.etapas.filter((e) => e.traslado?.volar).length

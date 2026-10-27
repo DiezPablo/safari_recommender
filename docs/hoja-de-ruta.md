@@ -46,9 +46,9 @@ Recorrido de la web en producción (móvil y escritorio) y de los datos publicad
   (Inspírate → Elige → Planifica → Organiza).
 
 Siguientes, por valor:
-1. Frecuencia de avistamientos por especie, parque y mes (histogramas de iNaturalist): «en agosto en el Mara,
+1. ~~Frecuencia de avistamientos~~ (hecho en los destacados) por especie, parque y mes (histogramas de iNaturalist): «en agosto en el Mara,
    león muy probable, leopardo probable».
-2. «Mi viaje»: un plan guardado (ruta, noches, presupuesto, ofertas, lista) compartible por URL e imprimible.
+2. ~~«Mi viaje»~~ (hecho, `/viaje`): un plan guardado (ruta, noches, presupuesto, ofertas, lista) compartible por URL e imprimible.
 3. Lista práctica por país (visado, fiebre amarilla y malaria, moneda, enchufe, equipaje de avioneta,
    propinas, seguridad).
 4. Perfiles: con niños, por tu cuenta en coche (Kruger, Etosha, Kgalagadi), fotografía, a pie, presupuesto

@@ -1860,3 +1860,54 @@ textarea.solicitud {
     min-width: 1.15em;
   }
 }
+
+/* Mi viaje */
+.resumen-viaje {
+  margin: 12px 0 0;
+  font-size: 1.05rem;
+}
+.noches-etapa input {
+  width: 4.5em;
+}
+.lista-viaje {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.lista-viaje label {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.lista-viaje input:checked + span {
+  color: var(--texto-3);
+  text-decoration: line-through;
+}
+.tabla-ver td {
+  font-size: 0.9rem;
+}
+.tabla-ver td.f-texto-muy-probable,
+.tabla-ver td.f-texto-probable,
+.tabla-ver td.si {
+  color: var(--c-fauna);
+  font-weight: 600;
+}
+.tabla-ver td.no,
+.tabla-ver td.f-texto-raro,
+.tabla-ver td.f-texto-sin-datos {
+  color: var(--texto-3);
+}
+@media print {
+  .cabecera,
+  .pie,
+  footer,
+  .no-imprimir {
+    display: none !important;
+  }
+  .seccion {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+}
