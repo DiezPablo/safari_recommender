@@ -44,7 +44,7 @@ NATIVOS_EXTRA: dict[str, set[str]] = {
 # zoos y parques de animales en cautividad que Wikidata clasifica como espacio protegido
 CAUTIVIDAD = re.compile(
     r"\bzoo\b|zoológico|wildlife park|safari park|animal park|tierpark|wildpark|walkabout|sanctuary farm|"
-    r"parque de fauna|parc animalier|reptile park",
+    r"parque de fauna|parc animalier|reptile park|naankuse|harnas|rehabilitation|rescue cent|orphanage",
     re.IGNORECASE,
 )
 

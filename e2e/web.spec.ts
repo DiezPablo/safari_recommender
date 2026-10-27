@@ -165,30 +165,36 @@ test("migración: zona del mes, cambiar de mes y lo visto en iNaturalist", async
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-migracion.png`, fullPage: true });
 });
 
-test("planificador: país, días y animales dan un circuito con noches y traslados", async ({ page }, info) => {
+test("planificador: noches repartidas como un operador (4 noches en Tanzania no son 4 en el Ngorongoro)", async ({
+  page,
+}, info) => {
   const errores = vigilar(page);
-  await page.goto("/planificar?pais=Tanzania&dias=10&mes=7&ritmo=normal");
-  const etapas = page.locator(".etapas-plan > li");
+  await page.goto("/planificar?pais=Tanzania&noches=4&mes=7&ritmo=normal");
+  const etapas = page.locator(".etapas-plan .etapa");
   const hay = await etapas
     .first()
     .waitFor({ timeout: 10000 })
     .then(() => true)
     .catch(() => false);
   test.skip(!hay, "sin datos de safaris");
-  await page.getByRole("group", { name: "Animales" }).getByRole("button", { name: "León", exact: true }).click();
-  await expect(page).toHaveURL(/ver=/);
-  await expect(page.locator(".plan h2")).toContainText("10 días en Tanzania: 3 parques");
-  await expect(etapas).toHaveCount(3);
-  // noches: 9 en total, repartidas
-  const noches = await page.locator(".etapa .rotulo").allInnerTexts();
-  expect(noches.reduce((a, t) => a + parseInt(t), 0)).toBe(9);
-  await expect(page.locator(".traslado").first()).toBeVisible();
+  await expect(page.locator(".plan h2")).toContainText("4 noches en Tanzania: 2 parques");
+  const serengeti = etapas.filter({ hasText: "Serengeti" });
+  await expect(serengeti.locator(".rotulo")).toContainText("3 noches");
+  const crater = etapas.filter({ hasText: "Ngorongoro" });
+  await expect(crater.locator(".rotulo")).toContainText("1 noche");
+  // ciudad de entrada, migración del mes y qué cambia con más noches
+  await expect(page.locator(".traslado").first()).toContainText("Desde Arusha");
+  await expect(serengeti).toContainText("La migración en agosto");
+  await expect(page.locator(".aviso-plan", { hasText: "Con 2 noches más" })).toBeVisible();
   await page.screenshot({ path: `${CAPTURAS}/${info.project.name}-planificar.png`, fullPage: true });
-  // demasiados parques para pocos días: avisa
-  await page.getByLabel("Días").selectOption("7");
-  await expect(page.locator(".plan h2")).toContainText("7 días en Tanzania");
-  await page.goto("/planificar?pais=Kenia&dias=3&ritmo=intenso");
-  await expect(page.locator(".plan h2")).toContainText("3 días en Kenia");
+  // con 7 noches entra Tarangire, y ningún parque pasa de las noches que merece
+  await page.getByLabel("Noches de safari").selectOption("7");
+  await expect(page.locator(".plan h2")).toContainText("7 noches en Tanzania: 3 parques");
+  await expect(etapas.filter({ hasText: "Tarangire" })).toHaveCount(1);
+  await expect(page.locator(".avisos-plan")).not.toContainText("más de las que suele merecer");
+  // los enlaces antiguos con días siguen funcionando
+  await page.goto("/planificar?pais=Kenia&dias=8&mes=8");
+  await expect(page.locator(".plan h2")).toContainText("7 noches en Kenia");
   expect(errores).toEqual([]);
 });
 
@@ -284,7 +290,7 @@ test("mi viaje: guardar desde el planificador, lista que se recuerda y enlace co
   browser,
 }, info) => {
   const errores = vigilar(page);
-  await page.goto("/planificar?pais=Tanzania&dias=10&mes=7");
+  await page.goto("/planificar?pais=Tanzania&noches=7&mes=7");
   const guardar = page.getByRole("link", { name: "Guardar en Mi viaje →" });
   const hay = await guardar
     .waitFor({ timeout: 10000 })
@@ -295,7 +301,7 @@ test("mi viaje: guardar desde el planificador, lista que se recuerda y enlace co
   await expect(page).toHaveURL(/\/viaje$/);
   await expect(page.locator("h1")).toHaveText("Mi viaje");
   await expect(page.locator(".etapas-plan > li")).toHaveCount(3);
-  await expect(page.locator(".resumen-viaje")).toContainText("10 días, 9 noches");
+  await expect(page.locator(".resumen-viaje")).toContainText("8 días, 7 noches");
   await expect(page.getByRole("heading", { name: "Qué verás en agosto" })).toBeVisible();
   // la lista se recuerda al volver
   await page.getByLabel(/Pasaporte/).check();

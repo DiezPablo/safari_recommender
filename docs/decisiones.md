@@ -250,3 +250,32 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   Pools, Akagera, Murchison, Reina Isabel) o con guía (reservas privadas y África oriental). Con las horas de
   amanecer y anochecer del mes en la hora local del parque (las puertas abren y cierran con la luz). Filtro
   «Cómo quieres ir» en el buscador.
+
+## 27-10-2026 · El planificador, como un operador
+
+- Fallo: con 4 noches en Tanzania proponía 4 noches en el Ngorongoro (dividía las noches entre «noches por
+  parque» del ritmo y cogía el parque de más puntuación). No sabía cuántas noches merece cada parque, ni que el
+  cráter se ve en un día, ni el coste de cambiar de parque, ni por dónde se entra al país.
+- Ahora (`planificar.ts` + `estancias.ts`):
+  - Estancia de los 65 destacados escrita a mano (mínimo, ideal y máximo de noches, nota, ciudad de entrada y
+    valor por noche para un primer safari: Serengeti y Mara 1, Ngorongoro 0,9, Tarangire 0,75, Pilanesberg 0,6;
+    gorilas 1,6). Los no destacados valen como mucho la mitad (los de al lado de la capital tienen muchas
+    observaciones por la gente que va, no por su fauna) y piden al menos 2 noches si son grandes.
+  - Interés de una noche = valor × temporada × frecuencia de avistamientos de ese mes frente a la media del año
+    (0,7-1,3). Hasta la estancia ideal vale entera, hasta el máximo un 25-60 % según el ritmo y por encima casi
+    nada.
+  - Voraz: en cada paso, alargar un parque o añadir otro (valorado con sus noches ideales, para repartir el coste
+    del cambio). Coste de añadir = lo que encarece la ruta (insertándolo en su mejor hueco, saliendo y volviendo a
+    la ciudad de entrada del país: Arusha, Nairobi, Johannesburgo, Maun…) + medio día de cambio según el ritmo +
+    otro circuito (Ruaha entra por Dar es Salaam). Tramos: horas por encima de las libres (5 h en la llegada y la
+    salida, 2 h entre parques porque el camino también es safari); más de 6,5 h, en avioneta (3 h + precio; menos
+    en Botsuana, Zambia y Zimbabue, donde es lo normal). Velocidad: 90 km/h en Sudáfrica, 85 en Namibia, 70 en
+    Botsuana y 50 en el resto.
+  - En pantalla: noches de safari (no días), ciudad de entrada y vuelta, «lo normal» de cada parque y su nota,
+    dónde está la migración ese mes y dónde alojarse (Serengeti y Mara), especies muy probables ese mes y qué
+    cambia con 2 noches más.
+- Comprobado con los datos de producción (agosto salvo indicación): Tanzania 4 noches → Serengeti 3 + Ngorongoro
+  1; 5 → + Tarangire 1; 7 → Serengeti 4, Ngorongoro 1, Tarangire 2; Kenia 7 (septiembre) → Mara 5 + Amboseli 2;
+  Sudáfrica 6 → Sabi Sand 3 + Kruger 3; Botsuana 8 (septiembre) → Makgadikgadi 2, Moremi 4, Chobe 2; Uganda 6
+  (julio) → Bwindi 3, Reina Isabel 2, Kibale 1; Ruanda 4 → Volcanes 3 + Akagera 1; Zambia 7 → Bajo Zambeze 3 +
+  Luangwa Sur 4.

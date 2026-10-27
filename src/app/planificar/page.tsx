@@ -19,8 +19,8 @@ export default function PaginaPlanificar() {
         </p>
         <h1>Planifica tu ruta</h1>
         <p className="entradilla">
-          Dinos dónde, cuántos días y qué quieres ver, y te proponemos qué parques encadenar, cuántas noches en cada uno
-          y cómo moverte entre ellos. El error más común es meter demasiados parques: aquí te avisamos.
+          Dinos dónde, cuántas noches y qué quieres ver, y te proponemos qué parques encadenar, cuántas noches en cada
+          uno y cómo moverte entre ellos. El error más común es meter demasiados parques: aquí te avisamos.
         </p>
       </header>
       <Planificador mesHoy={mesHoy} />

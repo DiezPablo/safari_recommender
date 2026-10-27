@@ -1,28 +1,54 @@
 "use client";
-// Planificador de ruta: país, días, mes, ritmo y animales → circuito con noches, traslados y avisos. El estado va
-// en la URL para poder compartir el plan.
+// Planificador de ruta: país, noches, mes, ritmo y animales → circuito con noches, traslados y avisos (la lógica,
+// en planificar.ts). El estado va en la URL para poder compartir el plan.
 import Link from "next/link";
 import { MESES } from "@/lib/fechas";
 import { escribirAlmacen, useParametrosUrl } from "@/lib/almacen";
-import { esDestino, MAX_COMPARAR } from "@/features/safaris/modelo";
-import { facilidades, NOCHES_RITMO, planificar, type Ritmo } from "@/features/safaris/planificar";
+import { esDestino, MAX_COMPARAR, nivelFrecuencia } from "@/features/safaris/modelo";
+import { MIGRACION } from "@/features/safaris/migracion";
+import { facilidades, planificar, type Plan, type Ritmo, RITMOS, type Tramo } from "@/features/safaris/planificar";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import { guardarViaje } from "@/features/safaris/viaje";
 
-const RITMOS: [Ritmo, string][] = [
-  ["tranquilo", "Tranquilo (4 noches por parque)"],
-  ["normal", "Normal (3 noches)"],
-  ["intenso", "Intenso (2 noches)"],
-];
+const TEXTO_RITMO: Record<Ritmo, string> = {
+  tranquilo: "Tranquilo: menos parques, más noches en cada uno",
+  normal: "Normal",
+  intenso: "Intenso: más parques",
+};
 const PAIS_INICIAL = "Tanzania";
+const MAX_NOCHES = 21;
+/** parques donde la zona buena cambia con la migración (el Ngorongoro, solo cuando está en Ndutu) */
+const CON_MIGRACION = new Set(["serengeti", "masai-mara"]);
+
+function textoTramo(t: Tramo, desde?: string): string {
+  const origen = desde ? `Desde ${desde}: ` : "";
+  return t.volar
+    ? `✈ ${origen}vuelo interno o avioneta (por carretera serían ~${t.km.toLocaleString("es-ES")} km)`
+    : `🚙 ${origen}~${t.km.toLocaleString("es-ES")} km por carretera, unas ${t.horas.toLocaleString("es-ES")} h`;
+}
+
+/** Qué cambia con dos noches más: noches añadidas a parques del plan y parques nuevos. */
+function conMasNoches(plan: Plan, otro: Plan): string | null {
+  const antes = new Map(plan.etapas.map((e) => [e.f.id, e.noches]));
+  const cambios = otro.etapas
+    .map((e) => {
+      const n = e.noches - (antes.get(e.f.id) ?? 0);
+      if (n <= 0) return null;
+      return antes.has(e.f.id) ? `+${n} en ${e.f.n}` : `${e.f.n} (${n} ${n === 1 ? "noche" : "noches"})`;
+    })
+    .filter(Boolean);
+  return cambios.length ? cambios.join(", ") : null;
+}
 
 export default function Planificador({ mesHoy }: { mesHoy: number }) {
   const { especies: datos, indice } = useDatosNavegador();
   const [parametros, actualizar] = useParametrosUrl();
   const pais = parametros.get("pais") ?? PAIS_INICIAL;
-  const dias = Math.min(30, Math.max(2, Number(parametros.get("dias") ?? 10) || 10));
+  // «dias» en enlaces antiguos: noches = días - 1
+  const crudo = parametros.get("noches") ?? (parametros.has("dias") ? String(Number(parametros.get("dias")) - 1) : "6");
+  const noches = Math.min(MAX_NOCHES, Math.max(1, Number(crudo) || 6));
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
-  const ritmo = (parametros.get("ritmo") as Ritmo) in NOCHES_RITMO ? (parametros.get("ritmo") as Ritmo) : "normal";
+  const ritmo = RITMOS.includes(parametros.get("ritmo") as Ritmo) ? (parametros.get("ritmo") as Ritmo) : "normal";
   const elegidas = (parametros.get("ver") ?? "").split(",").filter(Boolean).map(Number);
 
   if (!datos || !indice) return <p className="nota-pie">Cargando parques…</p>;
@@ -32,19 +58,34 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
   const interes = new Map<string, number>();
   for (const f of filas) if (f.p) interes.set(f.p, (interes.get(f.p) ?? 0) + f.s);
   const paises = [...interes.entries()].sort((a, b) => b[1] - a[1]).map(([p]) => p);
-  const plan = planificar({
+  const entrada = {
     indice: filas,
     observaciones: facilidades(datos.parques),
+    frecuencia: datos.frecuencia,
     pais,
-    dias,
     mes,
     especies: elegidas,
     ritmo,
-  });
+  };
+  const plan = planificar({ ...entrada, noches });
+  const masNoches =
+    noches + 2 <= MAX_NOCHES ? conMasNoches(plan, planificar({ ...entrada, noches: noches + 2 })) : null;
   const nombre = new Map(datos.especies.map((e) => [e.clave, e.nombre]));
   // en el selector, las especies que se ven en algún parque del país
   const delPais = new Set(filas.filter((f) => f.p === pais).flatMap((f) => f.e));
   const opcionesEspecies = datos.especies.filter((e) => delPais.has(e.clave));
+  const vuelos = [...plan.etapas.map((e) => e.traslado), plan.entrada?.vuelta].filter((t) => t?.volar).length;
+  const zonaMigracion = MIGRACION[mes];
+
+  /** Las especies estrella muy probables o probables ese mes en el parque (frecuencia de los destacados). */
+  function destacadasMes(id: string): string[] {
+    return Object.entries(datos!.frecuencia?.[id] ?? {})
+      .map(([k, meses]) => ({ k: Number(k), v: meses[mes] }))
+      .filter((x) => x.v !== null && x.v >= 20)
+      .sort((a, b) => b.v! - a.v!)
+      .slice(0, 4)
+      .map((x) => `${nombre.get(x.k) ?? x.k} (${nivelFrecuencia(x.v).texto})`);
+  }
 
   function alternar(clave: number) {
     const nuevas = elegidas.includes(clave) ? elegidas.filter((c) => c !== clave) : [...elegidas, clave];
@@ -63,11 +104,11 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
           </select>
         </label>
         <label className="campo">
-          <span className="rotulo">Días</span>
-          <select value={dias} onChange={(e) => actualizar({ dias: e.target.value })}>
-            {Array.from({ length: 29 }, (_, i) => i + 2).map((d) => (
-              <option key={d} value={d}>
-                {d} días
+          <span className="rotulo">Noches de safari</span>
+          <select value={noches} onChange={(e) => actualizar({ noches: e.target.value, dias: null })}>
+            {Array.from({ length: MAX_NOCHES }, (_, i) => i + 1).map((n) => (
+              <option key={n} value={n}>
+                {n} {n === 1 ? "noche" : "noches"}
               </option>
             ))}
           </select>
@@ -85,9 +126,9 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
         <label className="campo">
           <span className="rotulo">Ritmo</span>
           <select value={ritmo} onChange={(e) => actualizar({ ritmo: e.target.value })}>
-            {RITMOS.map(([r, t]) => (
+            {RITMOS.map((r) => (
               <option key={r} value={r}>
-                {t}
+                {TEXTO_RITMO[r]}
               </option>
             ))}
           </select>
@@ -118,8 +159,14 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
 
       <section className="seccion plan" aria-live="polite">
         <h2>
-          {dias} días en {pais}: {plan.etapas.length} {plan.etapas.length === 1 ? "parque" : "parques"}
+          {noches} {noches === 1 ? "noche" : "noches"} en {pais}: {plan.etapas.length}{" "}
+          {plan.etapas.length === 1 ? "parque" : "parques"}
         </h2>
+        {plan.entrada && (
+          <p className="nota-pie">
+            Entrada y salida por {plan.entrada.nombre}; si llegas tarde o te vas temprano, suma una noche allí.
+          </p>
+        )}
         {plan.avisos.length > 0 && (
           <ul className="avisos-plan">
             {plan.avisos.map((a) => (
@@ -129,53 +176,89 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
         )}
         {plan.sinCubrir.length > 0 && (
           <p className="aviso-plan">
-            Sin cubrir en {pais}: {plan.sinCubrir.map((k) => nombre.get(k)).join(", ")}. Prueba con más días o mira en{" "}
+            Sin cubrir en {pais}: {plan.sinCubrir.map((k) => nombre.get(k)).join(", ")}. Prueba con más noches o mira en{" "}
             <Link href={`/?ver=${plan.sinCubrir.join(",")}&mes=${mes}`}>qué parques del mundo se ven</Link>.
           </p>
         )}
         <ol className="etapas-plan">
-          {plan.etapas.map((e) => (
-            <li key={e.f.id}>
-              {e.traslado && (
-                <p className={`traslado ${e.traslado.volar ? "volar" : ""}`}>
-                  {e.traslado.volar
-                    ? `✈ Vuelo interno o avioneta (por carretera serían ~${e.traslado.km.toLocaleString("es-ES")} km, ${e.traslado.horas} h)`
-                    : `🚙 ~${e.traslado.km.toLocaleString("es-ES")} km por carretera, unas ${e.traslado.horas} h`}
-                </p>
-              )}
-              <div className="etapa">
-                {e.f.f && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.f.f} alt="" loading="lazy" />
+          {plan.etapas.map((e, i) => {
+            const destacadas = destacadasMes(e.f.id);
+            return (
+              <li key={e.f.id}>
+                {e.traslado && (
+                  <p className={`traslado ${e.traslado.volar ? "volar" : ""}`}>
+                    {textoTramo(e.traslado, i === 0 ? plan.entrada?.nombre : undefined)}
+                  </p>
                 )}
-                <div>
-                  <p className="rotulo">
-                    {e.noches} {e.noches === 1 ? "noche" : "noches"}
-                  </p>
-                  <h3>
-                    <Link href={`/parque/${e.f.id}`}>{e.f.n}</Link>
-                  </h3>
-                  {e.especies.length > 0 && (
-                    <p className="especies-ok">
-                      {e.especies.map((k) => (
-                        <span key={k} className="si">
-                          ✓ {nombre.get(k)}
-                        </span>
-                      ))}
-                    </p>
+                <div className="etapa">
+                  {e.f.f && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={e.f.f} alt="" loading="lazy" />
                   )}
-                  <p className={e.enEpoca === false ? "fuera-temporada" : "en-temporada"}>
-                    {e.enEpoca === null
-                      ? "Sin datos de temporada"
-                      : e.enEpoca
-                        ? `Buena época en ${MESES[mes]}`
-                        : `${MESES[mes]} no es su mejor época`}
-                  </p>
+                  <div>
+                    <p className="rotulo">
+                      {e.noches} {e.noches === 1 ? "noche" : "noches"}
+                      {e.f.d &&
+                        ` · lo normal: ${e.estancia.min === e.estancia.ideal ? "" : `${e.estancia.min}-`}${e.estancia.ideal}`}
+                    </p>
+                    <h3>
+                      <Link href={`/parque/${e.f.id}`}>{e.f.n}</Link>
+                    </h3>
+                    {e.estancia.nota && <p className="nota-etapa">{e.estancia.nota}</p>}
+                    {(CON_MIGRACION.has(e.f.id) || zonaMigracion.parque === e.f.id) && (
+                      <p className="nota-etapa">
+                        <b>La migración en {MESES[mes]}:</b> {zonaMigracion.zona}. Alójate cerca: {zonaMigracion.base}.{" "}
+                        <Link href="/migracion">Más →</Link>
+                      </p>
+                    )}
+                    {destacadas.length > 0 && (
+                      <p className="nota-etapa">
+                        <b>En {MESES[mes]}:</b> {destacadas.join(", ")}.
+                      </p>
+                    )}
+                    {e.especies.length > 0 && (
+                      <p className="especies-ok">
+                        {e.especies.map((k) => (
+                          <span key={k} className="si">
+                            ✓ {nombre.get(k)}
+                          </span>
+                        ))}
+                      </p>
+                    )}
+                    <p className={e.enEpoca === false ? "fuera-temporada" : "en-temporada"}>
+                      {e.enEpoca === null
+                        ? "Sin datos de temporada"
+                        : e.enEpoca
+                          ? `Buena época en ${MESES[mes]}`
+                          : `${MESES[mes]} no es su mejor época`}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </li>
+            );
+          })}
+          {plan.entrada && plan.etapas.length > 0 && (
+            <li>
+              <p className={`traslado ${plan.entrada.vuelta.volar ? "volar" : ""}`}>
+                {plan.entrada.vuelta.volar
+                  ? `✈ Vuelta a ${plan.entrada.nombre} en avioneta o vuelo interno`
+                  : `🚙 Vuelta a ${plan.entrada.nombre}: unas ${plan.entrada.vuelta.horas.toLocaleString("es-ES")} h por carretera`}
+              </p>
             </li>
-          ))}
+          )}
         </ol>
+        {masNoches && (
+          <p className="aviso-plan">
+            <b>Con 2 noches más:</b> {masNoches}.{" "}
+            <button
+              type="button"
+              className="quitar"
+              onClick={() => actualizar({ noches: String(noches + 2), dias: null })}
+            >
+              Probar
+            </button>
+          </p>
+        )}
         {plan.etapas.length > 0 && (
           <p className="enlaces">
             {plan.etapas.length > 1 && (
@@ -213,18 +296,17 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
               Guardar en Mi viaje →
             </Link>
             <Link
-              href={`/presupuesto?p=${plan.etapas.map((e) => `${e.f.id}:${e.noches}`).join(",")}&mes=${mes}&vuelos=${
-                plan.etapas.filter((e) => e.traslado?.volar).length
-              }`}
+              href={`/presupuesto?p=${plan.etapas.map((e) => `${e.f.id}:${e.noches}`).join(",")}&mes=${mes}&vuelos=${vuelos}`}
             >
               Calcular el presupuesto →
             </Link>
           </p>
         )}
         <p className="nota-pie">
-          Primera aproximación para saber si el viaje es realista, no un itinerario cerrado: distancias en línea recta
-          ×1,3 a 50 km/h (pistas), parques elegidos por observaciones reales (GBIF) y época. La primera y la última
-          noche suelen ser en la ciudad del aeropuerto. Revísalo con un operador local antes de reservar.
+          Cómo se decide: cada noche vale según el parque (escrito a mano en los destacados), su temporada y lo que se
+          ve ese mes, hasta las noches que suele merecer; añadir un parque cuesta el traslado y medio día de cambio, y
+          la ruta sale y vuelve a la ciudad de entrada. Distancias en línea recta ×1,3 a la velocidad de las carreteras
+          de cada país. Es una primera aproximación: revísala con un operador local antes de reservar.
         </p>
       </section>
     </>

@@ -1936,3 +1936,7 @@ textarea.solicitud {
   min-width: 12em;
   font-size: 0.85rem;
 }
+.nota-etapa {
+  font-size: 0.9rem;
+  color: var(--texto-2);
+}

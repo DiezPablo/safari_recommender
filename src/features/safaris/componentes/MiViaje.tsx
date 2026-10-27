@@ -8,7 +8,7 @@ import { MESES } from "@/lib/fechas";
 import { escribirAlmacen, useAlmacen, useParametrosUrl } from "@/lib/almacen";
 import CampoNumero from "@/ui/CampoNumero";
 import { nivelFrecuencia } from "@/features/safaris/modelo";
-import { traslado } from "@/features/safaris/planificar";
+import { trasladoEn } from "@/features/safaris/planificar";
 import { calcular, SUPUESTOS_INICIALES, type Supuestos } from "@/features/safaris/presupuesto";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import {
@@ -79,7 +79,7 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
     if (compartido) router.replace("/viaje");
   };
   const filas = v.etapas.map((e) => ({ ...e, f: indice.get(e.id) }));
-  const tramos = filas.map((e, i) => (i && e.f && filas[i - 1].f ? traslado(filas[i - 1].f!, e.f) : null));
+  const tramos = filas.map((e, i) => (i && e.f && filas[i - 1].f ? trasladoEn(e.f.p, filas[i - 1].f!, e.f) : null));
   const vuelos = tramos.filter((t) => t?.volar).length;
   const noches = v.etapas.reduce((a, e) => a + e.noches, 0);
   const r = calcular(
