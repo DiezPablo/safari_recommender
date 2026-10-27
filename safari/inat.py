@@ -106,11 +106,13 @@ def conteos(p: dict, taxones: list[int], desde: str | None = None, cache: CacheJ
     return salida
 
 
-def por_mes(p: dict, grupo: str | None = None) -> list[int]:
-    """Observaciones por mes del año (enero a diciembre), de un grupo o de todo."""
+def por_mes(p: dict, grupo: str | None = None, taxon: int | None = None) -> list[int]:
+    """Observaciones por mes del año (enero a diciembre), de un grupo, de un taxón o de todo."""
     params = {**_zona(p), "date_field": "observed", "interval": "month_of_year"}
     if grupo:
         params["iconic_taxa"] = grupo
+    if taxon:
+        params["taxon_id"] = taxon
     d = _get("observations/histogram", params)
     meses = d.get("results", {}).get("month_of_year", {})
     return [int(meses.get(str(m), 0)) for m in range(1, 13)]

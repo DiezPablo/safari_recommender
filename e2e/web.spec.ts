@@ -266,3 +266,15 @@ test("buscador: por defecto solo destinos de fauna; los demás espacios, a petic
   await expect(page).toHaveURL(/todos=1/);
   await expect.poll(async () => parseInt((await total.innerText()).replace(/\D/g, ""))).toBeGreaterThan(antes);
 });
+
+test("frecuencia de avistamientos por mes en un destacado y en «qué ver»", async ({ page }, info) => {
+  await page.goto("/parque/masai-mara");
+  const tabla = page.locator(".tabla-frecuencia");
+  test.skip(!(await tabla.count()), "datos sin frecuencia por mes");
+  // la migración: ñus muy probables en agosto
+  await expect(tabla.locator('td[title="Ñu en agosto: muy probable"]')).toHaveCount(1);
+  await page.locator(".frecuencia").screenshot({ path: `${CAPTURAS}/${info.project.name}-frecuencia.png` });
+  await page.goto("/?ver=5219404&mes=7");
+  const mara = page.locator(".resultados-que-ver li", { hasText: "Masái Mara" });
+  await expect(mara).toContainText("muy probable");
+});

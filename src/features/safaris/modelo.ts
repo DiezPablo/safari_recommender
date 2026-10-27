@@ -50,6 +50,8 @@ export interface Parque {
   foto?: FotoSafari | null;
   especies?: Record<string, TaxonSafari[]>;
   conteo_estrella?: Record<string, number>;
+  /** frecuencia de avistamientos por mes (‰ de las observaciones de su grupo; safari/frecuencia.py), por taxón */
+  frecuencia?: Record<string, (number | null)[]>;
   /** observaciones de mamíferos por mes, 0-100 (null si hay muy pocas) */
   meses_mamiferos?: number[] | null;
   observaciones?: number;
@@ -301,4 +303,21 @@ export function capitalizar(nombre: string): string {
 export function nombreEspecieMundo(m: Pick<Mundo, "especies">, clave: number | string): string {
   const e = m.especies[String(clave)];
   return e?.n ?? e?.c ?? "Especie sin nombre común";
+}
+
+// ---- Frecuencia de avistamientos (‰ de las fotos de su grupo ese mes): niveles para la web
+
+export interface NivelFrecuencia {
+  clave: "muy-probable" | "probable" | "posible" | "dificil" | "raro" | "sin-datos";
+  texto: string;
+}
+
+/** Umbrales calibrados con el Mara y Kruger: el león es ~100 ‰, el leopardo 20-50 ‰, el rinoceronte negro ~10 ‰. */
+export function nivelFrecuencia(permil: number | null | undefined): NivelFrecuencia {
+  if (permil === null || permil === undefined) return { clave: "sin-datos", texto: "sin datos" };
+  if (permil >= 50) return { clave: "muy-probable", texto: "muy probable" };
+  if (permil >= 20) return { clave: "probable", texto: "probable" };
+  if (permil >= 5) return { clave: "posible", texto: "posible" };
+  if (permil >= 1) return { clave: "dificil", texto: "difícil" };
+  return { clave: "raro", texto: "muy raro" };
 }

@@ -6,10 +6,12 @@ import AnoSafari from "@/features/safaris/componentes/AnoSafari";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
 import BotonComparar from "@/features/safaris/componentes/BotonComparar";
 import ResumenParque from "@/features/safaris/componentes/ResumenParque";
+import FrecuenciaAvistamientos from "@/features/safaris/componentes/FrecuenciaAvistamientos";
 import FichaMundo from "@/features/safaris/componentes/FichaMundo";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
 import {
+  nivelFrecuencia,
   cargarMundo,
   cargarRecientes,
   cargarSafaris,
@@ -154,11 +156,17 @@ export default async function PaginaParque({ params }: Props) {
         epoca={p.meses}
         mesHoy={mesHoy}
         especies={estrella
-          .map((e) => ({
-            nombre: nombreTaxon(e),
-            n: p.conteo_estrella?.[String(e.taxon)] ?? 0,
-            href: `/especie/${slugEspecie(e)}`,
-          }))
+          .map((e) => {
+            // con frecuencia por mes, ordenadas por lo probable que es verlas este mes
+            const f = p.frecuencia?.[String(e.taxon)]?.[mesHoy];
+            const n = nivelFrecuencia(f);
+            return {
+              nombre: nombreTaxon(e),
+              n: f ?? (p.conteo_estrella?.[String(e.taxon)] ?? 0) / 1000,
+              href: `/especie/${slugEspecie(e)}`,
+              nivel: n.clave === "sin-datos" ? undefined : n.texto,
+            };
+          })
           .sort((a, b) => b.n - a.n)}
         tasaTexto={p.tasa}
         mundo={enMundo}
@@ -198,6 +206,17 @@ export default async function PaginaParque({ params }: Props) {
           </ul>
         </section>
       )}
+
+      <FrecuenciaAvistamientos
+        mesHoy={mesHoy}
+        filas={estrella
+          .filter((e) => p.frecuencia?.[String(e.taxon)])
+          .map((e) => ({
+            nombre: nombreTaxon(e),
+            href: `/especie/${slugEspecie(e)}`,
+            meses: p.frecuencia![String(e.taxon)],
+          }))}
+      />
 
       <div className="ficha-grid">
         <section className="seccion">

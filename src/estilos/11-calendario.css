@@ -1770,3 +1770,93 @@ textarea.solicitud {
 .resumen-parque .en-temporada {
   color: var(--c-fauna);
 }
+
+/* Frecuencia de avistamientos */
+.tabla-frecuencia {
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-size: 0.9rem;
+}
+.tabla-frecuencia thead th {
+  font: 600 0.72rem var(--f-mono);
+  color: var(--texto-3);
+  text-align: center;
+  min-width: 1.6em;
+}
+.tabla-frecuencia thead th.mes-actual {
+  color: var(--texto);
+}
+.tabla-frecuencia tbody th {
+  text-align: left;
+  font-weight: 500;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+.tabla-frecuencia td {
+  height: 1.6em;
+  min-width: 1.6em;
+  border-radius: 4px;
+}
+.tabla-frecuencia td.mes-actual {
+  outline: 2px solid var(--texto);
+  outline-offset: -1px;
+}
+.f-muy-probable {
+  background: var(--c-fauna);
+}
+.f-probable {
+  background: color-mix(in srgb, var(--c-fauna) 60%, var(--superficie));
+}
+.f-posible {
+  background: color-mix(in srgb, var(--c-fauna) 30%, var(--superficie));
+}
+.f-dificil {
+  background: color-mix(in srgb, var(--c-fauna) 10%, var(--superficie));
+}
+.f-raro {
+  background: var(--superficie-2);
+}
+.f-sin-datos {
+  background: repeating-linear-gradient(45deg, var(--superficie-2) 0 3px, transparent 3px 6px);
+}
+.leyenda-frecuencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+}
+.leyenda-frecuencia i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+.especies-ok .nivel {
+  color: var(--texto-2);
+}
+.especies-ok .f-texto-muy-probable,
+.especies-ok .f-texto-probable {
+  color: var(--c-fauna);
+  font-weight: 600;
+}
+.resumen-parque .nivel-mes {
+  font-weight: 400;
+  color: var(--texto-2);
+}
+@media (max-width: 600px) {
+  .tabla-frecuencia {
+    border-spacing: 2px;
+    font-size: 0.8rem;
+  }
+  .tabla-frecuencia tbody th {
+    white-space: normal;
+    max-width: 7em;
+    line-height: 1.2;
+  }
+  .tabla-frecuencia td,
+  .tabla-frecuencia thead th {
+    min-width: 1.15em;
+  }
+}

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { type DatosEspecies, useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import { MESES } from "@/lib/fechas";
-import { buenaEpoca, type FilaIndice } from "@/features/safaris/modelo";
+import { buenaEpoca, type FilaIndice, nivelFrecuencia } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
 /** Parques ordenados por cuántas de las especies elegidas tienen, buena época en el mes y facilidad media. */
@@ -109,11 +109,19 @@ export default function QueVer({ mesHoy }: { mesHoy: number }) {
                 </Link>{" "}
                 <small>{r.f!.p ?? ""}</small>
                 <p className="especies-ok">
-                  {elegidas.map((c) => (
-                    <span key={c} className={r.especies.has(c) ? "si" : "no"}>
-                      {r.especies.has(c) ? "✓" : "–"} {nombre.get(c)}
-                    </span>
-                  ))}
+                  {elegidas.map((c) => {
+                    // en los destacados, lo probable que es verla ese mes
+                    const f = datos.frecuencia?.[r.id]?.[String(c)];
+                    const n = f ? nivelFrecuencia(f[mes]) : null;
+                    return (
+                      <span key={c} className={r.especies.has(c) ? "si" : "no"}>
+                        {r.especies.has(c) ? "✓" : "–"} {nombre.get(c)}
+                        {n && n.clave !== "sin-datos" && (
+                          <small className={`nivel f-texto-${n.clave}`}> · {n.texto}</small>
+                        )}
+                      </span>
+                    );
+                  })}
                 </p>
                 <p className={r.enEpoca ? "en-temporada" : "fuera-temporada"}>
                   {r.enEpoca

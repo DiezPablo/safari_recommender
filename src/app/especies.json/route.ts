@@ -66,5 +66,18 @@ export function GET() {
     parques[clave] = lista;
   }
   especies.sort((a, b) => a.orden - b.orden);
-  return Response.json({ especies, parques });
+
+  // frecuencia de avistamientos por mes en los destacados (taxón de iNaturalist → clave de GBIF)
+  const clavePorCientifico = new Map(Object.entries(mundo?.estrella ?? {}).map(([k, c]) => [c, k]));
+  const clavePorTaxon = new Map(
+    listaCatalogo.map((e) => [String(e.taxon), clavePorCientifico.get(e.cientifico)] as const),
+  );
+  const frecuencia: Record<string, Record<string, (number | null)[]>> = {};
+  for (const p of cargarSafaris()?.parques ?? []) {
+    for (const [taxon, meses] of Object.entries(p.frecuencia ?? {})) {
+      const clave = clavePorTaxon.get(taxon);
+      if (clave) (frecuencia[p.id] ??= {})[clave] = meses;
+    }
+  }
+  return Response.json({ especies, parques, frecuencia });
 }

@@ -10,6 +10,8 @@ export interface EspecieResumen {
   nombre: string;
   n: number;
   href?: string;
+  /** lo probable que es verla este mes («muy probable»…), en los destacados */
+  nivel?: string;
 }
 
 export default function ResumenParque({
@@ -63,6 +65,7 @@ export default function ResumenParque({
                 <span key={e.nombre}>
                   {i > 0 && ", "}
                   {e.href ? <Link href={e.href}>{e.nombre}</Link> : e.nombre}
+                  {e.nivel && <span className="nivel-mes"> ({e.nivel})</span>}
                 </span>
               ))
             ) : (

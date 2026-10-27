@@ -207,3 +207,17 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   Rasante refinado; se puede lanzar a mano con `solo_refinar` (150 min para operadores).
 - **Resumen arriba en cada ficha** (`ResumenParque`): cuándo ir, qué verás, entrada (de `tasas.ts`), cómo
   llegar y con quién, con enlace a cada detalle.
+
+## 27-10-2026 · Frecuencia de avistamientos por mes
+
+- Para cada destacado y especie estrella, el histograma mensual de iNaturalist frente al de su grupo
+  (mamíferos, aves, reptiles), en ‰ y sumando los meses vecinos (`safari/frecuencia.py`; sin cifra si el grupo
+  tiene < 30 observaciones en esos tres meses). Corrige que en temporada alta vaya más gente. Calibrado con
+  datos reales: león en el Mara ~100 ‰ todo el año, leopardo 20-50 ‰, rinoceronte negro ~10 ‰, licaón ~1 ‰; el
+  ñu del Mara se triplica de julio a septiembre, los osos de Yellowstone caen a ~0 en invierno (hibernan), las
+  belugas de Churchill solo de junio a agosto.
+- Niveles en la web (`nivelFrecuencia`): ≥ 50 ‰ muy probable, ≥ 20 probable, ≥ 5 posible, ≥ 1 difícil, si no
+  muy raro. Se presenta como frecuencia en las fotos de los visitantes, no como probabilidad exacta (los
+  animales vistosos se fotografían más).
+- Dónde: tabla especie × mes en la ficha de los destacados, nivel de este mes en el resumen y nivel del mes
+  elegido en «¿Qué quieres ver y cuándo?». ~450 peticiones más a iNaturalist por ejecución semanal (≤ 1/s).

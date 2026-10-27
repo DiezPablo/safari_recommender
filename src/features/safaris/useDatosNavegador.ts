@@ -17,6 +17,8 @@ export interface DatosEspecies {
   especies: EspecieQueVer[];
   /** clave de GBIF → [id del parque, observaciones], de más a menos */
   parques: Record<string, [string, number][]>;
+  /** frecuencia de avistamientos por mes en los destacados: id del parque → clave de GBIF → ‰ por mes */
+  frecuencia?: Record<string, Record<string, (number | null)[]>>;
 }
 
 function pedir<T>(url: string): Promise<T> {
