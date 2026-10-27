@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MESES } from "@/lib/fechas";
 import { MIGRACION } from "@/features/safaris/migracion";
+import FotoGrande from "@/ui/FotoGrande";
 import QueVer from "@/features/safaris/componentes/QueVer";
 import ExploradorSafaris from "@/features/safaris/componentes/ExploradorSafaris";
 import {
@@ -36,64 +37,99 @@ export default function PaginaSafaris() {
   const destinos = (mundo?.parques ?? []).filter((p) => p.nivel !== "C");
   const total = destinos.length || parques.length;
   const paisesMundo = new Set(destinos.map((p) => p.pais)).size;
+  // la foto de la portada: el primer destacado en buena época este mes que tenga foto
+  const hero = ahora.find((p) => p.foto) ?? parques.find((p) => p.foto);
   const especies = Object.keys(mundo?.estrella ?? {})
     .map((k) => ({ clave: Number(k), nombre: nombreEstrella(k) }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   return (
     <main className="calendario fauna safaris">
-      <header className="titular">
-        <p className="rotulo">
-          {total.toLocaleString("es-ES")} destinos de fauna · {paisesMundo || new Set(parques.map((p) => p.pais)).size}{" "}
-          países · Wikidata, GBIF, iNaturalist y OpenStreetMap
-        </p>
-        <h1>Safaris por el mundo</h1>
-        <nav className="pestanas" aria-label="Safaris">
-          <Link href="/" aria-current="page">
-            Parques
-          </Link>
-          <Link href="/especies">Especies</Link>
-          <Link href="/guia">Cómo organizarlo</Link>
-        </nav>
-        <p className="entradilla">
-          Todos los parques nacionales y reservas del mundo con fauna registrada: qué se ve y cuándo, lo que han visto
-          los observadores en el último mes, cómo llegar (aeropuertos y pistas de aterrizaje), puertas, operadores
-          locales y alojamientos con su web. Sin intermediarios ni comisiones: reservas directamente con el parque, el
-          lodge o el operador.
-        </p>
-      </header>
+      <figure className="portada-hero">
+        {hero?.foto && <FotoGrande src={hero.foto.url} />}
+        <div className="portada-hero-texto">
+          <p className="rotulo">Atlas de fauna · {MESES[mesHoy]}</p>
+          <h1>Dónde y cuándo ver cada animal</h1>
+          <p>
+            Los parques y reservas de todo el mundo con lo que se ve cada mes, lo que se ha visto en las últimas semanas
+            y cómo organizarlo: rutas, presupuesto y operadores locales, sin intermediarios.
+          </p>
+          <div className="acciones">
+            <Link href="/planificar">Planifica tu safari</Link>
+            <Link href="/migracion">Dónde está la migración</Link>
+          </div>
+        </div>
+        {hero?.foto && (
+          <figcaption>
+            {hero.nombre} ·{" "}
+            {hero.foto.web ? (
+              <a href={hero.foto.web} rel="noopener">
+                {hero.foto.autor ?? "Wikimedia Commons"}
+              </a>
+            ) : (
+              hero.foto.autor
+            )}
+            {hero.foto.licencia && ` · ${hero.foto.licencia}`}
+          </figcaption>
+        )}
+      </figure>
 
-      <QueVer mesHoy={mesHoy} />
-
-      <section className="seccion aviso-migracion">
+      <section className="portada-cifras" aria-label="En cifras">
         <p>
-          <b>La gran migración en {MESES[mesHoy]}:</b> {MIGRACION[mesHoy].zona}.{" "}
-          <Link href="/migracion">Dónde está y dónde la han visto este mes →</Link>
+          <b>{total.toLocaleString("es-ES")}</b>
+          <span>destinos de fauna</span>
         </p>
         <p>
-          <b>¿Ya sabes a qué país?</b> <Link href="/planificar">Planifica la ruta: parques, noches y traslados →</Link>
+          <b>{paisesMundo || new Set(parques.map((p) => p.pais)).size}</b>
+          <span>países</span>
+        </p>
+        <p>
+          <b>{especies.length}</b>
+          <span>especies emblemáticas, mes a mes</span>
+        </p>
+        <p>
+          <b>0 %</b>
+          <span>de comisión: reservas directamente</span>
         </p>
       </section>
 
+      <QueVer mesHoy={mesHoy} />
+
       {ahora.length > 0 && (
         <section className="seccion">
-          <h2 className="rotulo">Destacados en buena época ahora, en {MESES[mesHoy]}</h2>
-          <ul className="lista-cercanos">
+          <h2>En buena época ahora, en {MESES[mesHoy]}</h2>
+          <ul className="tarjetas-ahora">
             {ahora.map((p) => {
               const r = recientes?.parques[p.id];
               const top = r?.mamiferos.slice(0, 3).map((m) => m.nombre ?? m.cientifico);
               return (
                 <li key={p.id}>
-                  <Link href={`/parque/${p.id}`}>{p.nombre}</Link>
-                  <small>
-                    {p.pais}
-                    {top?.length ? ` · visto este mes: ${top.join(", ")}` : ""}
-                  </small>
+                  <Link href={`/parque/${p.id}`}>
+                    {p.foto && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.foto.url} alt="" loading="lazy" />
+                    )}
+                    <span className="rotulo">{p.pais}</span>
+                    <b>{p.nombre}</b>
+                    {top?.length ? <small>Visto este mes: {top.join(", ")}</small> : null}
+                  </Link>
                 </li>
               );
             })}
           </ul>
         </section>
       )}
+
+      <section className="seccion franja-migracion">
+        <p className="rotulo">La gran migración</p>
+        <h2>
+          En {MESES[mesHoy]}, {MIGRACION[mesHoy].zona}
+        </h2>
+        <p>{MIGRACION[mesHoy].que}</p>
+        <p className="enlaces">
+          <Link href="/migracion">Ver el mapa y lo visto este mes</Link>
+          <Link href="/planificar?pais=Tanzania">Planificar un safari en Tanzania</Link>
+        </p>
+      </section>
 
       {parques.length ? (
         <>

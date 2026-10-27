@@ -1,51 +1,11 @@
-/* Ajustes para pantallas estrechas (móvil). */
+/* Ajustes para pantallas estrechas (móvil) que no caben en su área. */
 
 @media (max-width: 520px) {
   .cabecera-in {
-    gap: 8px;
-    padding: 0 12px;
-    height: 56px;
+    padding: 0 16px;
   }
-  .cabecera nav > a {
-    padding: 6px 9px;
-    font-size: 0.86rem;
-  }
-  /* el icono ya lleva a la portada: sin la marca ni «Parques» caben los enlaces y el tema */
-  .marca b,
-  .cabecera nav > a.nav-inicio,
-  .cabecera nav > a.nav-ancho {
-    display: none;
-  }
-  .cabecera nav {
-    gap: 0;
-  }
-  .cabecera nav > a {
-    padding: 6px 7px;
-  }
-  .temas {
-    margin-left: 2px;
-  }
-  .tema-txt {
-    display: none;
-  }
-  .tema-ico {
-    display: inline-grid;
-    place-items: center;
-  }
-  .temas button {
-    padding: 5px 8px;
-  }
-  .destacado {
-    padding: 16px;
-  }
-  .destacado-fila {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  .destacado .foto-tira {
-    margin: 0 -16px -16px;
-  }
-  .cifra.enorme {
-    font-size: 4.2rem;
+  .calendario {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }

@@ -2,6 +2,7 @@
 // Planificador de ruta: país, noches, mes, ritmo y animales → circuito con noches, traslados y avisos (la lógica,
 // en planificar.ts). El estado va en la URL para poder compartir el plan.
 import Link from "next/link";
+import { IconoAvion, IconoCoche } from "@/ui/Iconos";
 import { MESES } from "@/lib/fechas";
 import { escribirAlmacen, useParametrosUrl } from "@/lib/almacen";
 import { esDestino, MAX_COMPARAR, nivelFrecuencia } from "@/features/safaris/modelo";
@@ -23,8 +24,8 @@ const CON_MIGRACION = new Set(["serengeti", "masai-mara"]);
 function textoTramo(t: Tramo, desde?: string): string {
   const origen = desde ? `Desde ${desde}: ` : "";
   return t.volar
-    ? `✈ ${origen}vuelo interno o avioneta (por carretera serían ~${t.km.toLocaleString("es-ES")} km)`
-    : `🚙 ${origen}~${t.km.toLocaleString("es-ES")} km por carretera, unas ${t.horas.toLocaleString("es-ES")} h`;
+    ? `${origen}vuelo interno o avioneta (por carretera serían ~${t.km.toLocaleString("es-ES")} km)`
+    : `${origen}~${t.km.toLocaleString("es-ES")} km por carretera, unas ${t.horas.toLocaleString("es-ES")} h`;
 }
 
 /** Qué cambia con dos noches más: noches añadidas a parques del plan y parques nuevos. */
@@ -187,6 +188,7 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
               <li key={e.f.id}>
                 {e.traslado && (
                   <p className={`traslado ${e.traslado.volar ? "volar" : ""}`}>
+                    {e.traslado.volar ? <IconoAvion /> : <IconoCoche />}
                     {textoTramo(e.traslado, i === 0 ? plan.entrada?.nombre : undefined)}
                   </p>
                 )}
@@ -240,9 +242,10 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
           {plan.entrada && plan.etapas.length > 0 && (
             <li>
               <p className={`traslado ${plan.entrada.vuelta.volar ? "volar" : ""}`}>
+                {plan.entrada.vuelta.volar ? <IconoAvion /> : <IconoCoche />}
                 {plan.entrada.vuelta.volar
-                  ? `✈ Vuelta a ${plan.entrada.nombre} en avioneta o vuelo interno`
-                  : `🚙 Vuelta a ${plan.entrada.nombre}: unas ${plan.entrada.vuelta.horas.toLocaleString("es-ES")} h por carretera`}
+                  ? `Vuelta a ${plan.entrada.nombre} en avioneta o vuelo interno`
+                  : `Vuelta a ${plan.entrada.nombre}: unas ${plan.entrada.vuelta.horas.toLocaleString("es-ES")} h por carretera`}
               </p>
             </li>
           )}

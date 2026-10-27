@@ -1,6 +1,7 @@
 // Ficha de un parque del mundo que no está en el catálogo escrito a mano: todo sale de datos abiertos
 // (Wikidata, GBIF, NASA, OurAirports, OpenStreetMap) y de iNaturalist en directo.
 import Link from "next/link";
+import FotoGrande from "@/ui/FotoGrande";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { INICIALES, MESES } from "@/lib/fechas";
 import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/ComplementosSafari";
@@ -64,29 +65,14 @@ export default function FichaMundo({
   ];
   return (
     <main className="ficha evento cat-fauna safari">
-      <nav className="migas rotulo" aria-label="Migas">
-        <Link href="/">Safaris</Link>
-        {pais?.continente && <span>{pais.continente}</span>}
-        {pais?.nombre && <span>{pais.nombre}</span>}
-      </nav>
-      <header className="ficha-cab cabecera-especie">
-        {p.foto && (
-          <figure>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.foto.url} alt={p.nombre} />
-            <figcaption>
-              {p.foto.web ? (
-                <a href={p.foto.web} rel="noopener">
-                  {p.foto.autor ?? "Wikimedia Commons"}
-                </a>
-              ) : (
-                p.foto.autor
-              )}
-              {p.foto.licencia && ` · ${p.foto.licencia}`}
-            </figcaption>
-          </figure>
-        )}
-        <div>
+      <header className={`ficha-hero${p.foto ? "" : " sin-foto"}`}>
+        {p.foto && <FotoGrande src={p.foto.url} />}
+        <div className="ficha-hero-texto">
+          <nav className="migas rotulo" aria-label="Migas">
+            <Link href="/">Safaris</Link>
+            {pais?.continente && <span>{pais.continente}</span>}
+            {pais?.nombre && <span>{pais.nombre}</span>}
+          </nav>
           <p className="rotulo">
             <span className="punto-cat" aria-hidden /> {CLASE[p.clase] ?? p.clase}
             {pais?.nombre && ` · ${pais.nombre}`}
@@ -113,6 +99,18 @@ export default function FichaMundo({
             </a>
           </p>
         </div>
+        {p.foto && (
+          <figcaption>
+            {p.foto.web ? (
+              <a href={p.foto.web} rel="noopener">
+                {p.foto.autor ?? "Wikimedia Commons"}
+              </a>
+            ) : (
+              p.foto.autor
+            )}
+            {p.foto.licencia && ` · ${p.foto.licencia}`}
+          </figcaption>
+        )}
       </header>
 
       <ResumenParque

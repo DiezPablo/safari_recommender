@@ -1,6 +1,5 @@
-/* Safaris — estilos globales (heredados de Rasante). Cada área en src/estilos/; el orden de importación es el de la cascada.
-   Dos colores con sentido fotográfico: hora dorada (notas) y hora azul (interfaz). Temas: claro, oscuro y
-   «noche» (solo rojos, para no perder la adaptación a la oscuridad en el campo). */
+/* Safaris — estilos globales. Cada área en src/estilos/; el orden de importación es el de la cascada. Las piezas
+   01-11 vienen de Rasante; 12-diseno.css, la última, da el aspecto propio (guía de campo editorial). */
 @import "../estilos/01-tokens.css";
 @import "../estilos/02-base.css";
 @import "../estilos/03-cabecera.css";
@@ -12,3 +11,4 @@
 @import "../estilos/09-rutas.css";
 @import "../estilos/11-calendario.css";
 @import "../estilos/10-movil.css";
+@import "../estilos/12-diseno.css";

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FotoGrande from "@/ui/FotoGrande";
 import { notFound } from "next/navigation";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import AnoSafari from "@/features/safaris/componentes/AnoSafari";
@@ -93,32 +94,14 @@ export default async function PaginaParque({ params }: Props) {
   ];
   return (
     <main className="ficha evento cat-fauna safari">
-      <nav className="migas rotulo" aria-label="Migas">
-        <Link href="/">Safaris</Link>
-        <span>{p.continente}</span>
-        <span>{p.pais}</span>
-      </nav>
-      <header className="ficha-cab cabecera-especie">
-        {p.foto && (
-          <figure>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.foto.url} alt={p.nombre} />
-            <figcaption>
-              {p.foto.web ? (
-                <a href={p.foto.web} rel="noopener">
-                  {p.foto.autor ?? "Wikimedia Commons"}
-                </a>
-              ) : (
-                p.foto.autor
-              )}
-              {p.foto.licencia && ` · ${p.foto.licencia}`}
-            </figcaption>
-          </figure>
-        )}
-        <div>
-          <p className="rotulo">
-            <span className="punto-cat" aria-hidden /> {p.pais} · {p.continente}
-          </p>
+      <header className={`ficha-hero${p.foto ? "" : " sin-foto"}`}>
+        {p.foto && <FotoGrande src={p.foto.url} />}
+        <div className="ficha-hero-texto">
+          <nav className="migas rotulo" aria-label="Migas">
+            <Link href="/">Safaris</Link>
+            <span>{p.continente}</span>
+            <span>{p.pais}</span>
+          </nav>
           <h1>{p.nombre}</h1>
           <p className="entradilla">{p.consejo}</p>
           <p className="chips">
@@ -149,6 +132,18 @@ export default async function PaginaParque({ params }: Props) {
             </a>
           </p>
         </div>
+        {p.foto && (
+          <figcaption>
+            {p.foto.web ? (
+              <a href={p.foto.web} rel="noopener">
+                {p.foto.autor ?? "Wikimedia Commons"}
+              </a>
+            ) : (
+              p.foto.autor
+            )}
+            {p.foto.licencia && ` · ${p.foto.licencia}`}
+          </figcaption>
+        )}
       </header>
 
       <ResumenParque

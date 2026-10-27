@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { Archivo, IBM_Plex_Mono, Newsreader } from "next/font/google";
 import Link from "next/link";
-import { IconoPrismaticos } from "@/ui/Iconos";
-import SelectorTema from "@/ui/SelectorTema";
+import { BarraInferior, MenuPrincipal } from "@/ui/Navegacion";
 import "./globals.css";
 
 // Tipografías autoalojadas en el build (sin peticiones a Google desde el navegador)
 const ui = Archivo({ subsets: ["latin"], variable: "--f-ui", display: "swap", axes: ["wdth"] });
+const serif = Newsreader({ subsets: ["latin"], variable: "--f-serif", display: "swap", style: ["normal", "italic"] });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], variable: "--f-mono", display: "swap", weight: ["400", "500"] });
 
 export const metadata: Metadata = {
@@ -19,87 +19,80 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f1ed" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0f11" },
+    { media: "(prefers-color-scheme: light)", color: "#f3eee4" },
+    { media: "(prefers-color-scheme: dark)", color: "#13120f" },
   ],
 };
 
-// Aplica el tema guardado antes de pintar (sin destello blanco en modo oscuro)
-const scriptTema = `(function(){var d=document.documentElement;try{var t=localStorage.getItem("tema");if(t)d.dataset.tema=t}catch(e){}
-document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest("[data-tema-boton]");if(!b)return;
-var t=b.getAttribute("data-tema-boton");d.dataset.tema=t;try{localStorage.setItem("tema",t)}catch(e){}
-window.dispatchEvent(new CustomEvent("tema",{detail:t}))})})()`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${ui.variable} ${mono.variable}`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
-      </head>
+    <html lang="es" suppressHydrationWarning className={`${ui.variable} ${serif.variable} ${mono.variable}`}>
       <body>
+        <a href="#contenido" className="saltar">
+          Ir al contenido
+        </a>
         <header className="cabecera">
           <div className="cabecera-in">
             <Link href="/" className="marca" aria-label="Safaris, inicio">
-              <IconoPrismaticos size={26} />
-              <b>Safaris</b>
-              <small className="solo-ancho">Dónde y cuándo ver cada animal, en todo el mundo</small>
+              Safaris<span className="marca-sub">atlas de fauna</span>
             </Link>
-            <nav>
-              <Link href="/" className="nav-inicio">
-                Parques
-              </Link>
-              <Link href="/planificar">Planificar</Link>
-              <Link href="/migracion">Migración</Link>
-              <Link href="/viaje">Mi viaje</Link>
-              <Link href="/presupuesto" className="nav-ancho">
-                Presupuesto
-              </Link>
-              <Link href="/comparar" className="nav-ancho">
-                Comparar
-              </Link>
-              <Link href="/especies" className="nav-ancho">
-                Especies
-              </Link>
-              <Link href="/guia" className="nav-ancho">
-                Guía
-              </Link>
-              <SelectorTema />
-            </nav>
+            <MenuPrincipal />
           </div>
         </header>
-        {children}
+        <div id="contenido">{children}</div>
+        <BarraInferior />
         <footer className="pie">
-          <div>
-            <span>
-              <b>Safaris</b> · Datos abiertos:{" "}
-              <a href="https://www.gbif.org/" rel="noopener">
-                GBIF
-              </a>
-              ,{" "}
-              <a href="https://www.inaturalist.org/" rel="noopener">
-                iNaturalist
-              </a>
-              ,{" "}
-              <a href="https://www.wikidata.org/" rel="noopener">
-                Wikidata
-              </a>{" "}
-              (fotos de Wikimedia Commons, con autor y licencia), lluvia de{" "}
-              <a href="https://power.larc.nasa.gov/" rel="noopener">
-                NASA POWER
-              </a>{" "}
-              y ERA5 (Open-Meteo), aeropuertos de{" "}
-              <a href="https://ourairports.com/" rel="noopener">
-                OurAirports
-              </a>{" "}
-              y mapa y servicios de ©{" "}
-              <a href="https://www.openstreetmap.org/copyright" rel="noopener">
-                colaboradores de OpenStreetMap
-              </a>
-              .
-            </span>
-            <span>
-              Sin comisiones ni alojamientos patrocinados: reservas directamente con el parque, el lodge o el operador.
-            </span>
+          <div className="pie-in">
+            <div className="pie-marca">
+              <p className="marca">Safaris</p>
+              <p>
+                Dónde y cuándo ver cada animal, en todo el mundo. Sin comisiones ni alojamientos patrocinados: reservas
+                directamente con el parque, el lodge o el operador.
+              </p>
+            </div>
+            <nav aria-label="Mapa del sitio">
+              <p>Descubrir</p>
+              <Link href="/">Parques</Link>
+              <Link href="/especies">Especies</Link>
+              <Link href="/migracion">La gran migración</Link>
+            </nav>
+            <nav aria-label="Organizar">
+              <p>Organizar</p>
+              <Link href="/planificar">Planificar la ruta</Link>
+              <Link href="/presupuesto">Presupuesto</Link>
+              <Link href="/comparar">Comparar parques</Link>
+              <Link href="/viaje">Mi viaje</Link>
+              <Link href="/guia">Guía</Link>
+            </nav>
+            <div className="pie-datos">
+              <p>Datos abiertos</p>
+              <span>
+                <a href="https://www.gbif.org/" rel="noopener">
+                  GBIF
+                </a>
+                ,{" "}
+                <a href="https://www.inaturalist.org/" rel="noopener">
+                  iNaturalist
+                </a>
+                ,{" "}
+                <a href="https://www.wikidata.org/" rel="noopener">
+                  Wikidata
+                </a>{" "}
+                y Wikimedia Commons (fotos con autor y licencia),{" "}
+                <a href="https://power.larc.nasa.gov/" rel="noopener">
+                  NASA POWER
+                </a>
+                , ERA5 (Open-Meteo),{" "}
+                <a href="https://ourairports.com/" rel="noopener">
+                  OurAirports
+                </a>{" "}
+                y ©{" "}
+                <a href="https://www.openstreetmap.org/copyright" rel="noopener">
+                  colaboradores de OpenStreetMap
+                </a>
+                .
+              </span>
+            </div>
           </div>
         </footer>
       </body>

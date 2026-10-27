@@ -1,19 +1,18 @@
-/* Rasante — estilos. Tarjetas claras sobre papel cálido, esquinas suaves, cifras estrechas y dos colores con
-   sentido para un fotógrafo: la hora dorada para las notas (gris → arena → ámbar → bronce dorado) y la hora azul
-   para la interfaz (acento, foco, selección).
-   Tres temas: claro, oscuro y "noche" (solo rojos sobre negro, para no perder la adaptación a la oscuridad). */
+/* Safaris — tokens. Una guía de campo: papel arena, tinta casi negra, verde acacia como acento y ocre para lo
+   destacado. Titulares en serif editorial (Newsreader), texto en grotesca (Archivo). Claro u oscuro según el
+   sistema. */
 
 :root {
-  --fondo: #f3f2ee;
-  --superficie: #ffffff;
-  --superficie-2: #ebe9e3;
-  --borde: #e0ddd5;
-  --texto: #141413;
-  --texto-2: #57554f;
-  --texto-3: #8c8981;
-  --acento: #2c4f8a;
-  --acento-suave: #dfe6f2;
-  --enlace: #141413;
+  --fondo: #f3eee4;
+  --superficie: #fbf8f2;
+  --superficie-2: #ebe4d6;
+  --borde: #ddd3c2;
+  --texto: #1d1a15;
+  --texto-2: #574f43;
+  --texto-3: #8a7f6e;
+  --acento: #2f4b36;
+  --acento-suave: #dfe6da;
+  --enlace: #1d1a15;
   --sol: #e3a020;
   --luna: #5d6b88;
   --vl: #6a4fb3;
@@ -28,11 +27,11 @@
   --mezcla-nota: 84%; /* las cifras se oscurecen con la tinta: el ámbar sobre papel claro se lee mal */
   --tinte-regular: color-mix(in srgb, var(--n-regular) 30%, var(--fondo));
   --tinte-buena: color-mix(in srgb, var(--n-buena) 38%, var(--fondo));
-  --sombra: 0 1px 2px rgb(30 28 20 / 5%), 0 6px 20px rgb(30 28 20 / 6%);
-  --sombra-alta: 0 2px 6px rgb(30 28 20 / 8%), 0 16px 40px rgb(30 28 20 / 12%);
-  --radio: 18px;
-  --radio-m: 12px;
-  --radio-s: 8px;
+  --sombra: none;
+  --sombra-alta: 0 12px 32px rgb(40 30 15 / 14%);
+  --radio: 10px;
+  --radio-m: 8px;
+  --radio-s: 5px;
   --cristal: color-mix(in srgb, var(--fondo) 78%, transparent);
   --mapa-filtro: grayscale(0.85) contrast(0.92) brightness(1.04);
   --foto-filtro: none;
@@ -49,28 +48,34 @@
   --t-blanco: #fff;
   --c-flora: #c4568a;
   --c-otono: #c8611c;
-  --c-fauna: #6f7a2e;
+  --c-fauna: #2f4b36;
+  --ocre: #b46a22;
+  --ocre-suave: #f1dfc6;
   --c-paisaje: #2f7f86;
   --c-agua: #2f6fb0;
   --c-nieve: #7d8fa8;
   --f-cuerpo: var(--f-ui), "Helvetica Neue", Arial, sans-serif;
+  --f-titulo: var(--f-serif), Georgia, "Times New Roman", serif;
   --f-datos: var(--f-mono), ui-monospace, "SF Mono", Menlo, monospace;
-  --ancho: 1440px;
+  --ancho: 1240px;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-tema="claro"]):not([data-tema="noche"]) {
-    --fondo: #0e0f11;
-    --superficie: #17181c;
-    --superficie-2: #212227;
-    --borde: #2a2b31;
-    --texto: #ecebe6;
-    --texto-2: #a9a7a0;
-    --texto-3: #6f6d67;
-    --acento: #8fb1ea;
-    --acento-suave: #1b2740;
-    --enlace: #ecebe6;
+  :root:not([data-tema="claro"]) {
+    --fondo: #13120f;
+    --superficie: #1b1915;
+    --superficie-2: #26231d;
+    --borde: #34302a;
+    --texto: #eee8dc;
+    --texto-2: #b5ac9c;
+    --texto-3: #7d7465;
+    --acento: #9cc0a2;
+    --acento-suave: #1f2c22;
+    --enlace: #eee8dc;
+    --c-fauna: #9cc0a2;
+    --ocre: #e0a25c;
+    --ocre-suave: #3a2a16;
     --sol: #f2a541;
     --luna: #a9b7d6;
     --vl: #a98bf0;
@@ -82,7 +87,7 @@
     --n-floja: #5c5b57;
     --n-top-texto: #1a1305;
     --mezcla-nota: 100%;
-    --sombra: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+    --sombra: none;
     --sombra-alta: 0 2px 8px rgb(0 0 0 / 45%), 0 18px 44px rgb(0 0 0 / 45%);
     --tinte-regular: color-mix(in srgb, var(--n-regular) 30%, var(--fondo));
     --tinte-buena: color-mix(in srgb, var(--n-buena) 34%, var(--fondo));
@@ -96,16 +101,19 @@
 }
 
 :root[data-tema="oscuro"] {
-  --fondo: #0e0f11;
-  --superficie: #17181c;
-  --superficie-2: #212227;
-  --borde: #2a2b31;
-  --texto: #ecebe6;
-  --texto-2: #a9a7a0;
-  --texto-3: #6f6d67;
-  --acento: #8fb1ea;
-  --acento-suave: #1b2740;
-  --enlace: #ecebe6;
+  --fondo: #13120f;
+  --superficie: #1b1915;
+  --superficie-2: #26231d;
+  --borde: #34302a;
+  --texto: #eee8dc;
+  --texto-2: #b5ac9c;
+  --texto-3: #7d7465;
+  --acento: #9cc0a2;
+  --acento-suave: #1f2c22;
+  --enlace: #eee8dc;
+  --c-fauna: #9cc0a2;
+  --ocre: #e0a25c;
+  --ocre-suave: #3a2a16;
   --sol: #f2a541;
   --luna: #a9b7d6;
   --vl: #a98bf0;
@@ -117,7 +125,7 @@
   --n-floja: #5c5b57;
   --n-top-texto: #1a1305;
   --mezcla-nota: 100%;
-  --sombra: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+  --sombra: none;
   --sombra-alta: 0 2px 8px rgb(0 0 0 / 45%), 0 18px 44px rgb(0 0 0 / 45%);
   --tinte-regular: color-mix(in srgb, var(--n-regular) 30%, var(--fondo));
   --tinte-buena: color-mix(in srgb, var(--n-buena) 34%, var(--fondo));
@@ -126,55 +134,5 @@
   --cielo-azul: #2c4370;
   --cielo-dorada: #b8772e;
   --cielo-dia: #3b4a55;
-  color-scheme: dark;
-}
-
-/* Modo noche: solo rojos, sin blancos ni azules, brillo mínimo */
-:root[data-tema="noche"] {
-  --mezcla-nota: 100%;
-  --sombra: none;
-  --sombra-alta: none;
-  --n-top-texto: #000;
-  --t-gr: #ff3b30;
-  --t-pr: #c9251e;
-  --t-sl: #8a0f0b;
-  --t-santiago: #b0201b;
-  --t-natural: #861612;
-  --t-otro: #5c0a07;
-  --t-blanco: #3a0606;
-  --c-flora: #e0302a;
-  --c-otono: #c9251e;
-  --c-fauna: #a01a14;
-  --c-paisaje: #861612;
-  --c-agua: #b0201b;
-  --c-nieve: #6a0c08;
-  --fondo: #000;
-  --superficie: #070000;
-  --superficie-2: #140000;
-  --borde: #3a0606;
-  --texto: #e0302a;
-  --texto-2: #b0201b;
-  --texto-3: #7a1410;
-  --acento: #ff3b30;
-  --acento-suave: #2a0303;
-  --enlace: #ff4d42;
-  --sol: #ff3b30;
-  --luna: #c9251e;
-  --vl: #e0302a;
-  --suma: #e0302a;
-  --resta: #861612;
-  --n-top: #ff3b30;
-  --n-buena: #c9251e;
-  --n-regular: #861612;
-  --n-floja: #4a0905;
-  --n-texto: #000;
-  --tinte-regular: #1c0201;
-  --tinte-buena: #3a0505;
-  --mapa-filtro: grayscale(1) invert(1) brightness(0.55) sepia(1) saturate(6) hue-rotate(-50deg) brightness(0.6);
-  --foto-filtro: grayscale(1) sepia(1) saturate(5) hue-rotate(-50deg) brightness(0.45);
-  --cielo-noche: #0c0000;
-  --cielo-azul: #2a0303;
-  --cielo-dorada: #6a0c08;
-  --cielo-dia: #3a0606;
   color-scheme: dark;
 }

@@ -2,6 +2,7 @@
 // «Mi viaje»: el plan en una sola página (itinerario con traslados, qué verás en cada parque el mes del viaje,
 // presupuesto y lista de cosas por hacer), guardado en este navegador, compartible por enlace e imprimible.
 import Link from "next/link";
+import { IconoAvion, IconoCoche } from "@/ui/Iconos";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MESES } from "@/lib/fechas";
@@ -213,9 +214,10 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
             <li key={e.id}>
               {tramos[i] && (
                 <p className={`traslado ${tramos[i]!.volar ? "volar" : ""}`}>
+                  {tramos[i]!.volar ? <IconoAvion /> : <IconoCoche />}
                   {tramos[i]!.volar
-                    ? `✈ Vuelo interno o avioneta (por carretera serían ~${tramos[i]!.km.toLocaleString("es-ES")} km)`
-                    : `🚙 ~${tramos[i]!.km.toLocaleString("es-ES")} km por carretera, unas ${tramos[i]!.horas} h`}
+                    ? `Vuelo interno o avioneta (por carretera serían ~${tramos[i]!.km.toLocaleString("es-ES")} km)`
+                    : `~${tramos[i]!.km.toLocaleString("es-ES")} km por carretera, unas ${tramos[i]!.horas} h`}
                 </p>
               )}
               <div className="etapa">

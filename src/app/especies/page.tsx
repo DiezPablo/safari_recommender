@@ -13,7 +13,7 @@ export default function PaginaEspeciesSafari() {
     <main className="calendario fauna safaris">
       <header className="titular">
         <p className="rotulo">{especies.length} especies · iNaturalist</p>
-        <h1>Qué quieres ver</h1>
+        <h1>Animales y dónde verlos</h1>
         <nav className="pestanas" aria-label="Safaris">
           <Link href="/">Parques</Link>
           <Link href="/especies" aria-current="page">

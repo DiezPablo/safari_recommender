@@ -130,6 +130,51 @@ export const IconoFlecha = (p: P) => (
   </Svg>
 );
 
+export const IconoBrujula = (p: P) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m15.5 8.5-2 5-5 2 2-5z" />
+  </Svg>
+);
+export const IconoCoche = (p: P) => (
+  <Svg {...p}>
+    <path d="M4 16V11l2-5h9l3 5h2v5" />
+    <path d="M4 11h16" />
+    <circle cx="7.5" cy="16.5" r="1.8" />
+    <circle cx="16.5" cy="16.5" r="1.8" />
+  </Svg>
+);
+export const IconoAvion = (p: P) => (
+  <Svg {...p}>
+    <path d="M10.5 3.5 12 3l1.5.5v6l7 4v2l-7-2v4.5l2 1.5v1.5l-3.5-1-3.5 1V19.5l2-1.5V13l-7 2v-2l7-4z" />
+  </Svg>
+);
+export const IconoMarcador = (p: P) => (
+  <Svg {...p}>
+    <path d="M7 3.5h10v17l-5-3.5-5 3.5z" />
+  </Svg>
+);
+export const IconoManada = (p: P) => (
+  <Svg {...p}>
+    <path d="M3 17c2-4 4-4 6 0M9 17c2-4 4-4 6 0M15 17c2-4 4-4 6 0" />
+    <path d="M2 20h20" />
+  </Svg>
+);
+export const IconoLibro = (p: P) => (
+  <Svg {...p}>
+    <path d="M4 5.5c3-1.5 5.5-1.5 8 0v14c-2.5-1.5-5-1.5-8 0zM12 5.5c2.5-1.5 5-1.5 8 0v14c-3-1.5-5.5-1.5-8 0z" />
+  </Svg>
+);
+export const IconoHuella = (p: P) => (
+  <Svg {...p}>
+    <ellipse cx="12" cy="15.5" rx="4" ry="3.5" />
+    <circle cx="6.5" cy="9.5" r="1.6" />
+    <circle cx="10" cy="6.5" r="1.6" />
+    <circle cx="14" cy="6.5" r="1.6" />
+    <circle cx="17.5" cy="9.5" r="1.6" />
+  </Svg>
+);
+
 /** Sol rasante sobre el horizonte. */
 export function Logo({ size = 22 }: { size?: number }) {
   return (

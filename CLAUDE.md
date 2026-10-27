@@ -16,8 +16,9 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
   - `comun` (caché `CacheJson`, sesión HTTP, `escribir_json` sin NaN), `commons` (Wikimedia Commons), `gbif`.
 - Web Next.js 16 (App Router) en `src/`: `app/` (`/`, `/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`, `/comparar`, `/migracion`,
   `/planificar`, `/presupuesto`, `/viaje`),
-  `features/safaris` (componentes, modelo, `datos.ts` solo servidor), `ui/` (mapa Leaflet, iconos, tema), `lib/`
-  (`datos.ts`: lee `datos/*.gz`; `almacen.ts`; `fechas.ts`), `estilos/`.
+  `features/safaris` (componentes, modelo, `datos.ts` solo servidor), `ui/` (mapa Leaflet, iconos, `Navegacion.tsx`, `FotoGrande.tsx`), `lib/`
+  (`datos.ts`: lee `datos/*.gz`; `almacen.ts`; `fechas.ts`), `estilos/` (01-11 heredados de Rasante; el aspecto
+  propio, guía de campo editorial, en `01-tokens.css` y `12-diseno.css`, que va la última).
   Los 65 destacados se generan en el build; el resto, al visitarlos (ISR) con los `.gz` en la función.
 - Workflows: `pruebas.yml` (ruff + pytest; tsc + ESLint + Prettier + build + Playwright), `safaris.yml`
   (semanal), `safaris_mundo.yml` (diario, incremental con caché), `recientes.yml` (dos veces al día).

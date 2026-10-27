@@ -279,3 +279,23 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   Sudáfrica 6 → Sabi Sand 3 + Kruger 3; Botsuana 8 (septiembre) → Makgadikgadi 2, Moremi 4, Chobe 2; Uganda 6
   (julio) → Bwindi 3, Reina Isabel 2, Kibale 1; Ruanda 4 → Volcanes 3 + Akagera 1; Zambia 7 → Bajo Zambeze 3 +
   Luangwa Sur 4.
+
+## 27-10-2026 · Nuevo aspecto y navegación
+
+- El aspecto venía de Rasante y tenía los tics de una web generada: tarjetas blancas con sombra en cada bloque,
+  rótulos en mayúsculas espaciadas encima de cada sección, botones en píldora, emojis como iconos, menú y
+  pestañas duplicados, tres temas (uno rojo para astrofotografía) y las fotos casi sin protagonismo.
+- Dirección: una guía de campo editorial. Titulares en serif (Newsreader) y texto en Archivo; papel arena, tinta
+  casi negra, verde acacia de acento y ocre para lo activo y los avisos; claro u oscuro según el sistema (fuera el
+  selector y el tema rojo). Las secciones se separan con una línea fina y aire; solo son tarjetas las cosas que se
+  «cogen» (un parque, una etapa, un resultado). Botón principal rectangular en tinta y el resto, enlaces.
+  Iconos SVG propios en vez de emojis.
+- Fotografía: portada con foto a sangre (la de un destacado en buena época ese mes) y el titular encima; ficha
+  de parque con la foto a sangre y el título encima. Las miniaturas de Commons se piden a 1280 px y, si el
+  original es más pequeño, se vuelve a la de 960 (`src/ui/FotoGrande.tsx`; a 1920 px Commons no responde).
+- Navegación (`src/ui/Navegacion.tsx`): un menú (Descubrir, Especies, Migración, Planificar, Guía) con la
+  sección activa subrayada en ocre y «Mi viaje» a la derecha con el número de parques guardados; en el móvil,
+  barra inferior con iconos (Descubrir, Especies, Planificar, Mi viaje). Comparar y Presupuesto se abren desde
+  donde se usan y desde el pie, que es ahora un mapa del sitio.
+- Implementación: los tokens nuevos están en `01-tokens.css` (mismos nombres, así que lo heredado cambia solo) y
+  `12-diseno.css`, cargado el último, redefine las piezas base. Se quitaron las reglas viejas de cabecera y móvil.

@@ -61,7 +61,7 @@ test("safaris: buscar por mes y especie, ficha de parque y especie", async ({ pa
   );
   const errores = vigilar(page);
   await page.goto("/");
-  await expect(page.locator("h1")).toHaveText("Safaris por el mundo");
+  await expect(page.locator("h1")).toHaveText("Dónde y cuándo ver cada animal");
   await expect(page.locator(".rejilla-safaris li").first()).toBeVisible();
   // en agosto, el Masái Mara (la migración) está en temporada
   await page.getByLabel("Cuándo vas").selectOption("7");
