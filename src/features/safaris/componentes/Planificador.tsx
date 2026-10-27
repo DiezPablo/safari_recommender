@@ -51,6 +51,7 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
   const ritmo = RITMOS.includes(parametros.get("ritmo") as Ritmo) ? (parametros.get("ritmo") as Ritmo) : "normal";
   const elegidas = (parametros.get("ver") ?? "").split(",").filter(Boolean).map(Number);
+  const conNinos = parametros.get("ninos") === "1";
 
   if (!datos || !indice) return <p className="nota-pie">Cargando parques…</p>;
 
@@ -67,6 +68,7 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
     mes,
     especies: elegidas,
     ritmo,
+    conNinos,
   };
   const plan = planificar({ ...entrada, noches });
   const masNoches =
@@ -133,6 +135,14 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
               </option>
             ))}
           </select>
+        </label>
+        <label className="campo campo-casilla">
+          <input
+            type="checkbox"
+            checked={conNinos}
+            onChange={(e) => actualizar({ ninos: e.target.checked ? "1" : null })}
+          />
+          <span>Viajo con niños</span>
         </label>
       </section>
       {opcionesEspecies.length > 0 && (

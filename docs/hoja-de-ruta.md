@@ -51,7 +51,7 @@ Siguientes, por valor:
 2. ~~«Mi viaje»~~ (hecho, `/viaje`): un plan guardado (ruta, noches, presupuesto, ofertas, lista) compartible por URL e imprimible.
 3. ~~Lista práctica por país~~ (hecho para 9 países) (visado, fiebre amarilla y malaria, moneda, enchufe, equipaje de avioneta,
    propinas, seguridad).
-4. Perfiles: con niños, ~~por tu cuenta en coche~~ (hecho), fotografía, a pie, presupuesto
+4. Perfiles: ~~con niños~~ (hecho), ~~por tu cuenta en coche~~ (hecho), fotografía, a pie, presupuesto
    bajo.
 5. Temporada verde: ahorro frente a lo que se ve.
 6. Avisos sin cuentas (RSS o `.ics`), lista personal de animales vistos, páginas de respuesta en español con

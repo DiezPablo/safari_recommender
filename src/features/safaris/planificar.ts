@@ -14,6 +14,7 @@
 import { buenaEpoca, esDestino, type FilaIndice } from "@/features/safaris/modelo";
 import { CIUDADES, ENTRADA_PAIS, estanciaDe, type Estancia } from "@/features/safaris/estancias";
 import { distanciaKm } from "@/lib/fechas";
+import { EDAD_MINIMA, SIN_MALARIA } from "@/features/safaris/familias";
 
 export type Ritmo = "tranquilo" | "normal" | "intenso";
 
@@ -168,6 +169,7 @@ export function planificar({
   mes,
   especies,
   ritmo,
+  conNinos = false,
 }: {
   indice: FilaIndice[];
   /** clave de especie → id del parque → facilidad 0-1 */
@@ -180,11 +182,15 @@ export function planificar({
   mes: number;
   especies: number[];
   ritmo: Ritmo;
+  /** fuera los parques con edad mínima (gorilas, chimpancés) y más peso a los que no tienen malaria */
+  conNinos?: boolean;
 }): Plan {
   noches = Math.max(1, noches);
   kmhActual = KMH_PAIS[pais] ?? KMH;
   costeVueloActual = COSTE_VUELO_PAIS[pais] ?? COSTE_VUELO;
-  const delPais = indice.filter((f) => f.p === pais && f.s > 0 && esDestino(f));
+  const delPais = indice.filter(
+    (f) => f.p === pais && f.s > 0 && esDestino(f) && !(conNinos && EDAD_MINIMA[f.id] && EDAD_MINIMA[f.id].edad > 6),
+  );
   // fuera los contenedores (reservas de la biosfera, áreas de conservación que engloban parques): si dentro hay
   // un parque más pequeño con interés parecido, el destino real es ese. Los destacados del catálogo nunca: el
   // Masái Mara o Kruger contienen reservas privadas pequeñas (Olare Orok, Sabi Sand) y son el destino
@@ -207,6 +213,7 @@ export function planificar({
       f.id,
       (f.d ? (estanciaDe(f.id, f.r).valor ?? 0.8) : PESO_NO_DESTACADO * Math.sqrt(f.s / maxS)) *
         (epoca(f) === false ? 0.6 : 1) *
+        (conNinos && SIN_MALARIA.has(f.id) ? 1.5 : 1) *
         factorMes(frecuencia[f.id], mes),
     ]),
   );
@@ -308,6 +315,16 @@ export function planificar({
     avisos.push(
       `Hay ${Math.round(horasCarretera)} h de carretera desde y hasta ${nombreEntrada}: volar en avioneta la ida o la vuelta ahorra casi un día (y cuesta más).`,
     );
+  if (conNinos) {
+    const conMalaria = etapas.filter((e) => !SIN_MALARIA.has(e.f.id));
+    avisos.push(
+      `Con niños: sin actividades con edad mínima (gorilas desde 15 años, chimpancés desde 12-13) y antes los parques sin malaria${
+        conMalaria.length
+          ? `; ${conMalaria.map((e) => e.f.n).join(", ")} sí tiene${conMalaria.length > 1 ? "n" : ""} riesgo: consúltalo en un centro de vacunación internacional`
+          : ""
+      }. Muchos lodges solo aceptan niños desde los 6-12 años: pregúntalo al reservar.`,
+    );
+  }
   const fuera = etapas.filter((e) => e.enEpoca === false);
   if (fuera.length) avisos.push(`${fuera.map((e) => e.f.n).join(", ")}: no es su mejor época ese mes.`);
   return { etapas, entrada, avisos, sinCubrir: especies.filter((k) => !cubiertas.has(k)), horasCarretera };

@@ -304,3 +304,14 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   de parque y especie enteras como enlace con foto 3:2 (o un rayado discreto si no hay foto), temporada como punto
   de color, guía con índice lateral fijo y texto a 72 caracteres. Modo oscuro revisado en portada, ficha,
   planificador y guía.
+
+## 27-10-2026 · Safari con niños
+
+- `src/features/safaris/familias.ts`: destacados sin malaria (sur de Sudáfrica —Addo, Pilanesberg, Madikwe,
+  Kgalagadi— y los de fuera de los trópicos) y edades mínimas (gorilas 15 años en Uganda y Ruanda, coinciden
+  todas las fuentes; chimpancés de Kibale 12-13 según la fuente, se dice así). Fuentes consultadas el
+  27-10-2026: Duma Explorer, Roadtrip Africa y Trek Africa Tours.
+- En la ficha (resumen «Con niños»), en el buscador («Con niños pequeños», solo sin malaria y sin edad mínima) y
+  en el planificador («Viajo con niños»: fuera los parques con edad mínima, ×1,5 a los sin malaria y un aviso
+  con los que sí tienen riesgo y las edades de los lodges). Sudáfrica 6 noches con niños → Madikwe 4 +
+  Pilanesberg 2 (sin niños, Sabi Sand + Kruger); Uganda → Murchison + Kidepo, sin gorilas.

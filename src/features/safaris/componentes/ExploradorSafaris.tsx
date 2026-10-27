@@ -8,6 +8,7 @@ import MapaEventos from "@/ui/mapa/MapaEventos";
 import { MESES } from "@/lib/fechas";
 import { buscarZonas } from "@/features/safaris/zonas";
 import { POR_TU_CUENTA } from "@/features/safaris/paises";
+import { EDAD_MINIMA, SIN_MALARIA } from "@/features/safaris/familias";
 import { esDestino, buenaEpoca, CONTINENTES, type FilaIndice } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
@@ -41,6 +42,8 @@ export default function ExploradorSafaris({
   const todos = parametros.get("todos") === "1";
   // por tu cuenta: «turismo» (coche normal) o «4x4» (también los de 4×4); solo destacados tienen el dato
   const cuenta = parametros.get("cuenta") ?? "";
+  // con niños: solo destacados sin malaria y sin edad mínima
+  const ninos = parametros.get("ninos") === "1";
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
 
   useEffect(() => {
@@ -63,13 +66,14 @@ export default function ExploradorSafaris({
           (clave === null || f.e.includes(clave)) &&
           (!soloEpoca || epoca) &&
           (todos || !!q || esDestino(f)) &&
+          (!ninos || (SIN_MALARIA.has(f.id) && !EDAD_MINIMA[f.id])) &&
           (!cuenta ||
             POR_TU_CUENTA[f.id]?.nivel === "turismo" ||
             (cuenta === "4x4" && POR_TU_CUENTA[f.id]?.nivel === "4x4")) &&
           (!q || deZonas.has(f.id) || normal(`${f.n} ${f.p ?? ""}`).includes(q)),
       )
       .sort((a, b) => Number(b.epoca) - Number(a.epoca) || Number(b.f.d) - Number(a.f.d) || b.f.s - a.f.s);
-  }, [filas, texto, continente, especie, soloEpoca, mes, todos, cuenta]);
+  }, [filas, texto, continente, especie, soloEpoca, mes, todos, cuenta, ninos]);
   const ocultos = (filas ?? []).filter((f) => !esDestino(f)).length;
 
   const zonas = buscarZonas(texto);
@@ -150,6 +154,14 @@ export default function ExploradorSafaris({
               onChange={(e) => actualizar({ epoca: e.target.checked ? "1" : null })}
             />
             <span>Solo los que están en buena época</span>
+          </label>
+          <label className="campo campo-casilla">
+            <input
+              type="checkbox"
+              checked={ninos}
+              onChange={(e) => actualizar({ ninos: e.target.checked ? "1" : null })}
+            />
+            <span>Con niños pequeños (sin malaria)</span>
           </label>
           {ocultos > 0 && (
             <label className="campo campo-casilla">

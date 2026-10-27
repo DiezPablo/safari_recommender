@@ -5,6 +5,7 @@ import { MESES, rangoMeses } from "@/lib/fechas";
 import { asociacionDe } from "@/features/safaris/asociaciones";
 import type { ParqueMundo } from "@/features/safaris/modelo";
 import { TASAS } from "@/features/safaris/tasas";
+import { EDAD_MINIMA, SIN_MALARIA, textoFamilias } from "@/features/safaris/familias";
 
 export interface EspecieResumen {
   nombre: string;
@@ -125,6 +126,15 @@ export default function ResumenParque({
             {asociacion && <small>Con licencia: {asociacion.sigla}</small>}
           </dd>
         </div>
+        {textoFamilias(id) && (
+          <div>
+            <dt>Con niños</dt>
+            <dd>
+              {SIN_MALARIA.has(id) ? "Sin malaria" : `Desde ${EDAD_MINIMA[id]?.edad} años`}
+              <small>{textoFamilias(id)}</small>
+            </dd>
+          </div>
+        )}
       </dl>
     </section>
   );

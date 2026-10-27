@@ -341,3 +341,21 @@ test("lo práctico del país y safari por tu cuenta", async ({ page }) => {
   await expect(page.locator(".rejilla-safaris li", { hasText: "Kruger" })).toBeVisible();
   await expect(page.locator(".rejilla-safaris li", { hasText: "Serengeti" })).toHaveCount(0);
 });
+
+test("con niños: parques sin malaria y sin edad mínima", async ({ page }) => {
+  await page.goto("/planificar?pais=Uganda&noches=6&mes=6");
+  const etapas = page.locator(".etapas-plan .etapa");
+  const hay = await etapas
+    .first()
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await expect(etapas.filter({ hasText: "Bwindi" })).toHaveCount(1);
+  await page.getByLabel("Viajo con niños").check();
+  await expect(page).toHaveURL(/ninos=1/);
+  await expect(etapas.filter({ hasText: "Bwindi" })).toHaveCount(0);
+  await expect(page.locator(".avisos-plan")).toContainText("Con niños");
+  await page.goto("/parque/addo");
+  await expect(page.getByRole("region", { name: "Resumen" })).toContainText("Sin malaria");
+});
