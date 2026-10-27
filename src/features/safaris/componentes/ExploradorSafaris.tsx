@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { MESES } from "@/lib/fechas";
 import { buscarZonas } from "@/features/safaris/zonas";
+import { POR_TU_CUENTA } from "@/features/safaris/paises";
 import { esDestino, buenaEpoca, CONTINENTES, type FilaIndice } from "@/features/safaris/modelo";
 import { useParametrosUrl } from "@/lib/almacen";
 
@@ -38,6 +39,8 @@ export default function ExploradorSafaris({
   const soloEpoca = parametros.get("epoca") === "1";
   // por defecto solo destinos de fauna (niveles A y B); buscando por nombre, todos
   const todos = parametros.get("todos") === "1";
+  // por tu cuenta: «turismo» (coche normal) o «4x4» (también los de 4×4); solo destacados tienen el dato
+  const cuenta = parametros.get("cuenta") ?? "";
   const mes = parametros.has("mes") ? Number(parametros.get("mes")) : mesHoy;
 
   useEffect(() => {
@@ -60,10 +63,13 @@ export default function ExploradorSafaris({
           (clave === null || f.e.includes(clave)) &&
           (!soloEpoca || epoca) &&
           (todos || !!q || esDestino(f)) &&
+          (!cuenta ||
+            POR_TU_CUENTA[f.id]?.nivel === "turismo" ||
+            (cuenta === "4x4" && POR_TU_CUENTA[f.id]?.nivel === "4x4")) &&
           (!q || deZonas.has(f.id) || normal(`${f.n} ${f.p ?? ""}`).includes(q)),
       )
       .sort((a, b) => Number(b.epoca) - Number(a.epoca) || Number(b.f.d) - Number(a.f.d) || b.f.s - a.f.s);
-  }, [filas, texto, continente, especie, soloEpoca, mes, todos]);
+  }, [filas, texto, continente, especie, soloEpoca, mes, todos, cuenta]);
   const ocultos = (filas ?? []).filter((f) => !esDestino(f)).length;
 
   const zonas = buscarZonas(texto);
@@ -127,6 +133,14 @@ export default function ExploradorSafaris({
                   {e.nombre}
                 </option>
               ))}
+            </select>
+          </label>
+          <label className="campo">
+            <span className="rotulo">Cómo quieres ir</span>
+            <select value={cuenta} onChange={(e) => actualizar({ cuenta: e.target.value || null })}>
+              <option value="">Con guía o por tu cuenta</option>
+              <option value="turismo">Por tu cuenta en coche normal</option>
+              <option value="4x4">Por tu cuenta, también en 4×4</option>
             </select>
           </label>
           <label className="campo campo-casilla">

@@ -231,3 +231,22 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - Planificador y presupuesto tienen «Guardar en Mi viaje». Claves y utilidades compartidas en
   `src/features/safaris/viaje.ts`. En el menú del móvil, «Mi viaje» sustituye a «Presupuesto» (se llega desde
   el plan).
+
+## 27-10-2026 · Lo práctico por país y safari por tu cuenta
+
+- `src/features/safaris/paises.ts`: para pasaporte español en Kenia, Tanzania, Uganda, Ruanda, Sudáfrica,
+  Botsuana, Namibia, Zambia y Zimbabue: visado (con su web oficial), fiebre amarilla, malaria, enchufes (IEC),
+  dinero, conducción, zona horaria y propinas. Solo lo que coincidía en varias fuentes; donde no (Namibia y
+  Zambia para pasaporte español), se dice que hay que comprobarlo. Fuentes consultadas el 27-10-2026: eTA de
+  Kenia (etakenya.go.ke y guías que coinciden en ~30 USD), cambio de visados de Namibia de abril de 2025 (avisos
+  de las embajadas en Suecia y Finlandia, 1600 NAD), tasas de visado de Zambia de 2026 (zambiatourism.com:
+  50 USD, KAZA UniVisa 50 USD), certificado de fiebre amarilla obligatorio en Uganda desde 2024 (citizen.digital),
+  malaria estacional en el sur (SANParks, wanda.be), programa «La salud también viaja» de Sanidad. Revisar al
+  menos una vez al año.
+- Se ve en «Antes de ir» de cada ficha, en la lista de Mi viaje (visado y salud de cada país del plan, adaptador
+  solo si hace falta) y en la guía («País a país»).
+- Safari por tu cuenta (`POR_TU_CUENTA`, 20 destacados): coche normal (Kruger, Etosha, Addo, Pilanesberg,
+  Hluhluwe-iMfolozi, Kgalagadi), 4×4 con experiencia (Chobe, Moremi, Makgadikgadi, Kalahari Central, Hwange, Mana
+  Pools, Akagera, Murchison, Reina Isabel) o con guía (reservas privadas y África oriental). Con las horas de
+  amanecer y anochecer del mes en la hora local del parque (las puertas abren y cierran con la luz). Filtro
+  «Cómo quieres ir» en el buscador.

@@ -1911,3 +1911,28 @@ textarea.solicitud {
     box-shadow: none;
   }
 }
+
+/* Por tu cuenta */
+.por-tu-cuenta {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--c-fauna);
+  background: var(--superficie-2);
+  border-radius: 0 var(--radio-m) var(--radio-m) 0;
+}
+.por-tu-cuenta h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+.por-tu-cuenta p {
+  margin: 4px 0;
+}
+.lista-viaje .detalle-lista {
+  display: block;
+  color: var(--texto-2);
+  margin-top: 2px;
+}
+.tabla-paises td {
+  min-width: 12em;
+  font-size: 0.85rem;
+}

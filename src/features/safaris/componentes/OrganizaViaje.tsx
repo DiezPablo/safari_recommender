@@ -2,6 +2,8 @@
 // OurAirports), puertas de entrada, pueblos, operadores y alojamientos (OpenStreetMap), y enlaces oficiales.
 import Link from "next/link";
 import { asociacionDe } from "@/features/safaris/asociaciones";
+import { practicoDe } from "@/features/safaris/paises";
+import { ItemsPais, PorTuCuenta } from "./PracticoPais";
 import { enlaceResenas, type LugarOsm, type Pais, type ParqueMundo, urlWeb } from "@/features/safaris/modelo";
 
 const EXTERIORES = "https://www.exteriores.gob.es/";
@@ -98,7 +100,8 @@ export default function OrganizaViaje({
         <div>
           <h3>Antes de ir</h3>
           <ul className="lista-organiza">
-            {pais?.nombre && (
+            {pais?.nombre && practicoDe(pais.nombre) && <ItemsPais pais={pais.nombre} x={practicoDe(pais.nombre)!} />}
+            {pais?.nombre && !practicoDe(pais.nombre) && (
               <li>
                 <b>Visado, salud y seguridad:</b>{" "}
                 <a href={EXTERIORES} target="_blank" rel="noopener">
@@ -145,6 +148,7 @@ export default function OrganizaViaje({
               </li>
             )}
           </ul>
+          <PorTuCuenta id={p.id} lat={p.lat} lon={p.lon} zona={practicoDe(pais?.nombre)?.zona} />
         </div>
       </div>
       <EmpresasParaOrganizarlo p={p} pais={pais} />

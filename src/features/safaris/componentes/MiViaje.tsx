@@ -23,6 +23,7 @@ import {
   viajeDeUrl,
   VISADO,
 } from "@/features/safaris/viaje";
+import { practicoDe, SANIDAD } from "@/features/safaris/paises";
 import BuscadorParques from "./BuscadorParques";
 
 const MAX_ESPECIES = 8;
@@ -104,31 +105,41 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
 
   const lista: [string, React.ReactNode][] = [
     ["pasaporte", "Pasaporte con al menos 6 meses de validez y dos páginas en blanco."],
-    [
-      "visado",
-      <>
-        Visado:{" "}
-        {paises.map((p, i) => (
-          <span key={p}>
-            {i > 0 && " · "}
-            <a href={VISADO[p] ?? EXTERIORES} target="_blank" rel="noopener">
-              {p} ↗
+    ...paises.map(
+      (p) =>
+        [
+          `visado-${p}`,
+          <>
+            Visado de {p}: {practicoDe(p)?.visado.texto ?? "consulta los requisitos."}{" "}
+            <a href={practicoDe(p)?.visado.url ?? VISADO[p] ?? EXTERIORES} target="_blank" rel="noopener">
+              Web oficial ↗
             </a>
-          </span>
-        ))}{" "}
-        (webs oficiales).
-      </>,
-    ],
+          </>,
+        ] as [string, React.ReactNode],
+    ),
     [
       "salud",
       <>
-        Vacunas y malaria: cita en un centro de vacunación internacional 4-8 semanas antes (
-        <a href={EXTERIORES} target="_blank" rel="noopener">
-          recomendaciones de Exteriores ↗
-        </a>
-        ).
+        Vacunas y malaria: cita en un{" "}
+        <a href={SANIDAD} target="_blank" rel="noopener">
+          centro de vacunación internacional ↗
+        </a>{" "}
+        4-8 semanas antes.
+        {paises
+          .filter((p) => practicoDe(p))
+          .map((p) => (
+            <small key={p} className="detalle-lista">
+              <b>{p}.</b> Fiebre amarilla: {practicoDe(p)!.fiebreAmarilla} Malaria: {practicoDe(p)!.malaria}
+            </small>
+          ))}
       </>,
     ],
+    ...(() => {
+      const tipos = [...new Set(paises.flatMap((p) => practicoDe(p)?.enchufes ?? []))];
+      return tipos.length && !paises.every((p) => practicoDe(p)?.enchufes.includes("C"))
+        ? [["enchufe", `Adaptador de enchufe (tipo ${tipos.join(", ")}).`] as [string, React.ReactNode]]
+        : [];
+    })(),
     ["seguro", "Seguro de viaje con evacuación médica (en los parques el hospital puede estar a horas)."],
     [
       "presupuestos",

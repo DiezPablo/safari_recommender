@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cargarSafaris } from "@/features/safaris/datos";
+import {
+  EXTERIORES,
+  POR_TU_CUENTA,
+  PRACTICO,
+  REVISADO,
+  SANIDAD,
+  TEXTO_POR_TU_CUENTA,
+  type PorTuCuenta,
+} from "@/features/safaris/paises";
 
 export const metadata: Metadata = {
   title: "Cómo organizar un safari",
@@ -7,7 +17,10 @@ export const metadata: Metadata = {
     "Tipos de safari, cuándo ir, presupuesto, cómo elegir operador y lodge, salud, ética y equipo de fotografía.",
 };
 
+const NIVELES: PorTuCuenta[] = ["turismo", "4x4", "guia"];
+
 export default function PaginaGuiaSafari() {
+  const nombre = new Map((cargarSafaris()?.parques ?? []).map((p) => [p.id, p.nombre]));
   return (
     <main className="calendario safaris guia-safari">
       <header className="titular">
@@ -201,6 +214,76 @@ export default function PaginaGuiaSafari() {
           <li>Ropa de colores neutros, prismáticos y baterías y tarjetas de sobra (no siempre hay enchufe).</li>
           <li>Las mejores horas son las primeras y últimas del día: coinciden con la luz y con la actividad animal.</li>
         </ul>
+      </section>
+      <section className="seccion" id="paises">
+        <h2>8. País a país</h2>
+        <p className="nota-pie">
+          Para pasaporte español, revisado el {REVISADO}. Visados y requisitos sanitarios cambian a menudo: confírmalo
+          en la web oficial,{" "}
+          <a href={EXTERIORES} target="_blank" rel="noopener">
+            Exteriores ↗
+          </a>{" "}
+          y un{" "}
+          <a href={SANIDAD} target="_blank" rel="noopener">
+            centro de vacunación internacional ↗
+          </a>
+          .
+        </p>
+        <div className="tabla-desliza">
+          <table className="tabla-comparar tabla-paises">
+            <thead>
+              <tr>
+                <th scope="col">País</th>
+                <th scope="col">Visado</th>
+                <th scope="col">Fiebre amarilla</th>
+                <th scope="col">Malaria</th>
+                <th scope="col">Enchufes</th>
+                <th scope="col">Conducción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(PRACTICO).map(([pais, x]) => (
+                <tr key={pais}>
+                  <th scope="row">{pais}</th>
+                  <td>
+                    {x.visado.texto}{" "}
+                    <a href={x.visado.url} target="_blank" rel="noopener">
+                      ↗
+                    </a>
+                  </td>
+                  <td>{x.fiebreAmarilla}</td>
+                  <td>{x.malaria}</td>
+                  <td>{x.enchufes.join(", ")}</td>
+                  <td>por la {x.conduce}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="seccion" id="por-tu-cuenta">
+        <h2>9. Safari por tu cuenta</h2>
+        <p>
+          En el sur de África se puede alquilar un coche e ir por libre: más barato y a tu ritmo, pero sin guía que
+          encuentre los animales (los tablones de avistamientos de los campamentos ayudan). Respeta los horarios de
+          puertas, no salgas del coche fuera de las zonas señaladas y reserva los campamentos con antelación. En África
+          oriental lo normal es ir con guía-conductor.
+        </p>
+        {NIVELES.map((n) => (
+          <p key={n}>
+            <b>{TEXTO_POR_TU_CUENTA[n]}:</b>{" "}
+            {Object.entries(POR_TU_CUENTA)
+              .filter(([, t]) => t.nivel === n)
+              .map(([id], i) => (
+                <span key={id}>
+                  {i > 0 && ", "}
+                  <Link href={`/parque/${id}#organiza`}>{nombre.get(id) ?? id}</Link>
+                </span>
+              ))}
+            .
+          </p>
+        ))}
       </section>
     </main>
   );

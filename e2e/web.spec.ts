@@ -314,3 +314,24 @@ test("mi viaje: guardar desde el planificador, lista que se recuerda y enlace co
   await otro.close();
   expect(errores).toEqual([]);
 });
+
+test("lo práctico del país y safari por tu cuenta", async ({ page }) => {
+  await page.goto("/parque/etosha");
+  const organiza = page.locator("#organiza");
+  await expect(organiza).toContainText("Visado");
+  await expect(organiza).toContainText("Enchufes: tipo D, M (lleva adaptador)");
+  await expect(organiza).toContainText("Por tu cuenta en coche normal");
+  await expect(organiza).toContainText(/amanece hacia las \d\d:\d\d/);
+  await page.goto("/guia#paises");
+  await expect(page.locator(".tabla-paises tbody tr")).toHaveCount(9);
+  await page.goto("/?cuenta=turismo");
+  const lista = page.locator(".rejilla-safaris li");
+  const hay = await lista
+    .first()
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin índice");
+  await expect(page.locator(".rejilla-safaris li", { hasText: "Kruger" })).toBeVisible();
+  await expect(page.locator(".rejilla-safaris li", { hasText: "Serengeti" })).toHaveCount(0);
+});
