@@ -8,6 +8,7 @@ import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/Complem
 import BotonComparar from "@/features/safaris/componentes/BotonComparar";
 import ResumenParque from "@/features/safaris/componentes/ResumenParque";
 import FrecuenciaAvistamientos from "@/features/safaris/componentes/FrecuenciaAvistamientos";
+import IndiceFicha from "@/features/safaris/componentes/IndiceFicha";
 import FichaMundo from "@/features/safaris/componentes/FichaMundo";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
@@ -56,6 +57,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: `${p.nombre} (${p.pais}): cuándo ir, qué se ve, tipos de safari, tasas y alojamientos. ${p.consejo}`,
   };
 }
+
+/** alojamientos a la vista; el resto, plegados */
+const VISIBLES = 6;
 
 const GRUPOS: [string, string, number][] = [
   ["Mammalia", "Mamíferos", 15],
@@ -146,6 +150,17 @@ export default async function PaginaParque({ params }: Props) {
         )}
       </header>
 
+      <IndiceFicha
+        secciones={[
+          ["resumen", "Resumen"],
+          ["que-se-ve", "Qué se ve"],
+          ["cuando", "Cuándo ir"],
+          ["mapa", "Mapa"],
+          ["organiza", "Organizar"],
+          ...(alojamientos.length ? ([["dormir", "Dónde dormir"]] as [string, string][]) : []),
+        ]}
+      />
+
       <ResumenParque
         id={p.id}
         epoca={p.meses}
@@ -169,7 +184,7 @@ export default async function PaginaParque({ params }: Props) {
       />
 
       {estrella.length > 0 && (
-        <section className="seccion">
+        <section className="seccion" id="que-se-ve">
           <h2 className="rotulo">Especies estrella</h2>
           <ul className="rejilla-especies rejilla-estrella">
             {estrella.map((e) => {
@@ -214,7 +229,7 @@ export default async function PaginaParque({ params }: Props) {
       />
 
       <div className="ficha-grid">
-        <section className="seccion">
+        <section className="seccion" id="cuando">
           <h2 className="rotulo">Cuándo ir</h2>
           <AnoSafari p={p} mesActual={mesHoy} />
           <p className="nota-pie">
@@ -284,7 +299,7 @@ export default async function PaginaParque({ params }: Props) {
             </li>
           </ul>
         </section>
-        <section className="seccion">
+        <section className="seccion" id="mapa">
           <h2 className="rotulo">Mapa</h2>
           <MapaEventos eventos={puntos} etiqueta={`Mapa de ${p.nombre}`} mundo />
         </section>
@@ -309,10 +324,10 @@ export default async function PaginaParque({ params }: Props) {
       )}
 
       {alojamientos.length > 0 && (
-        <section className="seccion">
+        <section className="seccion" id="dormir">
           <h2 className="rotulo">Dónde dormir</h2>
           <ul className="lista-alojamientos">
-            {alojamientos.map((a) => (
+            {alojamientos.slice(0, VISIBLES).map((a) => (
               <li key={a.osm}>
                 <b>{a.nombre}</b> <small>{a.tipo}</small>
                 <span className="enlaces">
@@ -329,6 +344,29 @@ export default async function PaginaParque({ params }: Props) {
               </li>
             ))}
           </ul>
+          {alojamientos.length > VISIBLES && (
+            <details className="mas-alojamientos">
+              <summary>Ver {alojamientos.length - VISIBLES} más</summary>
+              <ul className="lista-alojamientos">
+                {alojamientos.slice(VISIBLES).map((a) => (
+                  <li key={a.osm}>
+                    <b>{a.nombre}</b> <small>{a.tipo}</small>
+                    <span className="enlaces">
+                      {urlWeb(a.web) && (
+                        <a href={urlWeb(a.web)!} target="_blank" rel="noopener">
+                          Web y reservas ↗
+                        </a>
+                      )}
+                      {a.telefono && <a href={`tel:${a.telefono.split(";")[0]}`}>{a.telefono.split(";")[0]}</a>}
+                      <a href={enlaceResenas(a)} target="_blank" rel="noopener">
+                        Reseñas ↗
+                      </a>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
           <p className="nota-pie">
             Lodges, campamentos y hoteles con nombre en OpenStreetMap dentro del parque o cerca. No cobramos comisión ni
             hay alojamientos patrocinados; las reseñas se abren en Google Maps.

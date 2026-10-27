@@ -8,6 +8,7 @@ import { CincoGrandes, CombinaCon } from "@/features/safaris/componentes/Complem
 import BotonComparar from "./BotonComparar";
 import { nombreEstrella } from "@/features/safaris/datos";
 import ResumenParque from "./ResumenParque";
+import IndiceFicha from "./IndiceFicha";
 import OrganizaViaje from "@/features/safaris/componentes/OrganizaViaje";
 import VistoAhora from "@/features/safaris/componentes/VistoAhora";
 import {
@@ -113,6 +114,16 @@ export default function FichaMundo({
         )}
       </header>
 
+      <IndiceFicha
+        secciones={[
+          ["resumen", "Resumen"],
+          ["que-se-ve", "Qué se ve"],
+          ["cuando", "Cuándo ir"],
+          ["organiza", "Organizar"],
+          ["mapa", "Mapa"],
+        ]}
+      />
+
       <ResumenParque
         id={p.id}
         epoca={epoca}
@@ -132,7 +143,7 @@ export default function FichaMundo({
       />
 
       {estrella.length > 0 && (
-        <section className="seccion">
+        <section className="seccion" id="que-se-ve">
           <h2 className="rotulo">Especies estrella que se ven aquí</h2>
           <p className="enlaces-especies">
             {estrella.map(([k, n]) => {
@@ -152,7 +163,7 @@ export default function FichaMundo({
       )}
 
       <div className="ficha-grid">
-        <section className="seccion">
+        <section className="seccion" id="cuando">
           <h2 className="rotulo">Cuándo ir</h2>
           <div className="ano-safari" role="table" aria-label="El año en el parque">
             <div role="row" className="fila-ano cabecera-ano">
@@ -227,7 +238,7 @@ export default function FichaMundo({
 
       <CombinaCon p={p} mundo={mundo} nombre={p.nombre} />
 
-      <section className="seccion">
+      <section className="seccion" id="mapa">
         <h2 className="rotulo">Mapa</h2>
         <MapaEventos eventos={puntos} etiqueta={`Mapa de ${p.nombre}`} mundo />
       </section>

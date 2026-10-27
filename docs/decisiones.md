@@ -299,3 +299,8 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   donde se usan y desde el pie, que es ahora un mapa del sitio.
 - Implementación: los tokens nuevos están en `01-tokens.css` (mismos nombres, así que lo heredado cambia solo) y
   `12-diseno.css`, cargado el último, redefine las piezas base. Se quitaron las reglas viejas de cabecera y móvil.
+- Retoques (27-10-2026): índice fijo bajo la cabecera en las fichas (Resumen, Qué se ve, Cuándo ir, Mapa,
+  Organizar, Dónde dormir; anclas, sin JavaScript), «Dónde dormir» con 6 a la vista y el resto plegado, tarjetas
+  de parque y especie enteras como enlace con foto 3:2 (o un rayado discreto si no hay foto), temporada como punto
+  de color, guía con índice lateral fijo y texto a 72 caracteres. Modo oscuro revisado en portada, ficha,
+  planificador y guía.

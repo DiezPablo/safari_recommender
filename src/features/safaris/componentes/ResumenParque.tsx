@@ -43,7 +43,7 @@ export default function ResumenParque({
   const operadores = (mundo?.operadores_ciudad?.lista.length ?? 0) + (mundo?.osm?.operadores.length ?? 0);
   const asociacion = asociacionDe(pais);
   return (
-    <section className="seccion resumen-parque" aria-label="Resumen">
+    <section className="seccion resumen-parque" aria-label="Resumen" id="resumen">
       <dl>
         <div>
           <dt>Cuándo ir</dt>

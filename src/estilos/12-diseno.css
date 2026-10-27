@@ -792,3 +792,171 @@ body {
   background: var(--texto);
   border-color: var(--texto);
 }
+
+/* Índice fijo de la ficha */
+.indice-ficha {
+  position: sticky;
+  top: 64px;
+  z-index: 900;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 max(20px, calc(50vw - var(--ancho) / 2 + 20px));
+  background: var(--fondo);
+  border-bottom: 1px solid var(--borde);
+}
+.indice-ficha a {
+  flex: none;
+  padding: 14px 0 12px;
+  font: 500 0.92rem var(--f-cuerpo);
+  color: var(--texto-2);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.indice-ficha a:hover {
+  color: var(--texto);
+  border-bottom-color: var(--ocre);
+}
+@media (max-width: 900px) {
+  .indice-ficha {
+    top: 56px;
+    gap: 18px;
+  }
+}
+.ficha [id] {
+  scroll-margin-top: 130px;
+}
+.mas-alojamientos summary {
+  cursor: pointer;
+  margin-top: 12px;
+  font: 600 0.95rem var(--f-cuerpo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.mas-alojamientos[open] summary {
+  margin-bottom: 12px;
+}
+
+/* Tarjetas de parque y de especie: toda la tarjeta es el enlace, foto horizontal, nombre en serif */
+.tarjeta-especie {
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.tarjeta-especie img,
+.tarjeta-especie .sin-foto {
+  aspect-ratio: 3 / 2;
+  border-radius: 0;
+}
+.tarjeta-especie .sin-foto {
+  background:
+    repeating-linear-gradient(-35deg, transparent 0 9px, color-mix(in srgb, var(--borde) 70%, transparent) 9px 10px),
+    var(--superficie-2);
+}
+.tarjeta-especie > div {
+  padding: 12px 14px 14px;
+  gap: 4px;
+}
+.tarjeta-especie h3 {
+  font: 500 1.2rem/1.2 var(--f-titulo);
+}
+.tarjeta-especie h3 a {
+  color: var(--texto);
+  text-decoration: none;
+}
+.tarjeta-especie h3 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.tarjeta-especie:hover h3 a {
+  text-decoration: underline;
+}
+.tarjeta-especie .meta,
+.tarjeta-especie p {
+  font-size: 0.86rem;
+}
+.en-temporada,
+.fuera-temporada {
+  font: 500 0.86rem var(--f-cuerpo);
+}
+.en-temporada::before,
+.fuera-temporada::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: var(--acento);
+}
+.en-temporada {
+  color: var(--acento);
+}
+.fuera-temporada {
+  color: var(--texto-3);
+}
+.fuera-temporada::before {
+  background: var(--texto-3);
+  opacity: 0.6;
+}
+.resultados-que-ver .en-temporada::before,
+.resumen-parque .en-temporada::before,
+.resumen-parque .fuera-temporada::before {
+  display: none;
+}
+
+/* Guía: índice lateral fijo y texto a un ancho de lectura */
+.guia-cuerpo {
+  display: grid;
+  gap: 0 56px;
+}
+@media (min-width: 1000px) {
+  .guia-cuerpo {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+.guia-indice {
+  display: none;
+}
+@media (min-width: 1000px) {
+  .guia-indice {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    position: sticky;
+    top: 96px;
+    padding-top: 32px;
+  }
+}
+.guia-indice p {
+  font: 600 0.82rem var(--f-cuerpo);
+  color: var(--texto-3);
+}
+.guia-indice a {
+  color: var(--texto-2);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.guia-indice a:hover {
+  color: var(--texto);
+}
+.guia-texto > .seccion:not(#paises) {
+  max-width: 72ch;
+}
+.guia-texto .seccion ul {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 8px;
+}
+.guia-texto .seccion li::marker {
+  color: var(--ocre);
+}
+.guia-safari [id] {
+  scroll-margin-top: 90px;
+}
