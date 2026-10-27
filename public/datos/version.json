@@ -1,7 +1,9 @@
 {
- "actualizado": "2026-10-26T23:47:50+00:00",
+ "actualizado": "2026-10-27T06:14:07+00:00",
  "ficheros": {
   "safaris_recientes.json": "0970a3ead2b0",
-  "safaris.json": "9d414e71665c"
+  "safaris.json": "9d414e71665c",
+  "safaris_mundo.json": "fe10124adc32",
+  "safaris_indice.json": "9cbb0dc542ee"
  }
 }
