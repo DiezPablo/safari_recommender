@@ -374,3 +374,6 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   operadores, oficiales y agencias españolas mira robots.txt, si sus condiciones mencionan el acceso
   automatizado y si una página de safari del sitemap trae el precio en JSON-LD. Pocas peticiones, 2 s entre
   ellas, sin guardar contenido. Resultado en `docs/sondeo-precios.md`.
+- Resultado del sondeo (`docs/sondeo-precios.md`): solo 2 de 44 webs tienen precio estructurado y una lo
+  prohíbe; 4 prohíben el acceso automatizado; 19 solo lo tienen en texto libre. Se descarta el raspador (paso
+  «c») y se sigue con las tarifas oficiales copiadas a mano una vez al año.
