@@ -3,6 +3,9 @@
 // 26-10-2026 con la fuente indicada; cambian a menudo, así que la web muestra la fecha y el enlace. Solo los
 // parques con una cifra que coincide en varias fuentes o es oficial (Ruaha no: las fuentes no coinciden).
 
+/** Fecha de la última revisión (la comprueba .github/scripts/revision_datos.py). */
+export const REVISADO_TASAS = "26-10-2026";
+
 export interface Tasa {
   /** por persona y día (24 h) */
   usdDia: number;

@@ -22,7 +22,8 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
   propio, guía de campo editorial, en `01-tokens.css` y `12-diseno.css`, que va la última).
   Los 65 destacados se generan en el build; el resto, al visitarlos (ISR) con los `.gz` en la función.
 - Workflows: `pruebas.yml` (ruff + pytest; tsc + ESLint + Prettier + build + Playwright), `safaris.yml`
-  (semanal), `safaris_mundo.yml` (diario, incremental con caché), `recientes.yml` (dos veces al día).
+  (semanal), `safaris_mundo.yml` (diario, incremental con caché), `recientes.yml` (dos veces al día),
+  `revision.yml` (mensual: incidencia si algún dato escrito a mano tiene más de un año).
   Los datos no van en git: se suben a la release `datos` (`.github/scripts/publicar_release.sh`, que no publica
   si nada cambió) y solo se hace commit de `public/datos/version.json`, que redespliega Vercel. El prebuild los
   descarga comprimidos a `datos/*.gz` (fuera de `public/`; si la release de este repo aún no los tiene, los de

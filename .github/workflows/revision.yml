@@ -1,0 +1,42 @@
+# Una vez al mes: si algún dato escrito a mano (tarifas, tasas, visados, cierres) tiene más de un año, abre una
+# incidencia con la lista de qué revisar (o la actualiza si ya hay una abierta).
+name: Revisión de datos
+
+on:
+  schedule:
+    - cron: "17 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  revisar:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Comprobar fechas
+        id: fechas
+        run: |
+          if python .github/scripts/revision_datos.py > informe.md; then
+            echo "viejo=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "viejo=si" >> "$GITHUB_OUTPUT"
+          fi
+          cat informe.md
+      - name: Abrir o actualizar la incidencia
+        if: steps.fechas.outputs.viejo == 'si'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          titulo="Revisión anual de los datos escritos a mano"
+          n=$(gh issue list --state open --search "in:title \"$titulo\"" --json number --jq '.[0].number')
+          if [ -n "$n" ]; then
+            gh issue edit "$n" --body-file informe.md
+          else
+            gh issue create --title "$titulo" --body-file informe.md
+          fi

@@ -462,3 +462,10 @@ Muestra aleatoria de 40 parques de nivel B. Errores encontrados y arreglo:
   del Departamento de Inmigración); Galápagos: tarjeta de tránsito 20 USD y entrada 200 USD.
 - Sri Lanka (libre de malaria desde 2016) y Kakadu (Australia) entran en `SIN_MALARIA`. El comparador muestra el
   texto de malaria del país en vez de «hay riesgo».
+
+## 28-10-2026 · Revisión anual de lo escrito a mano
+
+- `.github/scripts/revision_datos.py` lee las fechas de revisión de `src/features/safaris` (`REVISADO_*`,
+  `CONSULTADO` y el `revisado` de cada país) y el workflow `revision.yml` (el día 1 de cada mes) abre o
+  actualiza una incidencia «Revisión anual de los datos escritos a mano» si algo tiene más de un año, con la
+  lista y qué mirar en cada caso. Al revisar, se cambia la fecha en el fichero.

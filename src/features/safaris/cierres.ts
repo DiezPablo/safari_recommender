@@ -3,6 +3,9 @@
 // citan (consultadas el 28-10-2026); las fechas exactas cambian algo cada año. Meses 1-12: los que pasan la
 // mayor parte cerrados. Con esto la web no propone un parque cerrado (planificador, «Safari en julio»).
 
+/** Fecha de la última revisión (la comprueba .github/scripts/revision_datos.py). */
+export const REVISADO_CIERRES = "28-10-2026";
+
 export type TipoCierre =
   /** el parque entero */
   | "parque"
