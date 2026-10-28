@@ -79,6 +79,10 @@ WEBS: list[tuple[str, str, str]] = [
 
 CONDICIONES = [
     "/terms",
+    "/en/terms",
+    "/terms-of-service",
+    "/en/terms-and-conditions",
+    "/website-terms",
     "/terms-and-conditions",
     "/terms-of-use",
     "/terms-conditions",
@@ -87,11 +91,12 @@ CONDICIONES = [
     "/condiciones-generales",
 ]
 PROHIBE = re.compile(
-    r"(scrap\w*|crawl\w*|spider|data[- ]mining|automated (?:means|access|systems?|tools?)|robots?\b"
+    r"(scrap\w*|crawlers?|spiders?|data[- ]mining|automated (?:means|access|data|tools?)"
     r"|extracci[oó]n autom[aá]tica|medios automatizados)",
     re.I,
 )
 SAFARI = re.compile(r"safari|tour|itinerar|package|journey|trip|viaje|circuito|rates|tarif", re.I)
+ARCHIVO = re.compile(r"\.(?:jpe?g|png|gif|webp|svg|pdf|mp4|zip)$", re.I)
 PRECIO_TEXTO = re.compile(r"(?:US\$|USD|\$|€|EUR|ZAR|R)\s?\d[\d.,]{2,}|\d[\d.,]{2,}\s?(?:USD|€|EUR)", re.I)
 
 
@@ -204,7 +209,9 @@ def sondear(nombre: str, web: str, tipo: str, s: requests.Session) -> Resultado:
         if urls:
             break
     dominio = urlparse(web).netloc.removeprefix("www.")
-    candidatas = [u for u in urls if dominio in u and SAFARI.search(urlparse(u).path)]
+    candidatas = [
+        u for u in urls if dominio in u and SAFARI.search(urlparse(u).path) and not ARCHIVO.search(urlparse(u).path)
+    ]
     # mejor una página de un safari concreto (ruta con dos o más tramos) que un listado
     candidatas.sort(key=lambda u: -min(3, urlparse(u).path.strip("/").count("/")))
     if not candidatas:
