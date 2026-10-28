@@ -58,7 +58,7 @@ export default function TemporadaVerde({ p, mesActual }: { p: Parque; mesActual:
               role="cell"
               key={i}
               className="barra-ano precio"
-              title={v === null ? `${MESES[i]}: cerrados` : `${MESES[i]}: ${Math.round(v * 100)} % del mes más caro`}
+              title={v === null ? `${MESES[i]}: cerrados o sin tarifa` : `${MESES[i]}: ${Math.round(v * 100)} % del mes más caro`}
             >
               {v === null ? <em>–</em> : <i style={{ height: `${Math.max(6, v * 100)}%` }} />}
             </span>

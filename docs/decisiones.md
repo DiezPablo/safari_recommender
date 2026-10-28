@@ -416,3 +416,7 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   con su nivel del mes (frecuencia de iNaturalist); en el resto, una barra relativa a las observaciones de GBIF
   en vez del número suelto. «Se entra por» (Arusha, Nairobi…) además del aeropuerto internacional más cercano,
   que en el Serengeti es Mwanza y no es por donde entra casi nadie. Visado, malaria, con niños y por tu cuenta.
+- Tarifas ampliadas (28-10-2026): 30 lodges de 17 parques. Nuevos: Camp Savuti (Chobe, hoja oficial), Saruni
+  Samburu, Sand Rivers (Nyerere), Jongomero (Ruaha), Chiawa (Bajo Zambeze) y Musekese (Kafue), estos cinco de
+  tablas de agentes (Chalo Africa, Siyabona, Go2Africa) porque los lodges no publican la suya: se marcan así.
+  `null` en un mes es cerrado o sin tarifa publicada.

@@ -296,7 +296,7 @@ export default async function PaginaComparar({ searchParams }: Props) {
                   const ix = indicePrecios(p.id);
                   const v = ix?.meses[mes];
                   if (!ix) return "Sin tarifas recogidas";
-                  if (v == null) return "Muchos cierran";
+                  if (v == null) return "Cerrados o sin tarifa";
                   return ahorro(ix).ahorro < 0.05
                     ? "Mismo precio todo el año"
                     : `${Math.round(v * 100)} % de su temporada alta`;

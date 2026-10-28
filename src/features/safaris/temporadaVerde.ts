@@ -3,7 +3,7 @@
 // de un agente, marcado). No buscamos el precio exacto, que cambia cada año y depende del agente, sino la
 // proporción entre temporadas, que se mantiene: «en abril cobran un 40 % menos que en agosto». Consultado el
 // 28-10-2026; se revisa una vez al año.
-// Cada mes lleva la tarifa que cubre la mayor parte del mes; null si el lodge está cerrado.
+// Cada mes lleva la tarifa que cubre la mayor parte del mes; null si el lodge está cerrado o no hay tarifa.
 
 export const CONSULTADO = "28-10-2026";
 
@@ -30,6 +30,7 @@ const NS_BW = "https://naturalselection.travel/wp-content/uploads/2025/08/2026-N
 const NS_NA = "https://naturalselection.travel/wp-content/uploads/2025/08/2026-NS-Rack-Namibia.pdf";
 const TT = "https://timeandtideafrica.com/rates";
 const PC = "pensión completa";
+const CHALO = "https://www.chaloafrica.com/accommodation/";
 const TODO = "todo incluido (actividades, bebidas)";
 const TODO_PARQUE = "todo incluido, con la entrada al parque";
 
@@ -297,6 +298,68 @@ export const TARIFAS: TarifaLodge[] = [
     incluye: TODO,
     fuente: TT,
     oficial: true,
+    temporada: "2026",
+  },
+  {
+    lodge: "Saruni Samburu",
+    parque: "samburu",
+    zona: "conservancy de Kalama, junto a la reserva",
+    moneda: "USD",
+    precios: [800, 800, 700, 700, 700, 800, 1000, 1000, 1000, 800, 700, 800],
+    incluye: PC,
+    fuente: `${CHALO}saruni-samburu-kenya/`,
+    oficial: false,
+    temporada: "2026",
+  },
+  {
+    lodge: "Sand Rivers Selous",
+    parque: "nyerere",
+    moneda: "USD",
+    precios: [625, 625, null, null, null, 950, 950, 950, 950, 950, 625, 625],
+    incluye: "por persona y noche (según el agente)",
+    fuente: `${CHALO}sand-rivers-selous-selous-game-reserve-tanzania/`,
+    oficial: false,
+    temporada: "2026-2027",
+  },
+  {
+    lodge: "Jongomero",
+    parque: "ruaha",
+    moneda: "USD",
+    precios: [null, null, null, null, null, 803, 997, 997, 904, 904, 803, 803],
+    incluye: "pensión completa con actividades",
+    fuente: "https://www.siyabona.com/pricing_safari-lodge-jongomero-tented-camp-tanzania.html",
+    oficial: false,
+    temporada: "2026",
+  },
+  {
+    lodge: "Camp Savuti",
+    parque: "chobe",
+    zona: "Savuti",
+    moneda: "USD",
+    precios: [655, 655, 655, 750, 750, 750, 850, 850, 850, 850, 750, 655],
+    incluye: "todo incluido, con la entrada al parque",
+    fuente: "https://sundestinations.co.za/wp-content/uploads/2026/04/Camp-Savuti-2026-Rack-Rates-UPDATE.pdf",
+    oficial: true,
+    temporada: "diciembre 2025 - noviembre 2026",
+  },
+  {
+    lodge: "Chiawa Camp",
+    parque: "bajo-zambeze",
+    moneda: "USD",
+    precios: [null, null, null, null, 1510, 1510, 1995, 1995, 1995, 1995, 1510, null],
+    incluye: TODO,
+    fuente: "https://www.go2africa.com/accommodation/chiawa-camp",
+    oficial: false,
+    temporada: "2026",
+  },
+  {
+    lodge: "Musekese Camp",
+    parque: "kafue",
+    moneda: "USD",
+    precios: [null, null, null, null, 670, 670, 900, 900, 900, 900, 900, null],
+    incluye: "por persona y noche (según el agente)",
+    fuente: `${CHALO}musekese-camp-kafue-national-park-zambia/`,
+    oficial: false,
     temporada: "2026",
   },
   // ---- Zimbabue
