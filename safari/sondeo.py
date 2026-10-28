@@ -287,7 +287,7 @@ def informe(res: list[Resultado], ruta_md: Path) -> None:
     ]
     ruta_md.write_text("\n".join(texto), encoding="utf-8")
     ruta_md.with_suffix(".json").write_text(
-        json.dumps([asdict(r) for r in res], ensure_ascii=False, indent=1), encoding="utf-8"
+        json.dumps([asdict(r) for r in res], ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
 
