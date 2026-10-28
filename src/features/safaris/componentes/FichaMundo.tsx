@@ -2,6 +2,8 @@
 // (Wikidata, GBIF, NASA, OurAirports, OpenStreetMap) y de iNaturalist en directo.
 import Link from "next/link";
 import { Suscribir } from "@/ui/Suscribir";
+import { Frescura } from "@/ui/Frescura";
+import { REVISADO, practicoDe } from "@/features/safaris/paises";
 import FotoGrande from "@/ui/FotoGrande";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { INICIALES, MESES } from "@/lib/fechas";
@@ -250,6 +252,19 @@ export default function FichaMundo({
         <MapaEventos eventos={puntos} etiqueta={`Mapa de ${p.nombre}`} mundo />
       </section>
 
+      <Frescura
+        datos={[
+          {
+            que: "Especies, observaciones por mes, accesos y alojamientos",
+            cuando: mundo.generado,
+            fuente: "GBIF, NASA POWER, OurAirports y OpenStreetMap (cada día, por tandas)",
+          },
+          { que: "Mejor época", cuando: mundo.generado, fuente: "calculada con la lluvia y las observaciones" },
+          ...(practicoDe(p.pais_nombre ?? pais?.nombre)
+            ? [{ que: "Visado, salud y dinero", cuando: REVISADO, fuente: "revisado a mano" }]
+            : []),
+        ]}
+      />
       <p className="nota-pie">
         Fuentes:{" "}
         {Object.values(mundo.fuentes)

@@ -409,3 +409,29 @@ test("páginas de respuesta por mes y país, y mapa del sitio", async ({ page, r
   expect(mapa).toContain("/parque/serengeti");
   expect(await (await request.get("/robots.txt")).text()).toContain("Sitemap:");
 });
+
+test("calendario de un viaje con fecha de llegada", async ({ page, request }) => {
+  const r = await request.get("/viaje.ics?p=tarangire:2,serengeti:3&salida=2030-08-03&nombre=Prueba");
+  expect(r.status()).toBe(200);
+  const t = await r.text();
+  expect(t).toContain("DTSTART;VALUE=DATE:20300803");
+  expect(t).toContain("DTSTART;VALUE=DATE:20300805");
+  expect(t).toContain("Prueba: visado de Tanzania");
+  expect((await request.get("/viaje.ics?p=tarangire:2")).status()).toBe(400);
+  await page.goto("/viaje?p=tarangire:2,serengeti:3&mes=7&personas=2&salida=2030-08-03");
+  await expect(page.locator(".fechas-etapa").first()).toContainText("3 ago");
+  await expect(page.locator(".suscribir a", { hasText: "Descargar .ics" })).toHaveAttribute(
+    "href",
+    /viaje\.ics\?.*salida=2030-08-03/,
+  );
+});
+
+test("comparativa de países en un mes y frescura de los datos", async ({ page }) => {
+  await page.goto("/safari-en/kenia-o-tanzania-en-agosto");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kenia o Tanzania en agosto");
+  await expect(page.locator(".entradilla")).toContainText("migración está en Kenia");
+  await expect(page.locator(".tabla-paises-mes tbody tr")).toHaveCount(8);
+  await page.goto("/parque/serengeti");
+  await page.getByText("De cuándo es cada dato").click();
+  await expect(page.locator(".frescura")).toContainText("Lo visto en el último mes");
+});

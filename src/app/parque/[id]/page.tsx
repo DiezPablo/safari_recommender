@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suscribir } from "@/ui/Suscribir";
+import { Frescura } from "@/ui/Frescura";
+import { TASAS } from "@/features/safaris/tasas";
+import { REVISADO, practicoDe } from "@/features/safaris/paises";
 import FotoGrande from "@/ui/FotoGrande";
 import { notFound } from "next/navigation";
 import MapaEventos from "@/ui/mapa/MapaEventos";
@@ -381,6 +384,31 @@ export default async function PaginaParque({ params }: Props) {
 
       {enMundo && mundo && <CombinaCon p={enMundo} mundo={mundo} nombre={p.nombre} />}
 
+      <Frescura
+        datos={[
+          ...(cargarRecientes()
+            ? [
+                {
+                  que: "Lo visto en el último mes",
+                  cuando: cargarRecientes()!.fecha,
+                  fuente: "iNaturalist (se actualiza dos veces al día)",
+                },
+              ]
+            : []),
+          {
+            que: "Frecuencia por mes, especies, clima y alojamientos",
+            cuando: datos.generado,
+            fuente: "iNaturalist, ERA5 y OpenStreetMap (cada semana)",
+          },
+          { que: "Mejor época, estancia y consejos", cuando: "escrito a mano", fuente: "catálogo de destacados" },
+          ...(TASAS[p.id]
+            ? [{ que: "Tasa de entrada", cuando: TASAS[p.id].vigencia, fuente: "Fuente", url: TASAS[p.id].fuente }]
+            : []),
+          ...(practicoDe(p.pais)
+            ? [{ que: "Visado, salud y dinero", cuando: REVISADO, fuente: "revisado a mano" }]
+            : []),
+        ]}
+      />
       <p className="nota-pie">
         Fuentes: {Object.values(datos.fuentes).join(" · ")}. Respeta las distancias, no pidas al guía salirse de las
         pistas para acercarse a los animales y no hagas actividades con fauna en cautividad (paseos con leones,

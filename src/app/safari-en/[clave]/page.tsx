@@ -23,6 +23,17 @@ import { MIGRACION } from "@/features/safaris/migracion";
 import { practicoDe } from "@/features/safaris/paises";
 import { SIN_MALARIA } from "@/features/safaris/familias";
 import { ItemsPais } from "@/features/safaris/componentes/PracticoPais";
+import {
+  NavMeses,
+  NavPaises,
+  PAREJAS,
+  clavePareja,
+  lista,
+  parejaDe,
+  probables,
+  rango,
+} from "@/features/safaris/respuestas";
+import ComparaPaises from "@/features/safaris/componentes/ComparaPaises";
 import { Suscribir } from "@/ui/Suscribir";
 
 type Props = { params: Promise<{ clave: string }> };
@@ -34,7 +45,8 @@ function mesDe(clave: string): number {
 }
 
 export function generateStaticParams() {
-  return [...MESES, ...paisesDestacados().keys()].map((clave) => ({ clave }));
+  const parejas = PAREJAS.flatMap(([a, b]) => MESES.map((_, i) => clavePareja(a, b, i)));
+  return [...MESES, ...paisesDestacados().keys(), ...parejas].map((clave) => ({ clave }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -46,6 +58,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Los parques del mundo en su mejor época en ${MESES[mes]}, qué animales es más probable ver ese mes y dónde está la gran migración.`,
       alternates: { canonical: `/safari-en/${clave}` },
     };
+  const pareja = parejaDe(clave);
+  if (pareja) {
+    const [a, b, m] = pareja.map((x) => (typeof x === "string" ? paisesDestacados().get(x) : MESES[x]));
+    return {
+      title: `${a} o ${b} en ${m}: ¿dónde ir de safari?`,
+      description: `${a} y ${b} en ${m}, lado a lado: parques en su mejor época, qué animales es probable ver, la lluvia, la migración, visados y malaria.`,
+      alternates: { canonical: `/safari-en/${clave}` },
+    };
+  }
   const pais = paisesDestacados().get(clave);
   if (!pais) return {};
   return {
@@ -53,58 +74,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: `Los mejores parques de ${pais} para ver fauna, su mejor época mes a mes, qué animales se ven y lo práctico (visado, salud, dinero).`,
     alternates: { canonical: `/safari-en/${clave}` },
   };
-}
-
-/** Especies estrella probables ese mes (frecuencia ≥ 20 ‰), de más a menos. */
-function probables(p: Parque, mes: number): string[] {
-  return Object.entries(p.frecuencia ?? {})
-    .map(([t, f]) => ({ e: especiePorTaxon(Number(t)), f: f[mes] ?? 0 }))
-    .filter((x) => x.e && nivelFrecuencia(x.f).clave.includes("probable"))
-    .sort((a, b) => b.f - a.f)
-    .map((x) => nombreTaxon(x.e!).toLowerCase());
-}
-
-function lista(nombres: string[]): string {
-  return nombres.length > 1 ? `${nombres.slice(0, -1).join(", ")} y ${nombres.at(-1)}` : (nombres[0] ?? "");
-}
-
-function rango(meses: number[]): string {
-  // meses seguidos (también de diciembre a enero) como «julio a octubre»
-  const si = new Set(meses);
-  if (si.size === 12) return "todo el año";
-  const tramos: string[] = [];
-  for (let m = 1; m <= 12; m++) {
-    if (!si.has(m) || si.has(m === 1 ? 12 : m - 1)) continue;
-    let n = 1;
-    while (si.has(((m - 1 + n) % 12) + 1)) n++;
-    const fin = ((m - 1 + n - 1) % 12) + 1;
-    tramos.push(n === 1 ? MESES[m - 1] : `${MESES[m - 1]} ${n === 2 ? "y" : "a"} ${MESES[fin - 1]}`);
-  }
-  return lista(tramos);
-}
-
-function NavMeses({ actual }: { actual: number }) {
-  return (
-    <nav className="nav-respuestas" aria-label="Otros meses">
-      {MESES.map((m, i) => (
-        <Link key={m} href={`/safari-en/${m}`} aria-current={i === actual ? "page" : undefined}>
-          {m}
-        </Link>
-      ))}
-    </nav>
-  );
-}
-
-function NavPaises({ actual }: { actual?: string }) {
-  return (
-    <nav className="nav-respuestas" aria-label="Por países">
-      {[...paisesDestacados()].map(([s, n]) => (
-        <Link key={s} href={`/safari-en/${s}`} aria-current={s === actual ? "page" : undefined}>
-          {n}
-        </Link>
-      ))}
-    </nav>
-  );
 }
 
 function PaginaMes({ mes }: { mes: number }) {
@@ -190,6 +159,13 @@ function PaginaMes({ mes }: { mes: number }) {
         </p>
         <NavMeses actual={mes} />
         <NavPaises />
+        <nav className="nav-respuestas" aria-label="Comparativas">
+          {PAREJAS.map(([a, b]) => (
+            <Link key={`${a}-${b}`} href={`/safari-en/${clavePareja(a, b, mes)}`}>
+              {paisesDestacados().get(a)} o {paisesDestacados().get(b)} en {MESES[mes]}
+            </Link>
+          ))}
+        </nav>
       </section>
     </main>
   );
@@ -319,6 +295,13 @@ function PaginaPais({ clave, pais }: { clave: string; pais: string }) {
             Comparar sus parques →
           </Link>
         </p>
+        <nav className="nav-respuestas" aria-label="Comparativas">
+          {PAREJAS.filter((par) => par.includes(clave)).map(([a, b]) => (
+            <Link key={`${a}-${b}`} href={`/safari-en/${clavePareja(a, b, (mejores[0] ?? 8) - 1)}`}>
+              {paisesDestacados().get(a)} o {paisesDestacados().get(b)}
+            </Link>
+          ))}
+        </nav>
         <NavPaises actual={clave} />
         <NavMeses actual={-1} />
       </section>
@@ -330,6 +313,8 @@ export default async function PaginaRespuesta({ params }: Props) {
   const { clave } = await params;
   const mes = mesDe(clave);
   if (mes >= 0) return <PaginaMes mes={mes} />;
+  const pareja = parejaDe(clave);
+  if (pareja) return <ComparaPaises a={pareja[0]} b={pareja[1]} mes={pareja[2]} />;
   const pais = paisesDestacados().get(clave);
   if (!pais) notFound();
   return <PaginaPais clave={clave} pais={pais} />;

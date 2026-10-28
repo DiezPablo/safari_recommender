@@ -10,6 +10,7 @@ const config: NextConfig = {
   outputFileTracingIncludes: {
     "/parque/[id]": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz", "./datos/safaris_recientes.json.gz"],
     "/parque/[id]/calendario.ics": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz"],
+    "/viaje.ics": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz"],
     "/comparar": ["./datos/safaris.json.gz", "./datos/safaris_mundo.json.gz"],
   },
 };

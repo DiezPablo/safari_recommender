@@ -335,3 +335,20 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   B, lo práctico). Índice en `/safari-en`. `sitemap.xml` (destacados, especies, respuestas y parques A/B; los C
   no) y `robots.txt` (fuera `/viaje` y `/comparar`, que dependen de cada uno). `SITIO` en `src/lib/sitio.ts`
   (se puede cambiar con `NEXT_PUBLIC_SITIO`).
+
+## 28-10-2026 · Calendario del viaje, comparativas por mes y frescura de los datos
+
+- Mi viaje admite una fecha de llegada (opcional; fija el mes). Con ella, cada etapa muestra sus días y
+  `/viaje.ics?p=…&salida=…` da el viaje en el calendario: cada parque en sus noches, el día de vuelta y
+  recordatorios que aún no han pasado (alojamientos y permisos de gorilas 6 meses antes, vacunas 8 semanas,
+  visados electrónicos 6 semanas, repasar la lista 1 semana). Todo va en la dirección: no se guarda nada en el
+  servidor. Si se cambia el viaje, hay que volver a añadirlo (la dirección cambia).
+- Comparativas `/safari-en/kenia-o-tanzania-en-agosto` (`ComparaPaises.tsx`, parejas en
+  `src/features/safaris/respuestas.tsx`): 11 parejas que se buscan mucho × 12 meses. Sin veredicto inventado:
+  parques en su mejor época, especies probables (≥ 20 ‰ en algún parque), lluvia media (ERA5), dónde está la
+  migración, visado, malaria, parques sin malaria, por tu cuenta (con los nombres) y por dónde se conduce.
+- «De cuándo es cada dato» (`src/ui/Frescura.tsx`), plegado al pie de las fichas: lo visto en 30 días (fecha de
+  `safaris_recientes.json`), frecuencia/clima/alojamientos (`generado` del catálogo), lo escrito a mano, la tasa
+  (vigencia y fuente) y lo práctico del país (`REVISADO`). En las fichas del mundo, el `generado` de
+  `safaris_mundo.json`.
+- Se corrige el escape de «;» en los `.ics` (salía sin barra).

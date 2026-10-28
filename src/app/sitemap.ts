@@ -3,6 +3,7 @@
 import type { MetadataRoute } from "next";
 import { MESES } from "@/lib/fechas";
 import { SITIO } from "@/lib/sitio";
+import { PAREJAS, clavePareja } from "@/features/safaris/respuestas";
 import { cargarMundo, cargarSafaris, paisesDestacados, slugEspecie } from "@/features/safaris/datos";
 
 export const dynamic = "force-static";
@@ -21,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...["/especies", "/migracion", "/safari-en", "/guia", "/planificar", "/presupuesto"].map((r) => url(r, 0.8)),
     ...MESES.map((m) => url(`/safari-en/${m}`, 0.8)),
     ...[...paisesDestacados().keys()].map((s) => url(`/safari-en/${s}`, 0.8)),
+    ...PAREJAS.flatMap(([a, b]) => MESES.map((_, i) => url(`/safari-en/${clavePareja(a, b, i)}`, 0.6))),
     ...(safaris?.especies ?? []).map((e) => url(`/especie/${slugEspecie(e)}`, 0.7)),
     ...(safaris?.parques ?? []).map((p) => url(`/parque/${p.id}`, 0.7)),
     ...(cargarMundo()?.parques ?? [])

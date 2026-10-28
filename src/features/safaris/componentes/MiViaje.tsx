@@ -13,6 +13,8 @@ import { trasladoEn } from "@/features/safaris/planificar";
 import { calcular, SUPUESTOS_INICIALES, type Supuestos } from "@/features/safaris/presupuesto";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
 import ListaVistos from "@/features/safaris/componentes/ListaVistos";
+import { fechaValida, sumarDias } from "@/features/safaris/calendario";
+import { Suscribir } from "@/ui/Suscribir";
 import {
   CLAVE_LISTA,
   CLAVE_SUPUESTOS,
@@ -90,6 +92,17 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
     v.mes + 1,
     { ...s, vuelos: s.vuelos || vuelos },
   );
+  // con fecha de llegada, los días de cada etapa: «3-5 ago»
+  const corta = (d: string) =>
+    new Date(`${d}T12:00`).toLocaleDateString("es-ES", { day: "numeric", month: "short", weekday: "short" });
+  const fechas = filas.map((_, i) => {
+    if (!v.salida) return null;
+    const desde = sumarDias(
+      v.salida,
+      filas.slice(0, i).reduce((a, x) => a + x.noches, 0),
+    );
+    return `${corta(desde)} → ${corta(sumarDias(desde, filas[i].noches))}`;
+  });
   const paises = [...new Set(filas.map((e) => e.f?.p).filter((p): p is string => !!p))];
 
   // qué verás: lo elegido o, si no, las especies estrella que más se ven en estos parques
@@ -191,13 +204,24 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
           </label>
           <label className="campo">
             <span className="rotulo">Mes</span>
-            <select value={v.mes} onChange={(e) => cambiar({ mes: Number(e.target.value) })}>
+            <select value={v.mes} onChange={(e) => cambiar({ mes: Number(e.target.value), salida: undefined })}>
               {MESES.map((m, i) => (
                 <option key={m} value={i}>
                   {m}
                 </option>
               ))}
             </select>
+          </label>
+          <label className="campo">
+            <span className="rotulo">Llegada (opcional)</span>
+            <input
+              type="date"
+              value={v.salida ?? ""}
+              onChange={(e) => {
+                const salida = fechaValida(e.target.value);
+                cambiar(salida ? { salida, mes: Number(salida.slice(5, 7)) - 1 } : { salida: undefined });
+              }}
+            />
           </label>
           <label className="campo">
             <span className="rotulo">Personas</span>
@@ -235,6 +259,7 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
                   <h3>
                     <Link href={`/parque/${e.id}`}>{e.f?.n ?? e.id}</Link>
                   </h3>
+                  {fechas[i] && <p className="fechas-etapa">{fechas[i]}</p>}
                   <p className="noches-etapa">
                     <CampoNumero
                       valor={e.noches}
@@ -257,6 +282,16 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
             </li>
           ))}
         </ol>
+        {v.salida ? (
+          <Suscribir
+            ruta={urlDeViaje(v, "/viaje.ics")}
+            texto="El viaje en tu calendario: cada parque en sus días y los avisos de antes (reservas, vacunas, visados). Si cambias el viaje, vuelve a añadirlo."
+          />
+        ) : (
+          <p className="nota-pie">
+            Pon la fecha de llegada para ver los días de cada parque y llevarte el viaje al calendario.
+          </p>
+        )}
         <div className="no-imprimir">
           <BuscadorParques
             indice={[...indice.values()]}

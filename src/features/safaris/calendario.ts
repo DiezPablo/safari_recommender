@@ -15,6 +15,29 @@ export interface EventoAnual {
   url?: string;
 }
 
+/** Evento de una fecha concreta (el calendario de un viaje): días enteros desde «inicio» (AAAA-MM-DD). */
+export interface EventoFecha {
+  uid: string;
+  inicio: string;
+  dias: number;
+  titulo: string;
+  descripcion: string;
+  url?: string;
+}
+
+const FECHA = /^\d{4}-\d{2}-\d{2}$/;
+
+export function fechaValida(t: string | null | undefined): string | undefined {
+  return t && FECHA.test(t) && !Number.isNaN(Date.parse(t)) ? t : undefined;
+}
+
+/** «2027-08-03» + 4 días → «2027-08-07» (en UTC, sin horas). */
+export function sumarDias(fecha: string, dias: number): string {
+  const d = new Date(`${fecha}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + dias);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Tramos seguidos de una lista de meses (1-12), uniendo diciembre con enero: [11,12,1,2] → [{11, 4}]. */
 export function tramos(meses: number[]): { mes: number; meses: number }[] {
   const si = new Set(meses);
@@ -59,7 +82,7 @@ export function eventosTemporada(id: string, nombre: string, meses: number[], ur
 }
 
 function escapar(t: string): string {
-  return t.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  return t.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 }
 
 /** Corta las líneas a 75 octetos como pide el RFC 5545 (sin partir caracteres UTF-8). */
@@ -88,7 +111,7 @@ function fecha(anio: number, mes: number, dia = 1): string {
   return `${a}${String(m).padStart(2, "0")}${String(dia).padStart(2, "0")}`;
 }
 
-export function ics(nombre: string, eventos: EventoAnual[], ahora = new Date()): string {
+export function ics(nombre: string, eventos: (EventoAnual | EventoFecha)[], ahora = new Date()): string {
   const anio = ahora.getUTCFullYear();
   const sello = ahora.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const lineas = [
@@ -107,9 +130,16 @@ export function ics(nombre: string, eventos: EventoAnual[], ahora = new Date()):
       "BEGIN:VEVENT",
       `UID:${e.uid}@safaris`,
       `DTSTAMP:${sello}`,
-      `DTSTART;VALUE=DATE:${fecha(anio, e.mes)}`,
-      e.unDia ? `DTEND;VALUE=DATE:${fecha(anio, e.mes, 2)}` : `DTEND;VALUE=DATE:${fecha(anio, e.mes + e.meses)}`,
-      "RRULE:FREQ=YEARLY",
+      ...("inicio" in e
+        ? [
+            `DTSTART;VALUE=DATE:${e.inicio.replace(/-/g, "")}`,
+            `DTEND;VALUE=DATE:${sumarDias(e.inicio, e.dias).replace(/-/g, "")}`,
+          ]
+        : [
+            `DTSTART;VALUE=DATE:${fecha(anio, e.mes)}`,
+            e.unDia ? `DTEND;VALUE=DATE:${fecha(anio, e.mes, 2)}` : `DTEND;VALUE=DATE:${fecha(anio, e.mes + e.meses)}`,
+            "RRULE:FREQ=YEARLY",
+          ]),
       `SUMMARY:${escapar(e.titulo)}`,
       `DESCRIPTION:${escapar(e.url ? `${e.descripcion}\n${e.url}` : e.descripcion)}`,
       ...(e.url ? [`URL:${e.url}`] : []),

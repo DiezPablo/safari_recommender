@@ -3,6 +3,7 @@
 // (localStorage) y se comparte por URL: /viaje?p=serengeti:3,ngorongoro:1&mes=7&personas=2&ver=5219404
 import { escribirAlmacen, useAlmacen } from "@/lib/almacen";
 import { escribirEtapas, leerEtapas } from "@/features/safaris/presupuesto";
+import { fechaValida } from "@/features/safaris/calendario";
 
 export const CLAVE_VIAJE = "safaris.viaje";
 export const CLAVE_LISTA = "safaris.lista";
@@ -28,6 +29,8 @@ export interface Viaje {
   personas: number;
   /** claves de GBIF de lo que se quiere ver */
   ver: number[];
+  /** día de llegada (AAAA-MM-DD), opcional: con él, fechas en el itinerario y calendario del viaje */
+  salida?: string;
 }
 
 export function leerJson<T>(texto: string | null, defecto: T): T {
@@ -47,6 +50,7 @@ export function viajeDeUrl(q: URLSearchParams, mesHoy: number): Viaje | null {
     mes: q.has("mes") ? Number(q.get("mes")) : mesHoy,
     personas: Math.max(1, Number(q.get("personas") ?? 2) || 2),
     ver: (q.get("ver") ?? "").split(",").filter(Boolean).map(Number),
+    salida: fechaValida(q.get("salida")),
   };
 }
 
@@ -58,6 +62,7 @@ export function urlDeViaje(v: Viaje, ruta = "/viaje"): string {
   });
   if (v.ver.length) q.set("ver", v.ver.join(","));
   if (v.nombre && v.nombre !== "Mi safari") q.set("nombre", v.nombre);
+  if (v.salida) q.set("salida", v.salida);
   return `${ruta}?${q.toString().replace(/%2C/g, ",").replace(/%3A/g, ":")}`;
 }
 

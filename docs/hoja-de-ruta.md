@@ -56,5 +56,6 @@ Siguientes, por valor:
 5. Temporada verde: ahorro frente a lo que se ve.
 6. ~~Avisos sin cuentas~~ (hecho: `.ics` por parque y de la migración, RSS de lo visto), ~~lista personal de
    animales vistos~~ (hecho, en Mi viaje), ~~páginas de respuesta en español~~ (hecho: `/safari-en/agosto`,
-   `/safari-en/tanzania`, mapa del sitio) y frescura de cada dato. Pendiente: calendario de un viaje concreto
-   (sus parques juntos) y respuestas «Kenia o Tanzania en agosto».
+   `/safari-en/tanzania`, mapa del sitio), ~~frescura de cada dato~~ (hecho, al pie de las fichas),
+   ~~calendario de un viaje~~ (hecho, con fecha de llegada) y ~~comparativas «Kenia o Tanzania en agosto»~~
+   (hecho, 11 parejas × 12 meses).
