@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suscribir } from "@/ui/Suscribir";
 import { Frescura } from "@/ui/Frescura";
+import TemporadaVerde from "@/features/safaris/componentes/TemporadaVerde";
+import { CONSULTADO as TARIFAS_CONSULTADAS, TARIFAS as TARIFAS_LODGES } from "@/features/safaris/temporadaVerde";
 import { TASAS } from "@/features/safaris/tasas";
 import { REVISADO, practicoDe } from "@/features/safaris/paises";
 import FotoGrande from "@/ui/FotoGrande";
@@ -236,6 +238,7 @@ export default async function PaginaParque({ params }: Props) {
         <section className="seccion" id="cuando">
           <h2 className="rotulo">Cuándo ir</h2>
           <AnoSafari p={p} mesActual={mesHoy} />
+          <TemporadaVerde p={p} mesActual={mesHoy} />
           <p className="nota-pie">
             Temporada: la recomendada para ver fauna. Mamíferos vistos: observaciones de iNaturalist por mes (reflejan
             también cuándo va más gente). Clima: medias de ERA5 de dos años.
@@ -400,6 +403,15 @@ export default async function PaginaParque({ params }: Props) {
             cuando: datos.generado,
             fuente: "iNaturalist, ERA5 y OpenStreetMap (cada semana)",
           },
+          ...(TARIFAS_LODGES.some((t) => t.parque === p.id)
+            ? [
+                {
+                  que: "Precio de los lodges por mes",
+                  cuando: TARIFAS_CONSULTADAS,
+                  fuente: "tarifas publicadas, a mano",
+                },
+              ]
+            : []),
           { que: "Mejor época, estancia y consejos", cuando: "escrito a mano", fuente: "catálogo de destacados" },
           ...(TASAS[p.id]
             ? [{ que: "Tasa de entrada", cuando: TASAS[p.id].vigencia, fuente: "Fuente", url: TASAS[p.id].fuente }]

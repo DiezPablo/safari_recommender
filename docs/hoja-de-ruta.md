@@ -53,7 +53,8 @@ Siguientes, por valor:
    propinas, seguridad).
 4. Perfiles: ~~con niños~~ (hecho), ~~por tu cuenta en coche~~ (hecho), fotografía, a pie, presupuesto
    bajo.
-5. Temporada verde: ahorro frente a lo que se ve.
+5. ~~Temporada verde~~ (hecho: `/temporada-verde` y en las fichas, con 23 lodges de 12 parques): ahorro frente a lo
+   que se ve. Siguiente: usar el índice de precio por mes en el presupuesto.
 6. ~~Avisos sin cuentas~~ (hecho: `.ics` por parque y de la migración, RSS de lo visto), ~~lista personal de
    animales vistos~~ (hecho, en Mi viaje), ~~páginas de respuesta en español~~ (hecho: `/safari-en/agosto`,
    `/safari-en/tanzania`, mapa del sitio), ~~frescura de cada dato~~ (hecho, al pie de las fichas),

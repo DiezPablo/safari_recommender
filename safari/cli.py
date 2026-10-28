@@ -156,7 +156,15 @@ def main(argv: list[str] | None = None) -> None:
         metavar="ENTRADA",
         help="aplica safari.refinar a un safaris_mundo.json (o .gz) ya calculado y escribe --salida e --indice",
     )
+    ap.add_argument(
+        "--sondeo-precios", action="store_true", help="sondeo de webs de operadores (docs/sondeo-precios.md)"
+    )
     a = ap.parse_args(argv)
+    if a.sondeo_precios:
+        from safari import sondeo
+
+        sondeo.main()
+        return
     if a.refinar:
         from safari import mundo_cli
 

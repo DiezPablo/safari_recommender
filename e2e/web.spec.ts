@@ -71,7 +71,7 @@ test("safaris: buscar por mes y especie, ficha de parque y especie", async ({ pa
   await page.screenshot({ path: `${CAPTURAS}/safaris-${info.project.name}.png` });
   await mara.getByRole("link").click();
   await expect(page).toHaveURL(/\/parque\/masai-mara$/);
-  await expect(page.locator(".ano-safari")).toBeVisible();
+  await expect(page.locator(".ano-safari").first()).toBeVisible();
   await expect(page.locator(".visto-ahora")).toBeVisible();
   await expect(page.locator(".mapa-caja[data-listo=si]").first()).toBeVisible();
   await esperarTeselas(page);
@@ -434,4 +434,16 @@ test("comparativa de países en un mes y frescura de los datos", async ({ page }
   await page.goto("/parque/serengeti");
   await page.getByText("De cuándo es cada dato").click();
   await expect(page.locator(".frescura")).toContainText("Lo visto en el último mes");
+});
+
+test("temporada verde: ahorro por parque y en la ficha", async ({ page }) => {
+  await page.goto("/temporada-verde");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Temporada verde");
+  const mara = page.locator(".tabla-verde tr", { hasText: "Masái Mara" });
+  await expect(mara.locator(".ahorro")).toContainText("%");
+  await expect(page.locator(".tabla-verde tr", { hasText: "Sabi Sand" })).toContainText("Mismo precio");
+  await page.goto("/parque/masai-mara");
+  await expect(page.locator(".temporada-verde")).toContainText("menos");
+  await page.locator(".temporada-verde summary").click();
+  await expect(page.locator(".lista-tarifas li", { hasText: "Governors' Camp" })).toBeVisible();
 });

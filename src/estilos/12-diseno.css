@@ -1166,3 +1166,41 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Temporada verde */
+.temporada-verde {
+  margin-top: 1.4rem;
+}
+.temporada-verde h3 {
+  font-family: var(--f-titulo);
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.temporada-verde p {
+  max-width: 68ch;
+}
+.barra-ano.precio i {
+  background: var(--ocre);
+}
+.barra-ano em {
+  align-self: center;
+  margin: auto;
+  color: var(--texto-3);
+  font-style: normal;
+}
+.lista-tarifas {
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+}
+.tabla-verde th[scope="row"] small {
+  display: block;
+  color: var(--texto-2);
+  font-weight: 400;
+}
+.tabla-verde td.ahorro {
+  font-weight: 700;
+  color: var(--acento);
+  white-space: nowrap;
+}

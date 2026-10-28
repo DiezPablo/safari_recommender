@@ -19,7 +19,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const destacados = new Set((safaris?.parques ?? []).map((p) => p.id));
   return [
     url("/", 1),
-    ...["/especies", "/migracion", "/safari-en", "/guia", "/planificar", "/presupuesto"].map((r) => url(r, 0.8)),
+    ...["/especies", "/migracion", "/safari-en", "/temporada-verde", "/guia", "/planificar", "/presupuesto"].map((r) =>
+      url(r, 0.8),
+    ),
     ...MESES.map((m) => url(`/safari-en/${m}`, 0.8)),
     ...[...paisesDestacados().keys()].map((s) => url(`/safari-en/${s}`, 0.8)),
     ...PAREJAS.flatMap(([a, b]) => MESES.map((_, i) => url(`/safari-en/${clavePareja(a, b, i)}`, 0.6))),

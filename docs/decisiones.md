@@ -354,3 +354,23 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - Se corrige el escape de «;» en los `.ics` (salía sin barra).
 - CI: `ubuntu-latest` pasó a Ubuntu 26.04 y Playwright aún no tiene Chromium para él («Playwright does not
   support chromium on ubuntu26.04-x64»). Todos los workflows fijan `ubuntu-24.04` hasta que lo soporte.
+
+## 28-10-2026 · Temporada verde y precios de operadores
+
+- Sin raspar webs: los precios publicados son «desde», con condiciones distintas, y muchas webs lo prohíben. Lo
+  que hace falta para la temporada verde es la proporción entre temporadas, que cambia poco de un año a otro.
+- `src/features/safaris/temporadaVerde.ts`: 23 lodges de 12 destacados, con el precio por persona y noche en
+  doble de cada mes copiado a mano de sus hojas de tarifas 2026 (Governors', Porini, Lemala, Natural
+  Selection Botsuana y Namibia, Time + Tide, Sabi Sabi, Chobe Mopani). Dos (Chobe Game Lodge y Camelthorn, en
+  Hwange) vienen de tablas de agentes y se marcan así. Cada mes, la tarifa que cubre la mayor parte
+  del mes; `null` si cierra. Índice por parque: mediana de (precio del mes / mes más caro) de sus lodges.
+- Web: en la ficha («Cuándo ir»), barras de precio por mes, el ahorro máximo, la lluvia y qué especies estrella
+  se siguen viendo igual o bajan de nivel ese mes (frecuencia de iNaturalist); plegadas, las tarifas con su
+  enlace. `/temporada-verde` compara los 12 parques. Sabi Sand sale «mismo precio todo el año», que también es
+  información útil.
+- Se revisa a mano una vez al año (`CONSULTADO`). Con meses en que cierran algunos lodges, el índice de ese mes
+  sale solo de los abiertos (en Ngorongoro, abril-mayo es Osonjoi solo).
+- `python -m safari --sondeo-precios` (`safari/sondeo.py`): para unas 45 webs de agregadores, lodges,
+  operadores, oficiales y agencias españolas mira robots.txt, si sus condiciones mencionan el acceso
+  automatizado y si una página de safari del sitemap trae el precio en JSON-LD. Pocas peticiones, 2 s entre
+  ellas, sin guardar contenido. Resultado en `docs/sondeo-precios.md`.
