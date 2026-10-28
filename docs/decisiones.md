@@ -315,3 +315,23 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   en el planificador («Viajo con niños»: fuera los parques con edad mínima, ×1,5 a los sin malaria y un aviso
   con los que sí tienen riesgo y las edades de los lodges). Sudáfrica 6 noches con niños → Madikwe 4 +
   Pilanesberg 2 (sin niños, Sabi Sand + Kruger); Uganda → Murchison + Kidepo, sin gorilas.
+
+## 28-10-2026 · Avisos sin cuenta, animales vistos y páginas de respuesta
+
+- Calendarios `.ics` (`src/features/safaris/calendario.ts`): `/parque/<id>/calendario.ics` con la buena época
+  como evento de varios meses que se repite cada año (`RRULE:FREQ=YEARLY`) y un recordatorio de un día dos meses
+  antes («Reserva ya…»); `/migracion.ics` con la zona de cada mes. Se suscriben con `webcal://` (Apple, Outlook,
+  móviles) o Google Calendar (`calendar.google.com/calendar/r?cid=`); `REFRESH-INTERVAL` de 7 días. Los de los
+  destacados se generan en el build y el resto al pedirlos (con los `.gz` en la función). Sin alarmas (`VALARM`):
+  los calendarios suscritos suelen ignorarlas, por eso el aviso es un evento.
+- RSS `/recientes.xml`: las especies estrella vistas en 30 días en cada destacado (solo el parque, nunca dónde).
+  El `guid` es parque + semana: los datos cambian dos veces al día y no queremos 65 entradas nuevas cada vez.
+- Animales vistos (`ListaVistos.tsx`, en Mi viaje): todas las especies estrella de los parques del viaje, para ir
+  marcándolas; se guardan en el navegador (`safaris.vistos`, clave de GBIF → fecha), de todos los viajes, y se
+  cuenta el total.
+- Páginas de respuesta con plantillas (`/safari-en/[clave]`): 12 meses («Safari en agosto: dónde ir»: destacados
+  en su mejor época por continente, lo probable ese mes según la frecuencia, la migración y los de África fuera de
+  temporada) y un país por cada uno con destacados (temporadas de sus parques, especies, otros destinos de nivel
+  B, lo práctico). Índice en `/safari-en`. `sitemap.xml` (destacados, especies, respuestas y parques A/B; los C
+  no) y `robots.txt` (fuera `/viaje` y `/comparar`, que dependen de cada uno). `SITIO` en `src/lib/sitio.ts`
+  (se puede cambiar con `NEXT_PUBLIC_SITIO`).

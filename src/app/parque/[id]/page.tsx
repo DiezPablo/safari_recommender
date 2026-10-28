@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suscribir } from "@/ui/Suscribir";
 import FotoGrande from "@/ui/FotoGrande";
 import { notFound } from "next/navigation";
 import MapaEventos from "@/ui/mapa/MapaEventos";
@@ -236,6 +237,10 @@ export default async function PaginaParque({ params }: Props) {
             Temporada: la recomendada para ver fauna. Mamíferos vistos: observaciones de iNaturalist por mes (reflejan
             también cuándo va más gente). Clima: medias de ERA5 de dos años.
           </p>
+          <Suscribir
+            ruta={`/parque/${p.id}/calendario.ics`}
+            texto="Cada año, la buena época en tu calendario y un aviso dos meses antes para reservar."
+          />
         </section>
         <VistoAhora lat={p.lat} lon={p.lon} radioKm={p.radio_km} respaldo={respaldo} conFicha={conFicha} />
       </div>

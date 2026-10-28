@@ -960,3 +960,154 @@ body {
 .guia-safari [id] {
   scroll-margin-top: 90px;
 }
+
+/* ---- Suscribirse a un calendario (.ics) */
+.suscribir {
+  margin-top: 1.25rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--borde);
+  font-size: 0.92rem;
+}
+.suscribir p {
+  margin: 0;
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+.suscribir-enlaces {
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem !important;
+  margin-top: 0.4rem !important;
+  padding-left: 1.6rem;
+}
+.suscribir-enlaces a {
+  font-weight: 600;
+}
+
+/* ---- Lo que has visto (Mi viaje) */
+.lista-vistos {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+}
+.lista-vistos button {
+  width: 100%;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0 0 0.45rem;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-s);
+  overflow: hidden;
+  cursor: pointer;
+}
+.lista-vistos img,
+.lista-vistos .sin-foto {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  background: var(--borde);
+  filter: grayscale(0.85) opacity(0.75);
+  transition: filter 0.2s;
+}
+.lista-vistos .lista-vistos-nombre,
+.lista-vistos small {
+  padding: 0 0.55rem;
+}
+.lista-vistos .lista-vistos-nombre {
+  font-weight: 600;
+  line-height: 1.2;
+}
+.lista-vistos small {
+  color: var(--texto-2);
+}
+.lista-vistos button.visto {
+  border-color: var(--acento);
+  box-shadow: inset 0 0 0 1px var(--acento);
+}
+.lista-vistos button.visto img {
+  filter: none;
+}
+.lista-vistos button.visto small {
+  color: var(--acento);
+  font-weight: 600;
+}
+@media print {
+  .lista-vistos img {
+    display: none;
+  }
+}
+
+/* ---- Páginas de respuesta (/safari-en/agosto, /safari-en/tanzania) */
+.lista-respuesta {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.1rem;
+}
+.lista-respuesta > li {
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--borde);
+}
+.lista-respuesta h3 {
+  font-family: var(--f-titulo);
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem;
+}
+.lista-respuesta h3 small {
+  font-family: var(--f-cuerpo);
+  font-size: 0.85rem;
+  color: var(--texto-2);
+  margin-left: 0.3rem;
+}
+.lista-respuesta p {
+  margin: 0;
+  max-width: 68ch;
+}
+.lista-respuesta .suscribir {
+  margin-top: 0.5rem;
+  padding-top: 0;
+  border: 0;
+  font-size: 0.85rem;
+}
+.lista-respuesta.compacta {
+  gap: 0.35rem;
+}
+.lista-respuesta.compacta > li {
+  padding: 0;
+  border: 0;
+}
+.nav-respuestas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: 1rem;
+  font-size: 0.92rem;
+}
+.nav-respuestas a[aria-current="page"] {
+  font-weight: 700;
+  color: var(--texto);
+  text-decoration: none;
+}
+.ano-pais .fila-ano {
+  grid-template-columns: minmax(9em, 14em) repeat(12, 1fr);
+}
+.ano-pais .cabecera-ano a {
+  color: inherit;
+  text-decoration: none;
+}
+.columnas-respuesta {
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.5rem 1.5rem !important;
+}
+.columnas-respuesta small {
+  color: var(--texto-2);
+}

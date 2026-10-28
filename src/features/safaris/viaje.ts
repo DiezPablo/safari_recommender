@@ -8,6 +8,8 @@ export const CLAVE_VIAJE = "safaris.viaje";
 export const CLAVE_LISTA = "safaris.lista";
 export const CLAVE_SUPUESTOS = "safaris.supuestos";
 export const CLAVE_OFERTAS = "safaris.ofertas";
+/** animales vistos, de todos los viajes: clave de GBIF → fecha (AAAA-MM-DD) */
+export const CLAVE_VISTOS = "safaris.vistos";
 
 /** Webs oficiales de visado electrónico (para el resto, las recomendaciones de viaje de Exteriores). */
 export const VISADO: Record<string, string> = {

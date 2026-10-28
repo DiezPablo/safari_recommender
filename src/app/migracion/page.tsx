@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suscribir } from "@/ui/Suscribir";
 import { MESES } from "@/lib/fechas";
 import { fechaLocal } from "@/lib/sol";
 import Migracion from "@/features/safaris/componentes/Migracion";
@@ -27,6 +28,10 @@ export default function PaginaMigracion() {
         </p>
       </header>
       <Migracion mesHoy={mesHoy} />
+      <Suscribir
+        ruta="/migracion.ics"
+        texto="La migración en tu calendario: cada mes, dónde suelen estar las manadas."
+      />
       <section className="seccion">
         <h2 className="rotulo">El año completo</h2>
         <table className="tabla-migracion">

@@ -1,6 +1,7 @@
 // Ficha de un parque del mundo que no está en el catálogo escrito a mano: todo sale de datos abiertos
 // (Wikidata, GBIF, NASA, OurAirports, OpenStreetMap) y de iNaturalist en directo.
 import Link from "next/link";
+import { Suscribir } from "@/ui/Suscribir";
 import FotoGrande from "@/ui/FotoGrande";
 import MapaEventos from "@/ui/mapa/MapaEventos";
 import { INICIALES, MESES } from "@/lib/fechas";
@@ -197,6 +198,12 @@ export default function FichaMundo({
             Mamíferos vistos: observaciones de GBIF por mes (reflejan también cuándo va más gente). Lluvia: climatología
             de la NASA (POWER).
           </p>
+          {epoca && epoca.length < 12 && (
+            <Suscribir
+              ruta={`/parque/${p.id}/calendario.ics`}
+              texto="Cada año, la buena época en tu calendario y un aviso dos meses antes para reservar."
+            />
+          )}
         </section>
         <VistoAhora lat={p.lat} lon={p.lon} radioKm={p.radio_km} respaldo={[]} conFicha={[]} />
       </div>

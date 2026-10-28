@@ -321,3 +321,18 @@ export function nivelFrecuencia(permil: number | null | undefined): NivelFrecuen
   if (permil >= 1) return { clave: "dificil", texto: "difícil" };
   return { clave: "raro", texto: "muy raro" };
 }
+
+/** «Sudáfrica» → «sudafrica»: para direcciones como /safari-en/sudafrica. */
+export function slugTexto(t: string): string {
+  return t
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** Países de un parque del catálogo («Sudáfrica y Botsuana» → los dos). */
+export function paisesDe(p: Pick<Parque, "pais">): string[] {
+  return p.pais.split(" y ");
+}

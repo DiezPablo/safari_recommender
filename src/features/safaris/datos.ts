@@ -2,7 +2,7 @@
 import "server-only";
 import { leerDatos } from "@/lib/datos";
 import type { EspecieSafari, Mundo, Parque, ParqueMundo, Recientes, Safaris } from "@/features/safaris/modelo";
-import { capitalizar, slugEspecie } from "@/features/safaris/modelo";
+import { capitalizar, paisesDe, slugEspecie, slugTexto } from "@/features/safaris/modelo";
 
 export * from "@/features/safaris/modelo";
 
@@ -67,4 +67,10 @@ export function nombreEstrella(clave: number | string): string {
   if (c?.nombre) return capitalizar(c.nombre);
   const n = m?.especies[String(clave)]?.n;
   return n ? capitalizar(n) : (cientifico ?? "Especie sin nombre común");
+}
+
+/** Países con parques destacados: slug → nombre (para /safari-en/tanzania). */
+export function paisesDestacados(): Map<string, string> {
+  const nombres = (cargarSafaris()?.parques ?? []).flatMap(paisesDe).sort((a, b) => a.localeCompare(b, "es"));
+  return new Map(nombres.map((n) => [slugTexto(n), n]));
 }

@@ -116,6 +116,10 @@ export default function PaginaSafaris() {
               );
             })}
           </ul>
+          <p className="enlaces">
+            <Link href={`/safari-en/${MESES[mesHoy]}`}>Todos los parques en su mejor época en {MESES[mesHoy]} →</Link>
+            <Link href="/safari-en">Otros meses y países →</Link>
+          </p>
         </section>
       )}
 

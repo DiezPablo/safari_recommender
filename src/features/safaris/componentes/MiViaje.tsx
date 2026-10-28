@@ -12,6 +12,7 @@ import { nivelFrecuencia } from "@/features/safaris/modelo";
 import { trasladoEn } from "@/features/safaris/planificar";
 import { calcular, SUPUESTOS_INICIALES, type Supuestos } from "@/features/safaris/presupuesto";
 import { useDatosNavegador } from "@/features/safaris/useDatosNavegador";
+import ListaVistos from "@/features/safaris/componentes/ListaVistos";
 import {
   CLAVE_LISTA,
   CLAVE_SUPUESTOS,
@@ -103,6 +104,11 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
         )
         .slice(0, MAX_ESPECIES);
   const nombre = new Map(datos.especies.map((e) => [e.clave, e.nombre]));
+  // para la lista de vistos, todas las especies estrella de estos parques
+  const maxFacil = (k: number) => Math.max(...v.etapas.map((e) => facil(k, e.id)));
+  const delViaje = datos.especies
+    .filter((e) => maxFacil(e.clave) > 0 || filas.some((f) => f.f?.e.includes(e.clave)))
+    .sort((a, b) => maxFacil(b.clave) - maxFacil(a.clave));
 
   const lista: [string, React.ReactNode][] = [
     ["pasaporte", "Pasaporte con al menos 6 meses de validez y dos páginas en blanco."],
@@ -301,6 +307,8 @@ export default function MiViaje({ mesHoy }: { mesHoy: number }) {
           </p>
         </section>
       )}
+
+      {delViaje.length > 0 && <ListaVistos especies={delViaje} total={datos.especies.length} />}
 
       <section className="seccion">
         <h2>Antes de ir</h2>

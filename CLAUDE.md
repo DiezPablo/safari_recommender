@@ -15,7 +15,8 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
     `safaris_indice.json`. Incremental: `--minutos` fija el tiempo de peticiones nuevas; después solo caché.
   - `comun` (caché `CacheJson`, sesión HTTP, `escribir_json` sin NaN), `commons` (Wikimedia Commons), `gbif`.
 - Web Next.js 16 (App Router) en `src/`: `app/` (`/`, `/parque/[id]`, `/especies`, `/especie/[slug]`, `/guia`, `/comparar`, `/migracion`,
-  `/planificar`, `/presupuesto`, `/viaje`),
+  `/planificar`, `/presupuesto`, `/viaje`, `/safari-en/[mes|país]`; `.ics` por parque y `/migracion.ics`,
+  `/recientes.xml`, `sitemap.xml`),
   `features/safaris` (componentes, modelo, `datos.ts` solo servidor), `ui/` (mapa Leaflet, iconos, `Navegacion.tsx`, `FotoGrande.tsx`), `lib/`
   (`datos.ts`: lee `datos/*.gz`; `almacen.ts`; `fechas.ts`), `estilos/` (01-11 heredados de Rasante; el aspecto
   propio, guía de campo editorial, en `01-tokens.css` y `12-diseno.css`, que va la última).

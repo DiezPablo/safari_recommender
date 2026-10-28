@@ -359,3 +359,53 @@ test("con niños: parques sin malaria y sin edad mínima", async ({ page }) => {
   await page.goto("/parque/addo");
   await expect(page.getByRole("region", { name: "Resumen" })).toContainText("Sin malaria");
 });
+
+test("avisos sin cuenta: calendarios .ics y RSS", async ({ page, request }) => {
+  const ics = await request.get("/parque/masai-mara/calendario.ics");
+  expect(ics.status()).toBe(200);
+  expect(ics.headers()["content-type"]).toContain("text/calendar");
+  const texto = await ics.text();
+  expect(texto).toContain("BEGIN:VCALENDAR");
+  expect(texto).toContain("RRULE:FREQ=YEARLY");
+  expect(texto).toContain("Reserva ya: Masái Mara");
+  const migracion = await (await request.get("/migracion.ics")).text();
+  expect(migracion.match(/BEGIN:VEVENT/g)).toHaveLength(12);
+  const rss = await request.get("/recientes.xml");
+  expect(rss.status()).toBe(200);
+  expect(await rss.text()).toContain("<rss");
+  await page.goto("/parque/masai-mara");
+  await expect(page.locator("#cuando .suscribir a", { hasText: "Añadir a mi calendario" })).toHaveAttribute(
+    "href",
+    /^webcal:\/\/.*\/parque\/masai-mara\/calendario\.ics$/,
+  );
+});
+
+test("lista de animales vistos en Mi viaje", async ({ page }) => {
+  await page.goto("/viaje?p=tarangire:2,ngorongoro:1,serengeti:3&mes=7&personas=2");
+  const botones = page.locator(".lista-vistos button");
+  const hay = await botones
+    .first()
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de especies");
+  await botones.first().click();
+  await expect(botones.first()).toHaveAttribute("aria-pressed", "true");
+  await page.reload();
+  await expect(page.locator(".lista-vistos button").first()).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#vistos")).toContainText("1 de");
+});
+
+test("páginas de respuesta por mes y país, y mapa del sitio", async ({ page, request }) => {
+  await page.goto("/safari-en/agosto");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Safari en agosto: dónde ir");
+  await expect(page.locator(".lista-respuesta h3", { hasText: "Masái Mara" })).toBeVisible();
+  await expect(page).toHaveTitle(/Safari en agosto/);
+  await page.goto("/safari-en/tanzania");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Safari en Tanzania");
+  await expect(page.getByRole("link", { name: "Serengeti" }).first()).toBeVisible();
+  const mapa = await (await request.get("/sitemap.xml")).text();
+  expect(mapa).toContain("/safari-en/agosto");
+  expect(mapa).toContain("/parque/serengeti");
+  expect(await (await request.get("/robots.txt")).text()).toContain("Sitemap:");
+});

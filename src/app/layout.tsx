@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Mono, Newsreader } from "next/font/google";
 import Link from "next/link";
+import { SITIO } from "@/lib/sitio";
 import { BarraInferior, MenuPrincipal } from "@/ui/Navegacion";
 import "./globals.css";
 
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
   title: { default: "Safaris · dónde y cuándo ver cada animal", template: "%s · Safaris" },
   description:
     "Parques nacionales y reservas de todo el mundo: qué fauna se ve y cuándo, lo visto en el último mes, cómo llegar, alojamientos y operadores. Datos abiertos, sin comisiones.",
+  metadataBase: new URL(SITIO),
+  alternates: { types: { "application/rss+xml": [{ url: "/recientes.xml", title: "Lo visto en el último mes" }] } },
 };
 
 export const viewport: Viewport = {
@@ -55,6 +58,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/">Parques</Link>
               <Link href="/especies">Especies</Link>
               <Link href="/migracion">La gran migración</Link>
+              <Link href="/safari-en">Por meses y países</Link>
+              <a href="/recientes.xml">Lo visto, por RSS</a>
             </nav>
             <nav aria-label="Organizar">
               <p>Organizar</p>
