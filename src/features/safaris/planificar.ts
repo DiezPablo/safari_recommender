@@ -15,6 +15,7 @@ import { buenaEpoca, esDestino, type FilaIndice } from "@/features/safaris/model
 import { CIUDADES, ENTRADA_PAIS, estanciaDe, type Estancia } from "@/features/safaris/estancias";
 import { distanciaKm } from "@/lib/fechas";
 import { EDAD_MINIMA, SIN_MALARIA } from "@/features/safaris/familias";
+import { cierreEn } from "@/features/safaris/cierres";
 
 export type Ritmo = "tranquilo" | "normal" | "intenso";
 
@@ -231,8 +232,18 @@ export function planificar({
   costeVueloActual = COSTE_VUELO_PAIS[pais] ?? COSTE_VUELO;
   volarEntrada = volar;
   maxHorasActual = volar ? MAX_HORAS_CARRETERA_VOLANDO : MAX_HORAS_CARRETERA;
+  // fuera los cerrados ese mes (o con sus zonas principales cerradas, como los de tigres en el monzón)
+  const cerradoMes = (f: FilaIndice) => {
+    const c = cierreEn(f.id, mes + 1);
+    return c !== null && c.tipo !== "campamentos";
+  };
   const delPais = indice.filter(
-    (f) => f.p === pais && f.s > 0 && esDestino(f) && !(conNinos && EDAD_MINIMA[f.id] && EDAD_MINIMA[f.id].edad > 6),
+    (f) =>
+      f.p === pais &&
+      f.s > 0 &&
+      esDestino(f) &&
+      !cerradoMes(f) &&
+      !(conNinos && EDAD_MINIMA[f.id] && EDAD_MINIMA[f.id].edad > 6),
   );
   // fuera los contenedores (reservas de la biosfera, áreas de conservación que engloban parques): si dentro hay
   // un parque más pequeño con interés parecido, el destino real es ese. Los destacados del catálogo nunca: el
@@ -257,6 +268,7 @@ export function planificar({
       (f.d ? (estanciaDe(f.id, f.r).valor ?? 0.8) : PESO_NO_DESTACADO * Math.sqrt(f.s / maxS)) *
         (epoca(f) === false ? 0.6 : 1) *
         (conNinos && SIN_MALARIA.has(f.id) ? 1.5 : 1) *
+        (cierreEn(f.id, mes + 1) ? 0.4 : 1) *
         factorMes(frecuencia[f.id], mes),
     ]),
   );
@@ -372,6 +384,12 @@ export function planificar({
       }. Muchos lodges solo aceptan niños desde los 6-12 años: pregúntalo al reservar.`,
     );
   }
+  for (const e of etapas) {
+    const c = cierreEn(e.f.id, mes + 1);
+    if (c) avisos.push(`${e.f.n}: ${c.texto}`);
+  }
+  const cerrados = indice.filter((f) => f.p === pais && f.d && cerradoMes(f));
+  if (cerrados.length) avisos.push(`Cerrados ese mes (no se proponen): ${cerrados.map((f) => f.n).join(", ")}.`);
   const fuera = etapas.filter((e) => e.enEpoca === false);
   if (fuera.length) avisos.push(`${fuera.map((e) => e.f.n).join(", ")}: no es su mejor época ese mes.`);
   return { etapas, entrada, avisos, sinCubrir: especies.filter((k) => !cubiertas.has(k)), horasCarretera };

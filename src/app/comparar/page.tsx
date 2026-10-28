@@ -21,6 +21,7 @@ import { ahorro, indicePrecios } from "@/features/safaris/temporadaVerde";
 import { POR_TU_CUENTA, practicoDe, TEXTO_POR_TU_CUENTA } from "@/features/safaris/paises";
 import { EDAD_MINIMA, SIN_MALARIA } from "@/features/safaris/familias";
 import { estanciaDe } from "@/features/safaris/estancias";
+import { cierreEn, TEXTO_TIPO_CIERRE } from "@/features/safaris/cierres";
 
 export const metadata: Metadata = {
   title: "Comparar parques",
@@ -123,7 +124,7 @@ export default async function PaginaComparar({ searchParams }: Props) {
       (_, v) => `${v >= 30 ? "30 o más" : v} en OpenStreetMap`,
     ),
   ].filter((x) => x !== null);
-  const enEpoca = parques.filter((p) => epoca(p)?.includes(mes + 1));
+  const enEpoca = parques.filter((p) => epoca(p)?.includes(mes + 1) && !cierreEn(p.id, mes + 1));
 
   const fila = (
     titulo: string,
@@ -217,10 +218,12 @@ export default async function PaginaComparar({ searchParams }: Props) {
                 {fila(
                   `En ${nombreMes}`,
                   (p) => {
+                    const c = cierreEn(p.id, mes + 1);
+                    if (c) return <span title={c.texto}>{TEXTO_TIPO_CIERRE[c.tipo]}</span>;
                     const ep = epoca(p);
                     return ep ? (ep.includes(mes + 1) ? "Buena época" : "Fuera de su mejor época") : "Sin datos";
                   },
-                  (p) => (epoca(p)?.includes(mes + 1) ? "mejor" : "no"),
+                  (p) => (cierreEn(p.id, mes + 1) ? "no" : epoca(p)?.includes(mes + 1) ? "mejor" : "no"),
                 )}
                 {fila("Mejor época", (p) => {
                   const ep = epoca(p);

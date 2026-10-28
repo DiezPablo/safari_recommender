@@ -420,3 +420,16 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   Samburu, Sand Rivers (Nyerere), Jongomero (Ruaha), Chiawa (Bajo Zambeze) y Musekese (Kafue), estos cinco de
   tablas de agentes (Chalo Africa, Siyabona, Go2Africa) porque los lodges no publican la suya: se marcan así.
   `null` en un mes es cerrado o sin tarifa publicada.
+
+## 28-10-2026 · Cierres estacionales
+
+- `src/features/safaris/cierres.ts`, escrito a mano con fuentes (consultadas el 28-10-2026): zonas núcleo de
+  los parques de tigres de la India cerradas del 1 de julio al 30 de septiembre (norma de la NTCA; Kanha,
+  Bandhavgarh, Pench, Tadoba, Ranthambore; Corbett, Bijrani y Dhikala), Kaziranga (mayo-septiembre, crecidas),
+  Yala (bloques 1 y 2 en septiembre, fechas variables), Katmai (Brooks Camp solo de junio a mediados de
+  septiembre), Mana Pools y Gorongosa (enero-marzo) y los campamentos de Ruaha (abril-mayo). Tres tipos: parque,
+  zona (quedan zonas secundarias) y campamentos.
+- Efectos: el planificador no propone parques o zonas cerrados ese mes y los nombra en un aviso (con
+  «campamentos» los deja, a ×0,4, con aviso); la ficha lo dice en «Cuándo ir» y, si es este mes, arriba; el
+  comparador marca «Cerrado» y no lo cuenta como en su mejor época; «Safari en agosto» tiene «Cerrados en
+  agosto». India en agosto: solo queda Sundarbans, fuera de su época, con los avisos.

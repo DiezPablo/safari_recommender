@@ -1263,3 +1263,16 @@ body {
 .comparador .f-texto-raro {
   color: var(--texto-3);
 }
+
+/* ---- Cierres estacionales */
+.aviso-cierre {
+  margin: 0.8rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 3px solid var(--ocre);
+  background: var(--ocre-suave);
+  font-size: 0.92rem;
+  max-width: 70ch;
+}
+.aviso-cierre.ahora {
+  margin: 1rem 0;
+}

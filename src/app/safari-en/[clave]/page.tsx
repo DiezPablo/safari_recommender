@@ -9,6 +9,8 @@ import {
   CONTINENTES,
   cargarMundo,
   cargarSafaris,
+  getParque,
+  getParqueMundo,
   enTemporada,
   especiePorTaxon,
   nombreTaxon,
@@ -17,6 +19,7 @@ import {
   puntuacionAhora,
 } from "@/features/safaris/datos";
 import { MIGRACION } from "@/features/safaris/migracion";
+import { CIERRES, cierreEn, type Cierre } from "@/features/safaris/cierres";
 import { practicoDe } from "@/features/safaris/paises";
 import { SIN_MALARIA } from "@/features/safaris/familias";
 import { ItemsPais } from "@/features/safaris/componentes/PracticoPais";
@@ -80,6 +83,9 @@ function PaginaMes({ mes }: { mes: number }) {
     .sort((a, b) => puntuacionAhora(b, mes) - puntuacionAhora(a, mes));
   const fuera = parques.filter((p) => !enTemporada(p, mes) && p.continente === "África");
   const migracion = MIGRACION.find((z) => z.mes === mes + 1);
+  const cerrados = Object.keys(CIERRES)
+    .map((id) => ({ id, nombre: getParque(id)?.nombre ?? getParqueMundo(id)?.nombre, c: cierreEn(id, mes + 1) }))
+    .filter((x): x is { id: string; nombre: string; c: Cierre } => !!x.nombre && !!x.c);
   const nombreMes = MESES[mes];
   return (
     <main className="calendario safaris respuesta">
@@ -134,6 +140,19 @@ function PaginaMes({ mes }: { mes: number }) {
           </section>
         );
       })}
+
+      {cerrados.length > 0 && (
+        <section className="seccion">
+          <h2 className="rotulo">Cerrados en {nombreMes}</h2>
+          <ul className="lista-respuesta compacta">
+            {cerrados.map(({ id, nombre, c }) => (
+              <li key={id}>
+                <Link href={`/parque/${id}`}>{nombre}</Link>: {c.texto}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {fuera.length > 0 && (
         <section className="seccion">

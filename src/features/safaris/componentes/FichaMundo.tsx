@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suscribir } from "@/ui/Suscribir";
 import { Frescura } from "@/ui/Frescura";
+import AvisoCierre from "@/features/safaris/componentes/AvisoCierre";
 import { REVISADO, practicoDe } from "@/features/safaris/paises";
 import FotoGrande from "@/ui/FotoGrande";
 import MapaEventos from "@/ui/mapa/MapaEventos";
@@ -168,6 +169,7 @@ export default function FichaMundo({
       <div className="ficha-grid">
         <section className="seccion" id="cuando">
           <h2 className="rotulo">Cuándo ir</h2>
+          <AvisoCierre id={p.id} mesHoy={mesHoy} />
           <div className="ano-safari" role="table" aria-label="El año en el parque">
             <div role="row" className="fila-ano cabecera-ano">
               <span role="rowheader" />

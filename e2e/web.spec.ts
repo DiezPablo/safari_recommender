@@ -495,3 +495,21 @@ test("comparador por mes: quién gana en cada cosa y nivel de las especies", asy
   await expect(page).toHaveURL(/mes=2/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Comparar parques en marzo");
 });
+
+test("cierres: los parques de tigres en el monzón no se proponen y lo dicen", async ({ page }) => {
+  await page.goto("/planificar?pais=India&noches=6&mes=7");
+  const etapas = page.locator(".etapas-plan .etapa");
+  const hay = await page
+    .locator(".plan")
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await expect(etapas.filter({ hasText: "Kanha" })).toHaveCount(0);
+  await expect(etapas.filter({ hasText: "Ranthambore" })).toHaveCount(0);
+  await expect(page.locator(".avisos-plan")).toContainText("Cerrados ese mes");
+  await page.goto("/parque/kaziranga");
+  await expect(page.locator("#cuando .aviso-cierre")).toContainText("mayo a septiembre");
+  await page.goto("/safari-en/agosto");
+  await expect(page.locator("section", { hasText: "Cerrados en agosto" })).toContainText("Kaziranga");
+});
