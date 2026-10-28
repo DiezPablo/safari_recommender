@@ -1204,3 +1204,62 @@ body {
   color: var(--acento);
   white-space: nowrap;
 }
+
+/* ---- Comparador */
+.meses-comparar {
+  margin: 0.5rem 0 1rem;
+}
+.ganadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.8rem 1.4rem;
+}
+.ganador {
+  margin: 0;
+  display: grid;
+  gap: 0.1rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--ocre);
+}
+.ganador b {
+  font-family: var(--f-titulo);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.ganador small {
+  color: var(--texto-2);
+}
+.comparador tbody th {
+  position: sticky;
+  left: 0;
+  background: var(--fondo);
+  z-index: 1;
+}
+.comparador .mini-ano i.este {
+  outline: 1px solid var(--ocre);
+  outline-offset: -1px;
+}
+.barra-comparar {
+  display: block;
+  width: 7rem;
+  max-width: 100%;
+  height: 0.55rem;
+  background: var(--borde);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+.barra-comparar i {
+  display: block;
+  height: 100%;
+  background: var(--acento);
+}
+.comparador .f-texto-muy-probable,
+.comparador .f-texto-probable {
+  color: var(--c-fauna);
+  font-weight: 600;
+}
+.comparador .f-texto-dificil,
+.comparador .f-texto-raro {
+  color: var(--texto-3);
+}

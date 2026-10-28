@@ -405,3 +405,14 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   media de las máximas diarias se estima como `T2M + T2M_RANGE / 2`, que cuadra con ERA5 a ±1-2 °C (Mara 27-29,
   Ngorongoro 20-25). Va en una petición aparte solo para el catálogo; los parques del mundo solo usan la lluvia y
   su caché no cambia.
+
+## 28-10-2026 · Comparador para decidir
+
+- `/comparar?p=…&mes=N`: el mes cambia la respuesta (nav de meses; por defecto el actual). Arriba, «quién gana en
+  cada cosa»: en su mejor época ese mes, más especies emblemáticas, aeropuerto internacional más cerca, entrada
+  más barata (tasa de un día de `tasas.ts`), lodges más baratos ese mes (temporada verde) y más alojamientos.
+  Si empatan varios salen todos; si empatan todos, no sale (no hay nada que decidir).
+- Tabla por secciones (cuándo ir, qué se ve, llegar y moverse, coste, práctico). En los destacados, cada especie
+  con su nivel del mes (frecuencia de iNaturalist); en el resto, una barra relativa a las observaciones de GBIF
+  en vez del número suelto. «Se entra por» (Arusha, Nairobi…) además del aeropuerto internacional más cercano,
+  que en el Serengeti es Mwanza y no es por donde entra casi nadie. Visado, malaria, con niños y por tu cuenta.

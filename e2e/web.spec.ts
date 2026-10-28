@@ -481,3 +481,17 @@ test("planificador: avioneta en tramos largos y salida por otra ciudad en rutas 
   await expect(etapas.last()).toContainText("Ruaha");
   await expect(page.locator(".plan")).toContainText("salida por Dar es Salaam");
 });
+
+test("comparador por mes: quién gana en cada cosa y nivel de las especies", async ({ page }) => {
+  await page.goto("/comparar?p=serengeti,masai-mara,kruger&mes=7");
+  const cabeceras = page.locator(".tabla-comparar thead th");
+  test.skip(!(await cabeceras.count()), "sin datos de safaris");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Comparar parques en agosto");
+  await expect(page.locator(".ganador", { hasText: "En su mejor época en agosto" })).toContainText("Masái Mara");
+  await expect(page.locator(".ganador", { hasText: "Entrada más barata" })).toBeVisible();
+  const leon = page.locator(".comparador tbody tr", { hasText: "León" });
+  await expect(leon).toContainText("probable");
+  await page.getByRole("navigation", { name: "Mes del viaje" }).getByRole("link", { name: "marzo" }).click();
+  await expect(page).toHaveURL(/mes=2/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Comparar parques en marzo");
+});
