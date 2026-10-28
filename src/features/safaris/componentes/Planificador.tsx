@@ -29,6 +29,13 @@ function textoTramo(t: Tramo, desde?: string): string {
 }
 
 /** Qué cambia con dos noches más: noches añadidas a parques del plan y parques nuevos. */
+/** «Arusha ✈ Serengeti 3 → Cráter del Ngorongoro 1 → Arusha»: ✈ en los tramos en avioneta. */
+function rutaCorta(p: Plan): string {
+  const flecha = (t: { volar: boolean } | null | undefined) => (t?.volar ? " ✈ " : " → ");
+  const partes = p.etapas.map((e, i) => `${i || p.entrada ? flecha(e.traslado) : ""}${e.f.n} ${e.noches}`);
+  return `${p.entrada?.nombre ?? ""}${partes.join("")}${p.entrada ? `${flecha(p.entrada.vuelta)}${p.entrada.salida}` : ""}`.trim();
+}
+
 function conMasNoches(plan: Plan, otro: Plan): string | null {
   const antes = new Map(plan.etapas.map((e) => [e.f.id, e.noches]));
   const cambios = otro.etapas
@@ -52,6 +59,7 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
   const ritmo = RITMOS.includes(parametros.get("ritmo") as Ritmo) ? (parametros.get("ritmo") as Ritmo) : "normal";
   const elegidas = (parametros.get("ver") ?? "").split(",").filter(Boolean).map(Number);
   const conNinos = parametros.get("ninos") === "1";
+  const volar = parametros.get("volar") === "1";
 
   if (!datos || !indice) return <p className="nota-pie">Cargando parques…</p>;
 
@@ -69,8 +77,15 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
     especies: elegidas,
     ritmo,
     conNinos,
+    volar,
   };
   const plan = planificar({ ...entrada, noches });
+  // con tramos largos por carretera, la misma ruta (o otra) volando en avioneta los tramos de más de 5 h
+  const largos = [...plan.etapas.map((e) => e.traslado), plan.entrada?.vuelta].some(
+    (t) => t && !t.volar && t.horas >= 5,
+  );
+  const enAvioneta = !volar && largos ? planificar({ ...entrada, noches, volar: true }) : null;
+  const ahorroHoras = enAvioneta ? Math.round(plan.horasCarretera - enAvioneta.horasCarretera) : 0;
   const masNoches =
     noches + 2 <= MAX_NOCHES ? conMasNoches(plan, planificar({ ...entrada, noches: noches + 2 })) : null;
   const nombre = new Map(datos.especies.map((e) => [e.clave, e.nombre]));
@@ -84,10 +99,10 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
   function destacadasMes(id: string): string[] {
     return Object.entries(datos!.frecuencia?.[id] ?? {})
       .map(([k, meses]) => ({ k: Number(k), v: meses[mes] }))
-      .filter((x) => x.v !== null && x.v >= 20)
+      .filter((x) => x.v !== null && x.v >= 20 && nombre.has(x.k))
       .sort((a, b) => b.v! - a.v!)
       .slice(0, 4)
-      .map((x) => `${nombre.get(x.k) ?? x.k} (${nivelFrecuencia(x.v).texto})`);
+      .map((x) => `${nombre.get(x.k)} (${nivelFrecuencia(x.v).texto})`);
   }
 
   function alternar(clave: number) {
@@ -144,6 +159,14 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
           />
           <span>Viajo con niños</span>
         </label>
+        <label className="campo campo-casilla">
+          <input
+            type="checkbox"
+            checked={volar}
+            onChange={(e) => actualizar({ volar: e.target.checked ? "1" : null })}
+          />
+          <span>Avioneta en los tramos de más de 5 h</span>
+        </label>
       </section>
       {opcionesEspecies.length > 0 && (
         <section className="seccion">
@@ -175,7 +198,10 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
         </h2>
         {plan.entrada && (
           <p className="nota-pie">
-            Entrada y salida por {plan.entrada.nombre}; si llegas tarde o te vas temprano, suma una noche allí.
+            {plan.entrada.salida === plan.entrada.nombre
+              ? `Entrada y salida por ${plan.entrada.nombre}`
+              : `Entrada por ${plan.entrada.nombre} y salida por ${plan.entrada.salida}`}
+            ; si llegas tarde o te vas temprano, suma una noche allí.
           </p>
         )}
         {plan.avisos.length > 0 && (
@@ -254,12 +280,21 @@ export default function Planificador({ mesHoy }: { mesHoy: number }) {
               <p className={`traslado ${plan.entrada.vuelta.volar ? "volar" : ""}`}>
                 {plan.entrada.vuelta.volar ? <IconoAvion /> : <IconoCoche />}
                 {plan.entrada.vuelta.volar
-                  ? `Vuelta a ${plan.entrada.nombre} en avioneta o vuelo interno`
-                  : `Vuelta a ${plan.entrada.nombre}: unas ${plan.entrada.vuelta.horas.toLocaleString("es-ES")} h por carretera`}
+                  ? `Vuelta a ${plan.entrada.salida} en avioneta o vuelo interno`
+                  : `Vuelta a ${plan.entrada.salida}: unas ${plan.entrada.vuelta.horas.toLocaleString("es-ES")} h por carretera`}
               </p>
             </li>
           )}
         </ol>
+        {enAvioneta && ahorroHoras >= 3 && (
+          <p className="aviso-plan">
+            <b>En avioneta:</b> {rutaCorta(enAvioneta)}, con unas {ahorroHoras} h menos de carretera (y vuelos que
+            encarecen el viaje).{" "}
+            <button type="button" className="quitar" onClick={() => actualizar({ volar: "1" })}>
+              Probar
+            </button>
+          </p>
+        )}
         {masNoches && (
           <p className="aviso-plan">
             <b>Con 2 noches más:</b> {masNoches}.{" "}

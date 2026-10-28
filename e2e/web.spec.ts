@@ -463,3 +463,21 @@ test("presupuesto: el alojamiento baja en temporada verde", async ({ page }) => 
   expect(abril.usd).toBeLessThan(agosto.usd);
   expect(abril.texto).toContain("respecto a la temporada alta");
 });
+
+test("planificador: avioneta en tramos largos y salida por otra ciudad en rutas largas", async ({ page }) => {
+  await page.goto("/planificar?pais=Tanzania&noches=5&mes=7");
+  const etapas = page.locator(".etapas-plan .etapa");
+  const hay = await etapas
+    .first()
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  test.skip(!hay, "sin datos de safaris");
+  await expect(page.locator(".aviso-plan", { hasText: "En avioneta" })).toBeVisible();
+  await page.locator(".aviso-plan", { hasText: "En avioneta" }).getByRole("button", { name: "Probar" }).click();
+  await expect(page).toHaveURL(/volar=1/);
+  await expect(page.getByLabel("Avioneta en los tramos de más de 5 h")).toBeChecked();
+  await page.goto("/planificar?pais=Tanzania&noches=14&mes=7");
+  await expect(etapas.last()).toContainText("Ruaha");
+  await expect(page.locator(".plan")).toContainText("salida por Dar es Salaam");
+});

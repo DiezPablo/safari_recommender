@@ -379,3 +379,18 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   «c») y se sigue con las tarifas oficiales copiadas a mano una vez al año.
 - Presupuesto: el alojamiento que escribe el usuario es el de temporada alta; en los parques con tarifas de
   lodges se multiplica por el índice de ese mes (p. ej. Serengeti en abril ≈ 40 %) y la línea lo explica.
+
+## 28-10-2026 · Planificador: viajes cortos, avioneta y salida por otra ciudad
+
+- Horas «gratis» del día de llegada y salida: de 5 a 3 (se aterriza y como mucho se llega al parque por la
+  tarde). Tanzania 3 noches deja de ser «Serengeti 3 con 12 h de carretera» y pasa a Ngorongoro + Tarangire.
+- Circuitos: la ruta puede acabar en la ciudad de otro circuito (después del norte de Tanzania, Ruaha y salida
+  por Dar es Salaam) y cada cambio de circuito dentro de la ruta cuesta 0,5 noches (antes se sumaba al insertar
+  el parque). Tanzania 14 noches: Tarangire → Ngorongoro → Serengeti → ✈ Ruaha → Dar es Salaam (antes metía
+  Ruaha entre el Serengeti y el Ngorongoro, con dos vuelos). Aviso del billete por ciudades distintas.
+- Opción «Avioneta en los tramos de más de 5 h» (`volar=1`): la ida y vuelta desde la entrada en avioneta si
+  pasan de 3 h y media y cualquier tramo de más de 5 h. Si el plan tiene tramos de ≥ 5 h por carretera, se
+  propone la alternativa en avioneta con las horas que ahorra.
+- Se probó a encarecer las horas de carretera (6 o 5 h por noche en vez de 8) y desordenaba otros casos: se
+  deja en 8.
+- Las especies sin nombre en `/especies.json` ya no salen como un número en «En agosto: …».

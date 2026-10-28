@@ -25,8 +25,10 @@ const KMH = 50;
 /** carreteras asfaltadas o pistas buenas: en el sur de África se va mucho más rápido que en el este */
 const KMH_PAIS: Record<string, number> = { Sudáfrica: 90, Namibia: 85, Botsuana: 70 };
 let kmhActual = KMH;
-/** a partir de aquí conviene volar (avioneta o vuelo interno) */
+/** a partir de aquí conviene volar (avioneta o vuelo interno); con «volar», antes */
 const MAX_HORAS_CARRETERA = 6.5;
+const MAX_HORAS_CARRETERA_VOLANDO = 5;
+let maxHorasActual = MAX_HORAS_CARRETERA;
 /** parques más cerca que esto (o uno dentro del otro) se cuentan como el mismo destino */
 const MIN_KM_ENTRE = 40;
 /** coste de cambiar de parque (en «noches de interés»): con ritmo tranquilo, menos parques */
@@ -71,8 +73,8 @@ export interface Etapa {
 
 export interface Plan {
   etapas: Etapa[];
-  /** ciudad de entrada y salida, y el tramo de vuelta desde el último parque */
-  entrada: { nombre: string; vuelta: Tramo } | null;
+  /** ciudad de entrada, la de salida (otra si se acaba en otro circuito) y el tramo de vuelta desde el último parque */
+  entrada: { nombre: string; salida: string; vuelta: Tramo } | null;
   avisos: string[];
   sinCubrir: number[];
   horasCarretera: number;
@@ -86,7 +88,7 @@ interface Punto {
 function tramo(a: Punto, b: Punto): Tramo {
   const km = Math.round(distanciaKm(a, b) * FACTOR_CARRETERA);
   const horas = Math.round((km / kmhActual) * 2) / 2;
-  return { km, horas, volar: horas > MAX_HORAS_CARRETERA };
+  return { km, horas, volar: horas > maxHorasActual };
 }
 
 const punto = (f: FilaIndice): Punto => ({ lat: f.la, lon: f.lo });
@@ -97,10 +99,11 @@ export function traslado(a: FilaIndice, b: FilaIndice): Tramo {
 
 /** Traslado con la velocidad de las carreteras del país (para quien no pasa por planificar, como Mi viaje). */
 export function trasladoEn(pais: string | null | undefined, a: FilaIndice, b: FilaIndice): Tramo {
-  const antes = kmhActual;
+  const antes = [kmhActual, maxHorasActual];
   kmhActual = (pais && KMH_PAIS[pais]) || KMH;
+  maxHorasActual = MAX_HORAS_CARRETERA;
   const t = traslado(a, b);
-  kmhActual = antes;
+  [kmhActual, maxHorasActual] = antes;
   return t;
 }
 
@@ -115,29 +118,64 @@ function permutaciones<T>(xs: T[]): T[][] {
 }
 
 /** Horas de los tramos desde y hasta la ciudad de entrada que no cuentan: el día de llegada y el de salida
- * ya son de viaje (Arusha → Tarangire, 2,5 h, no cuesta; Arusha → Serengeti, 6 h, cuesta la hora de más). */
-const HORAS_LIBRES_ENTRADA = 5;
+ * ya son de viaje (Arusha → Tarangire, 2,5 h, no cuesta; Arusha → Serengeti, 6 h, cuesta tres horas: se llega
+ * de noche y sin safari). */
+const HORAS_LIBRES_ENTRADA = 3;
+/** con «volar desde la entrada», los tramos desde y hasta la ciudad de más de esto van en avioneta */
+const HORAS_VOLAR_ENTRADA = 3.5;
+let volarEntrada = false;
+
+/** Tramo desde o hasta la ciudad de entrada (en avioneta si se ha pedido y es largo). */
+function tramoEntrada(a: Punto, b: Punto): Tramo {
+  const t = tramo(a, b);
+  return volarEntrada && t.horas > HORAS_VOLAR_ENTRADA ? { ...t, volar: true } : t;
+}
 
 const costeEntrada = (t: Tramo) => costeTramo(t, HORAS_LIBRES_ENTRADA);
 
-/** Coste de los traslados de una ruta (en «noches de interés»), saliendo y volviendo a la entrada si la hay. */
-function costeRuta(r: FilaIndice[], entrada?: Punto): number {
+/** Circuito de un parque: la ciudad por la que se entra (Ruaha por Dar es Salaam, el Serengeti por Arusha). */
+const circuito = (f: FilaIndice) => estanciaDe(f.id, f.r).entrada ?? null;
+
+/** Ciudad de salida: la de entrada o, si la ruta acaba en un parque de otro circuito, la de ese circuito
+ * (después del norte de Tanzania y Ruaha se vuela a casa desde Dar es Salaam, no se vuelve a Arusha). */
+function salidaDe(r: FilaIndice[], entrada?: Entrada): Entrada | undefined {
+  const c = r.length ? circuito(r[r.length - 1]) : null;
+  return entrada && c && c !== entrada.nombre && CIUDADES[c] ? { nombre: c, ...CIUDADES[c] } : entrada;
+}
+
+interface Entrada extends Punto {
+  nombre: string;
+}
+
+/** Coste de los traslados de una ruta (en «noches de interés»): tramos, ida desde la entrada, vuelta a la salida
+ * y cada cambio de circuito (otra logística y otro vuelo). */
+function costeRuta(r: FilaIndice[], entrada?: Entrada): number {
   if (!r.length) return 0;
+  let cambios = 0;
+  let actual = entrada?.nombre ?? circuito(r[0]);
+  for (const f of r) {
+    const c = circuito(f);
+    if (c && actual && c !== actual) cambios++;
+    if (c) actual = c;
+  }
+  const salida = salidaDe(r, entrada);
   return (
     r.slice(1).reduce((a, f, i) => a + costeTramo(traslado(r[i], f)), 0) +
-    (entrada ? costeEntrada(tramo(entrada, punto(r[0]))) + costeEntrada(tramo(punto(r[r.length - 1]), entrada)) : 0)
+    (entrada ? costeEntrada(tramoEntrada(entrada, punto(r[0]))) : 0) +
+    (salida ? costeEntrada(tramoEntrada(punto(r[r.length - 1]), salida)) : 0) +
+    cambios * COSTE_OTRO_CIRCUITO
   );
 }
 
-/** Ruta más barata saliendo y volviendo a la entrada (si la hay); con ≤ 6 parques se prueban todas. */
-export function ordenarRuta(parques: FilaIndice[], entrada?: Punto): FilaIndice[] {
+/** Ruta más barata saliendo de la entrada (si la hay); con ≤ 6 parques se prueban todas. */
+export function ordenarRuta(parques: FilaIndice[], entrada?: Entrada): FilaIndice[] {
   if (parques.length <= 1) return parques;
   return permutaciones(parques.slice(0, 6)).reduce((a, b) => (costeRuta(b, entrada) < costeRuta(a, entrada) ? b : a));
 }
 
 /** Cuánto encarece la ruta meter un parque en su mejor hueco: el Ngorongoro está en el camino de Arusha al
  * Serengeti y no cuesta casi nada; Ruaha, en el sur, obliga a volar dos veces. */
-function costeInsertar(ruta: FilaIndice[], f: FilaIndice, entrada?: Punto): number {
+function costeInsertar(ruta: FilaIndice[], f: FilaIndice, entrada?: Entrada): number {
   const antes = costeRuta(ruta, entrada);
   let mejor = Infinity;
   for (let i = 0; i <= ruta.length; i++) {
@@ -170,6 +208,7 @@ export function planificar({
   especies,
   ritmo,
   conNinos = false,
+  volar = false,
 }: {
   indice: FilaIndice[];
   /** clave de especie → id del parque → facilidad 0-1 */
@@ -184,10 +223,14 @@ export function planificar({
   ritmo: Ritmo;
   /** fuera los parques con edad mínima (gorilas, chimpancés) y más peso a los que no tienen malaria */
   conNinos?: boolean;
+  /** ida y vuelta desde la ciudad de entrada en avioneta cuando por carretera son más de 3 h y media */
+  volar?: boolean;
 }): Plan {
   noches = Math.max(1, noches);
   kmhActual = KMH_PAIS[pais] ?? KMH;
   costeVueloActual = COSTE_VUELO_PAIS[pais] ?? COSTE_VUELO;
+  volarEntrada = volar;
+  maxHorasActual = volar ? MAX_HORAS_CARRETERA_VOLANDO : MAX_HORAS_CARRETERA;
   const delPais = indice.filter(
     (f) => f.p === pais && f.s > 0 && esDestino(f) && !(conNinos && EDAD_MINIMA[f.id] && EDAD_MINIMA[f.id].edad > 6),
   );
@@ -226,7 +269,8 @@ export function planificar({
 
   // reparto voraz de las noches; la entrada, la del país (o, si no la hay, la del primer parque elegido)
   let nombreEntrada: string | undefined = ENTRADA_PAIS[pais];
-  let ciudad: Punto | undefined = nombreEntrada ? CIUDADES[nombreEntrada] : undefined;
+  const enCiudad = (n?: string): Entrada | undefined => (n && CIUDADES[n] ? { nombre: n, ...CIUDADES[n] } : undefined);
+  let ciudad = enCiudad(nombreEntrada);
   let ruta: FilaIndice[] = [];
   const elegidos: FilaIndice[] = [];
   const reparto = new Map<string, number>();
@@ -256,10 +300,8 @@ export function planificar({
       if (n < est.min) valor *= 0.5; // menos noches de las que pide: medio parque
       for (const k of especies) if (!cubiertas.has(k)) valor += BONO_ESPECIE * facil(k, f);
       // el traslado que añade (en el primero, la ida y vuelta desde la ciudad de entrada) y el cambio de parque
-      valor -=
-        costeInsertar(ruta, f, ciudad) +
-        (elegidos.length ? COSTE_CAMBIO[ritmo] : 0) +
-        (nombreEntrada && est.entrada && est.entrada !== nombreEntrada ? COSTE_OTRO_CIRCUITO : 0);
+      // (los cambios de circuito, como ir a Ruaha desde el norte, ya los cuenta la ruta)
+      valor -= costeInsertar(ruta, f, ciudad) + (elegidos.length ? COSTE_CAMBIO[ritmo] : 0);
       if (!mejor || valor / n > mejor.valor) mejor = { f, n, valor: valor / n };
     }
     if (!mejor) break;
@@ -268,7 +310,7 @@ export function planificar({
       for (const k of especies) if (facil(k, mejor.f) > 0) cubiertas.add(k);
       if (elegidos.length === 1 && !ciudad) {
         nombreEntrada = estancias.get(mejor.f.id)!.entrada;
-        ciudad = nombreEntrada ? CIUDADES[nombreEntrada] : undefined;
+        ciudad = enCiudad(nombreEntrada);
       }
       ruta = ordenarRuta(elegidos, ciudad);
     }
@@ -282,11 +324,12 @@ export function planificar({
     estancia: estancias.get(f.id)!,
     enEpoca: epoca(f),
     especies: especies.filter((k) => facil(k, f) > 0),
-    traslado: i ? traslado(ruta[i - 1], f) : ciudad ? tramo(ciudad, punto(f)) : null,
+    traslado: i ? traslado(ruta[i - 1], f) : ciudad ? tramoEntrada(ciudad, punto(f)) : null,
   }));
+  const salida = salidaDe(ruta, ciudad);
   const entrada =
-    ciudad && nombreEntrada && ruta.length
-      ? { nombre: nombreEntrada, vuelta: tramo(punto(ruta[ruta.length - 1]), ciudad) }
+    ciudad && salida && ruta.length
+      ? { nombre: ciudad.nombre, salida: salida.nombre, vuelta: tramoEntrada(punto(ruta[ruta.length - 1]), salida) }
       : null;
 
   const avisos: string[] = [];
@@ -314,6 +357,10 @@ export function planificar({
   if (largo && nombreEntrada)
     avisos.push(
       `Hay ${Math.round(horasCarretera)} h de carretera desde y hasta ${nombreEntrada}: volar en avioneta la ida o la vuelta ahorra casi un día (y cuesta más).`,
+    );
+  if (entrada && entrada.salida !== entrada.nombre)
+    avisos.push(
+      `Se acaba en ${entrada.salida}: vuelve a casa desde allí (billete de ida y vuelta por ciudades distintas) o con un vuelo interno a ${entrada.nombre}.`,
     );
   if (conNinos) {
     const conMalaria = etapas.filter((e) => !SIN_MALARIA.has(e.f.id));
