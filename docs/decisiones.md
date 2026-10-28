@@ -352,3 +352,5 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   (vigencia y fuente) y lo práctico del país (`REVISADO`). En las fichas del mundo, el `generado` de
   `safaris_mundo.json`.
 - Se corrige el escape de «;» en los `.ics` (salía sin barra).
+- CI: `ubuntu-latest` pasó a Ubuntu 26.04 y Playwright aún no tiene Chromium para él («Playwright does not
+  support chromium on ubuntu26.04-x64»). Todos los workflows fijan `ubuntu-24.04` hasta que lo soporte.

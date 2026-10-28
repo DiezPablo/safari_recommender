@@ -11,13 +11,10 @@ import {
   cargarSafaris,
   enTemporada,
   especiePorTaxon,
-  nivelFrecuencia,
   nombreTaxon,
   paisesDe,
   paisesDestacados,
   puntuacionAhora,
-  slugTexto,
-  type Parque,
 } from "@/features/safaris/datos";
 import { MIGRACION } from "@/features/safaris/migracion";
 import { practicoDe } from "@/features/safaris/paises";
