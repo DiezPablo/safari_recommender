@@ -263,7 +263,13 @@ export default function FichaMundo({
           },
           { que: "Mejor época", cuando: mundo.generado, fuente: "calculada con la lluvia y las observaciones" },
           ...(practicoDe(p.pais_nombre ?? pais?.nombre)
-            ? [{ que: "Visado, salud y dinero", cuando: REVISADO, fuente: "revisado a mano" }]
+            ? [
+                {
+                  que: "Visado, salud y dinero",
+                  cuando: practicoDe(p.pais_nombre ?? pais?.nombre)?.revisado ?? REVISADO,
+                  fuente: "revisado a mano",
+                },
+              ]
             : []),
         ]}
       />

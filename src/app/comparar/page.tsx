@@ -318,11 +318,7 @@ export default async function PaginaComparar({ searchParams }: Props) {
                 {seccion("Práctico")}
                 {fila("Visado", (p) => practicoDe(paisDe(p))?.visado.texto ?? "Consúltalo")}
                 {fila("Malaria", (p) =>
-                  SIN_MALARIA.has(p.id)
-                    ? "Sin riesgo"
-                    : practicoDe(paisDe(p))
-                      ? "Hay riesgo en el país: consúltalo"
-                      : "Consúltalo",
+                  SIN_MALARIA.has(p.id) ? "Sin riesgo" : (practicoDe(paisDe(p))?.malaria ?? "Consúltalo"),
                 )}
                 {fila("Con niños", (p) =>
                   EDAD_MINIMA[p.id]

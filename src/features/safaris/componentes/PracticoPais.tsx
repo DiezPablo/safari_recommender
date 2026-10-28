@@ -51,7 +51,7 @@ export function ItemsPais({ pais, x }: { pais: string; x: Practico }) {
         <b>Propinas:</b> {x.propinas}
       </li>
       <li className="nota-pie">
-        Revisado el {REVISADO}. Cambia a menudo: confírmalo en{" "}
+        Revisado el {x.revisado ?? REVISADO}. Cambia a menudo: confírmalo en{" "}
         <a href={EXTERIORES} target="_blank" rel="noopener">
           Exteriores ({pais}) ↗
         </a>

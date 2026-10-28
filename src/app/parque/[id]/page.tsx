@@ -420,7 +420,13 @@ export default async function PaginaParque({ params }: Props) {
             ? [{ que: "Tasa de entrada", cuando: TASAS[p.id].vigencia, fuente: "Fuente", url: TASAS[p.id].fuente }]
             : []),
           ...(practicoDe(p.pais)
-            ? [{ que: "Visado, salud y dinero", cuando: REVISADO, fuente: "revisado a mano" }]
+            ? [
+                {
+                  que: "Visado, salud y dinero",
+                  cuando: practicoDe(p.pais)?.revisado ?? REVISADO,
+                  fuente: "revisado a mano",
+                },
+              ]
             : []),
         ]}
       />

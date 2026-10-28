@@ -329,7 +329,7 @@ test("lo práctico del país y safari por tu cuenta", async ({ page }) => {
   await expect(organiza).toContainText("Por tu cuenta en coche normal");
   await expect(organiza).toContainText(/amanece hacia las \d\d:\d\d/);
   await page.goto("/guia#paises");
-  await expect(page.locator(".tabla-paises tbody tr")).toHaveCount(9);
+  await expect(page.locator(".tabla-paises tbody tr")).toHaveCount(23);
   await page.goto("/?cuenta=turismo");
   const lista = page.locator(".rejilla-safaris li");
   const hay = await lista

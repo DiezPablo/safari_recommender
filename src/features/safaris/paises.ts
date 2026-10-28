@@ -11,8 +11,10 @@ export interface PracticoPais {
   enchufes: string[];
   dinero: string;
   conduce: "izquierda" | "derecha";
-  /** zona horaria (IANA) para las horas de sol */
-  zona: string;
+  /** zona horaria (IANA) para las horas de sol; sin ella si el país tiene varias */
+  zona?: string;
+  /** fecha de revisión, si no es la general (REVISADO) */
+  revisado?: string;
   propinas: string;
 }
 
@@ -133,6 +135,185 @@ export const PRACTICO: Record<string, PracticoPais> = {
     conduce: "izquierda",
     zona: "Africa/Harare",
     propinas: PROPINAS_SUR,
+  },
+
+  // ---- Fuera de África (revisado el 28-10-2026)
+  India: {
+    visado: {
+      texto: "Visado electrónico (e-Tourist) antes de viajar: unos 25 USD por 30 días o 40 USD por un año.",
+      url: "https://indianvisaonline.gov.in/evisa/",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Riesgo en buena parte del país, también en los parques de tigres: consulta la profilaxis.",
+    enchufes: ["C", "D", "M"],
+    dinero: "Rupia india; los safaris de los parques de tigres se reservan en las webs oficiales de cada estado.",
+    conduce: "izquierda",
+    zona: "Asia/Kolkata",
+    propinas: "Al guía (naturalista) y al conductor del safari, unos cientos de rupias por salida.",
+    revisado: "28-10-2026",
+  },
+  Nepal: {
+    visado: {
+      texto: "Visado a la llegada o en línea antes: 30 USD por 15 días, 50 USD por 30.",
+      url: "https://nepaliport.immigration.gov.np/",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Riesgo bajo en el Terai (Chitwan, Bardia); ninguno en Katmandú ni en la montaña.",
+    enchufes: ["C", "D", "M"],
+    dinero: "Rupia nepalí; efectivo fuera de Katmandú.",
+    conduce: "izquierda",
+    zona: "Asia/Kathmandu",
+    propinas: "Al guía y al conductor, unos cientos de rupias por día.",
+    revisado: "28-10-2026",
+  },
+  "Sri Lanka": {
+    visado: {
+      texto: "ETA gratuita para españoles desde el 25-5-2026 (30 días), pero hay que pedirla antes de llegar.",
+      url: "https://eta.gov.lk/",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Sin malaria (eliminada en 2016).",
+    enchufes: ["D", "G", "M"],
+    dinero: "Rupia esrilanquesa; los jeeps de safari se pagan en efectivo.",
+    conduce: "izquierda",
+    zona: "Asia/Colombo",
+    propinas: "Al conductor del jeep, unos 1000-2000 rupias por salida.",
+    revisado: "28-10-2026",
+  },
+  Indonesia: {
+    visado: {
+      texto:
+        "Visado a la llegada (e-VOA, mejor en línea antes): 500.000 rupias; en Bali, además, una tasa turística de 150.000.",
+      url: "https://evisa.imigrasi.go.id/",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria:
+      "Riesgo en Borneo (Tanjung Puting), Flores y Komodo y Papúa; no en Bali ni Yakarta: consulta la profilaxis.",
+    enchufes: ["C", "F"],
+    dinero: "Rupia indonesia; efectivo en Labuan Bajo y Kumai.",
+    conduce: "izquierda",
+    propinas: "A la tripulación del klotok o del barco, una caja común al final.",
+    revisado: "28-10-2026",
+  },
+  Malasia: {
+    visado: {
+      texto: "Sin visado hasta 90 días; tarjeta de llegada digital (MDAC) en línea antes de viajar.",
+      url: "https://imigresen-online.imi.gov.my/mdac/main",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Riesgo en zonas de selva de Sabah y Sarawak (Kinabatangan): consulta.",
+    enchufes: ["G"],
+    dinero: "Ringgit; tarjeta en las ciudades, efectivo en el río.",
+    conduce: "izquierda",
+    zona: "Asia/Kuching",
+    propinas: "No es costumbre; al guía del río, si quieres.",
+    revisado: "28-10-2026",
+  },
+  Brasil: {
+    visado: { texto: "Sin visado hasta 90 días.", url: EXTERIORES },
+    fiebreAmarilla: "Vacuna recomendada para el Pantanal y la Amazonía (no te piden el certificado).",
+    malaria: "Riesgo en la Amazonía; en el Pantanal es muy bajo: consulta.",
+    enchufes: ["C", "N"],
+    dinero: "Real; tarjeta casi en todas partes.",
+    conduce: "derecha",
+    zona: "America/Cuiaba",
+    propinas: "En las pousadas del Pantanal, una caja común para el personal y algo al guía.",
+    revisado: "28-10-2026",
+  },
+  Ecuador: {
+    visado: {
+      texto:
+        "Sin visado hasta 90 días. Galápagos: tarjeta de control de tránsito (20 USD) y entrada al parque (200 USD, en efectivo).",
+      url: "https://www.gobiernogalapagos.gob.ec/",
+    },
+    fiebreAmarilla: "Recomendada si vas a la Amazonía; no hace falta para Galápagos ni Quito.",
+    malaria: "Riesgo en la Amazonía y la costa norte; ninguno en Galápagos ni en Quito.",
+    enchufes: ["A", "B"],
+    dinero: "Dólar estadounidense; lleva efectivo para Galápagos.",
+    conduce: "derecha",
+    zona: "Pacific/Galapagos",
+    propinas: "Al guía naturalista y a la tripulación del barco, una caja común al final del crucero.",
+    revisado: "28-10-2026",
+  },
+  Perú: {
+    visado: { texto: "Sin visado hasta 90 días.", url: EXTERIORES },
+    fiebreAmarilla: "Vacuna recomendada para la selva (Manu, Tambopata).",
+    malaria: "Riesgo en la Amazonía (más en Loreto; bajo en Madre de Dios): consulta.",
+    enchufes: ["A", "C"],
+    dinero: "Sol; efectivo en Puerto Maldonado y los lodges.",
+    conduce: "derecha",
+    zona: "America/Lima",
+    propinas: "Al guía del lodge y al barquero, una caja común.",
+    revisado: "28-10-2026",
+  },
+  "Costa Rica": {
+    visado: { texto: "Sin visado hasta 90 días.", url: EXTERIORES },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Riesgo muy bajo.",
+    enchufes: ["A", "B"],
+    dinero: "Colón; dólares aceptados casi en todas partes.",
+    conduce: "derecha",
+    zona: "America/Costa_Rica",
+    propinas: "Al guía naturalista, unos 10-20 USD por persona y salida.",
+    revisado: "28-10-2026",
+  },
+  "Estados Unidos": {
+    visado: { texto: "ESTA en línea antes de viajar, unos 40 USD.", url: "https://esta.cbp.dhs.gov/" },
+    fiebreAmarilla: "No hace falta.",
+    malaria: "Sin malaria.",
+    enchufes: ["A", "B"],
+    dinero: "Dólar; tarjeta en todas partes.",
+    conduce: "derecha",
+    propinas: "A los guías, un 10-20 % de la excursión.",
+    revisado: "28-10-2026",
+  },
+  Canadá: {
+    visado: {
+      texto: "eTA en línea antes de viajar en avión, 7 CAD.",
+      url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/eta.html",
+    },
+    fiebreAmarilla: "No hace falta.",
+    malaria: "Sin malaria.",
+    enchufes: ["A", "B"],
+    dinero: "Dólar canadiense; tarjeta en todas partes.",
+    conduce: "derecha",
+    zona: "America/Winnipeg",
+    propinas: "A los guías y conductores del tundra buggy, un 10-15 %.",
+    revisado: "28-10-2026",
+  },
+  Chile: {
+    visado: { texto: "Sin visado hasta 90 días.", url: EXTERIORES },
+    fiebreAmarilla: "No hace falta.",
+    malaria: "Sin malaria.",
+    enchufes: ["C", "L"],
+    dinero: "Peso chileno; tarjeta casi en todas partes.",
+    conduce: "derecha",
+    zona: "America/Punta_Arenas",
+    propinas: "Al guía (pumas, trekking), unos 10 % o una cantidad por día.",
+    revisado: "28-10-2026",
+  },
+  Argentina: {
+    visado: { texto: "Sin visado hasta 90 días.", url: EXTERIORES },
+    fiebreAmarilla: "Solo recomendada en el noreste (Misiones, Iguazú).",
+    malaria: "Sin malaria.",
+    enchufes: ["C", "I"],
+    dinero: "Peso argentino; con tarjeta extranjera el cambio suele ser mejor que en efectivo.",
+    conduce: "derecha",
+    propinas: "Al guía de avistamiento de ballenas o del safari, un 10 %.",
+    revisado: "28-10-2026",
+  },
+  Australia: {
+    visado: {
+      texto: "eVisitor gratuito en línea antes de viajar.",
+      url: "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/evisitor-651",
+    },
+    fiebreAmarilla: FA_DESDE_RIESGO,
+    malaria: "Sin malaria.",
+    enchufes: ["I"],
+    dinero: "Dólar australiano; tarjeta en todas partes.",
+    conduce: "izquierda",
+    propinas: "No es costumbre; a los guías, si quieres.",
+    revisado: "28-10-2026",
   },
 };
 

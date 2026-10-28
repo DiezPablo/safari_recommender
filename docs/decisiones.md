@@ -453,3 +453,12 @@ Muestra aleatoria de 40 parques de nivel B. Errores encontrados y arreglo:
   equidna australiano»: `limpiarNombre`. Las especies estrella ya salían bien (nombres del catálogo) y las de
   menos de 3 observaciones (orcas en Israel) ya no se mostraban.
 - Bases militares como ciudad de acceso («Oakey Army Aviation Centre»): fuera de los aeropuertos regulares.
+
+## 28-10-2026 · Lo práctico fuera de África
+
+- 14 países más en `paises.ts` (India, Nepal, Sri Lanka, Indonesia, Malasia, Brasil, Ecuador, Perú, Costa Rica,
+  Estados Unidos, Canadá, Chile, Argentina y Australia), con su fecha de revisión propia (`revisado`). Fuentes
+  oficiales enlazadas en cada visado; Sri Lanka: ETA gratuita para españoles desde el 25-5-2026 (lista oficial
+  del Departamento de Inmigración); Galápagos: tarjeta de tránsito 20 USD y entrada 200 USD.
+- Sri Lanka (libre de malaria desde 2016) y Kakadu (Australia) entran en `SIN_MALARIA`. El comparador muestra el
+  texto de malaria del país en vez de «hay riesgo».

@@ -2,7 +2,8 @@
 // actividades estrella. Escrito a mano para los destacados el 27-10-2026 (ver docs/decisiones.md); confírmalo con
 // el parque o el operador, y la malaria con un centro de vacunación internacional.
 
-/** Destacados sin malaria: el sur de Sudáfrica y los que están fuera de los trópicos. */
+/** Destacados sin malaria: el sur de Sudáfrica, los de fuera de los trópicos y los de países sin malaria aunque
+ * estén en ellos (Sri Lanka, libre desde 2016; Australia). */
 export const SIN_MALARIA = new Set([
   "addo",
   "pilanesberg",
@@ -18,6 +19,10 @@ export const SIN_MALARIA = new Set([
   "torres-del-paine",
   "valdes",
   "isla-canguro",
+  "kakadu",
+  "yala",
+  "wilpattu",
+  "minneriya",
 ]);
 
 /** Edad mínima de la actividad principal del parque. */
