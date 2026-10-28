@@ -172,7 +172,7 @@ export default function Presupuesto({ mesHoy }: { mesHoy: number }) {
         </p>
         <div className="formulario-plan">
           <label className="campo">
-            <span className="rotulo">Alojamiento por persona y noche</span>
+            <span className="rotulo">Alojamiento por persona y noche, en temporada alta</span>
             <select
               value={NIVELES.some(([, v]) => v === s.alojamiento) ? s.alojamiento : ""}
               onChange={(e) => e.target.value && cambiar({ alojamiento: Number(e.target.value) })}
@@ -189,6 +189,7 @@ export default function Presupuesto({ mesHoy }: { mesHoy: number }) {
             etiqueta="USD por persona y noche"
             valor={s.alojamiento}
             onCambio={(v) => cambiar({ alojamiento: v })}
+            ayuda="Fuera de temporada se rebaja en los parques con tarifas de lodges (ver temporada verde)"
           />
           <Numero
             etiqueta="Vehículo con guía, USD por día"

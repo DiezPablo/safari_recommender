@@ -377,3 +377,5 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - Resultado del sondeo (`docs/sondeo-precios.md`): solo 2 de 44 webs tienen precio estructurado y una lo
   prohíbe; 4 prohíben el acceso automatizado; 19 solo lo tienen en texto libre. Se descarta el raspador (paso
   «c») y se sigue con las tarifas oficiales copiadas a mano una vez al año.
+- Presupuesto: el alojamiento que escribe el usuario es el de temporada alta; en los parques con tarifas de
+  lodges se multiplica por el índice de ese mes (p. ej. Serengeti en abril ≈ 40 %) y la línea lo explica.

@@ -2,6 +2,7 @@
 // valores de partida que el usuario cambia por los suyos. Todo por persona y en USD, que es como cotizan los
 // operadores y los lodges.
 import { TASAS, tasaPorPersona, tasaPorVehiculo } from "@/features/safaris/tasas";
+import { indicePrecios } from "@/features/safaris/temporadaVerde";
 
 export interface EtapaPresupuesto {
   id: string;
@@ -10,7 +11,8 @@ export interface EtapaPresupuesto {
 }
 
 export interface Supuestos {
-  /** USD por persona y noche (alojamiento con pensión completa) */
+  /** USD por persona y noche (alojamiento con pensión completa) en temporada alta; en los parques con tarifas de
+   * lodges recogidas (temporadaVerde.ts) se rebaja según el mes */
   alojamiento: number;
   /** USD por vehículo y día (4×4 con guía-conductor y combustible); 0 si los safaris van incluidos en el lodge */
   vehiculo: number;
@@ -91,10 +93,21 @@ export function calcular(etapas: EtapaPresupuesto[], personas: number, mes: numb
         .join(" · "),
     });
   }
+  // temporada: en los parques con tarifas de lodges, la proporción de ese mes frente al más caro
+  const rebajas: string[] = [];
+  let alojamiento = 0;
+  for (const e of etapas) {
+    const f = indicePrecios(e.id)?.meses[mes - 1];
+    if (f != null && f < 0.97) rebajas.push(`${e.nombre}: ${Math.round(f * 100)} %`);
+    alojamiento += s.alojamiento * e.noches * (f ?? 1);
+  }
   lineas.push({
     concepto: `Alojamiento (${noches} noches)`,
-    porPersona: s.alojamiento * noches,
+    porPersona: alojamiento,
     origen: "estimación",
+    detalle: rebajas.length
+      ? `Precio de este mes respecto a la temporada alta, según las tarifas de sus lodges: ${rebajas.join(" · ")}`
+      : undefined,
   });
   if (s.vehiculo > 0)
     lineas.push({

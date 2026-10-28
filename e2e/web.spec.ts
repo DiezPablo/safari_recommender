@@ -447,3 +447,19 @@ test("temporada verde: ahorro por parque y en la ficha", async ({ page }) => {
   await page.locator(".temporada-verde summary").click();
   await expect(page.locator(".lista-tarifas li", { hasText: "Governors' Camp" })).toBeVisible();
 });
+
+test("presupuesto: el alojamiento baja en temporada verde", async ({ page }) => {
+  const alojamiento = async (mes: number) => {
+    await page.goto(`/presupuesto?p=serengeti:3,tarangire:2&personas=2&mes=${mes}`);
+    const fila = page.locator(".tabla-presupuesto tr", { hasText: "Alojamiento" });
+    await fila.waitFor({ timeout: 10000 });
+    return {
+      texto: await fila.innerText(),
+      usd: Number((await fila.locator("td").first().innerText()).replace(/\D/g, "")),
+    };
+  };
+  const agosto = await alojamiento(7);
+  const abril = await alojamiento(3);
+  expect(abril.usd).toBeLessThan(agosto.usd);
+  expect(abril.texto).toContain("respecto a la temporada alta");
+});
