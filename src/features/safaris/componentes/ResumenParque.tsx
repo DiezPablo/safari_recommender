@@ -49,7 +49,7 @@ export default function ResumenParque({
         <div>
           <dt>Cuándo ir</dt>
           <dd>
-            {epoca?.length ? rangoMeses(epoca) : "Sin datos"}
+            {epoca?.length ? rangoMeses(epoca) : "Sin una estación marcada"}
             {motivo && <small>{motivo}</small>}
             {epoca?.length ? (
               <small className={ahora ? "en-temporada" : "fuera-temporada"}>

@@ -49,6 +49,18 @@ CAUTIVIDAD = re.compile(
 )
 
 
+# monumentos y paisajes culturales que Wikidata clasifica como espacio protegido: no son destinos de fauna
+NO_NATURALEZA = re.compile(
+    r"iglesia|sinagoga|church|synagogue|catedral|cathedral|castillo|castle|monasterio|monastery|abad[ií]a|abbey|"
+    r"templo|\btemple\b|ruinas|\bruins\b|arqueol|archaeolog|mezquita|mosque|tumba|\btomb|cultura da vinha|"
+    r"paisaje cultural|cultural landscape",
+    re.IGNORECASE,
+)
+# especies estrella comunísimas en su región (el koala o el equidna en cualquier bosque de Nueva Gales del Sur): no
+# bastan para que un espacio sea un destino de fauna
+COMUNES = {"Tachyglossus aculeatus", "Macropus fuliginosus", "Phascolarctos cinereus"}
+
+
 def puntuacion(n_especies: int, obs: int, n_estrella: int = 0) -> float:
     """Más peso a las especies emblemáticas (lo que se va a ver en un safari) que a la riqueza total."""
     return round(25 * n_estrella + min(n_especies, 80) * math.log10(obs + 10) / 2, 1)
@@ -69,11 +81,13 @@ def continente(p: dict, paises: dict) -> str | None:
     return (paises.get(p.get("pais") or "") or {}).get("continente") or p.get("continente")
 
 
-def nivel(p: dict) -> str:
+def nivel(p: dict, cientifico: dict[str, str] | None = None) -> str:
     if p.get("destacado"):
         return "A"
-    vistas = [n for n in p["estrella"].values() if n >= MIN_OBS_ESTRELLA]
-    if not CAUTIVIDAD.search(p["nombre"]) and (len(vistas) >= 3 or (vistas and max(vistas) >= 50)):
+    if CAUTIVIDAD.search(p["nombre"]) or NO_NATURALEZA.search(p["nombre"]):
+        return "C"
+    vistas = [n for k, n in p["estrella"].items() if n >= MIN_OBS_ESTRELLA and (cientifico or {}).get(k) not in COMUNES]
+    if len(vistas) >= 3 or (vistas and max(vistas) >= 50):
         return "B"
     return "C"
 
@@ -90,5 +104,5 @@ def refinar(datos: dict, curados: list[dict] | None = None) -> dict:
             p["estrella"] = {k: n for k, n in p["estrella"].items() if cont in areas.get(cientifico.get(k, ""), {cont})}
         n_estrella = sum(1 for n in p["estrella"].values() if n >= MIN_OBS_ESTRELLA)
         p["puntuacion"] = puntuacion(p["n_mamiferos"], p["obs"], n_estrella)
-        p["nivel"] = nivel(p)
+        p["nivel"] = nivel(p, cientifico)
     return datos

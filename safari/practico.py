@@ -23,6 +23,8 @@ from safari.mundo import sin_tiempo
 
 OURAIRPORTS = "https://davidmegginson.github.io/ourairports-data/airports.csv"
 POWER = "https://power.larc.nasa.gov/api/temporal/climatology/point"
+# bases militares con vuelos regulares en OurAirports (Oakey Army Aviation Centre salía como ciudad de acceso)
+MILITAR = re.compile(r"\barmy\b|air force|air base|\bAFB\b|\bRAAF\b|\bRAF\b|military|naval|aviation centre", re.I)
 OVERPASS = (
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
@@ -86,7 +88,12 @@ class Aeropuertos:
                 }
             except ValueError:
                 continue
-            if f["scheduled_service"] == "yes" and f["type"] in ("large_airport", "medium_airport") and a["iata"]:
+            if (
+                f["scheduled_service"] == "yes"
+                and f["type"] in ("large_airport", "medium_airport")
+                and a["iata"]
+                and not MILITAR.search(a["nombre"])
+            ):
                 self.regulares.append(a)
             elif f["type"] == "small_airport":
                 self.pistas.setdefault((math.floor(a["lat"]), math.floor(a["lon"])), []).append(a)

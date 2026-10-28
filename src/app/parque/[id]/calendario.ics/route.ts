@@ -16,7 +16,9 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   const m = p ? undefined : getParqueMundo(id);
   if (!p && !m) return new Response("No existe ese parque", { status: 404 });
   const nombre = (p?.nombre ?? m?.nombre)!;
-  const meses = p ? p.meses : (buenaEpoca({ la: m!.lat, sec: m!.meses_secos, ep: m!.epoca?.meses }) ?? []);
+  const meses = p
+    ? p.meses
+    : (buenaEpoca({ la: m!.lat, sec: m!.meses_secos, ep: m!.epoca?.meses, em: m!.epoca?.motivo }) ?? []);
   const url = `${SITIO}/parque/${id}`;
   return new Response(ics(`Safari: ${nombre}`, eventosTemporada(id, nombre, meses, url)), {
     headers: CABECERAS_ICS,

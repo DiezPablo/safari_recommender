@@ -5,11 +5,12 @@ import json
 from conftest import FIX
 
 from safari import mundo, practico
-from safari.mundo_cli import indice, puntuacion, quitar_duplicados
+from safari.mundo_cli import area_plausible, indice, puntuacion, quitar_duplicados
 
 
 def test_radio_y_caja():
-    assert mundo.radio_km(19_623e6, "parque nacional") == 79.0  # Kruger: ~79 km de radio
+    assert mundo.radio_km(19_623e6, "parque nacional") == mundo.RADIO_MAX_KM  # Kruger (~79 km): tope de 40
+    assert mundo.radio_km(1_000e6, "parque nacional") == 17.8
     assert mundo.radio_km(1e6, "reserva de caza") == mundo.RADIO_MIN_KM
     assert mundo.radio_km(None, "parque nacional") == 15.0
     c = mundo.caja(-24.0, 31.5, 111)
@@ -107,3 +108,11 @@ def test_todos_los_parques_tienen_epoca():
     assert e == {"meses": [6, 7, 8, 9], "motivo": "menos lluvia"}
     templado = practico.epoca(44.6, None, [50] * 12, [10, 10, 20, 40, 80, 100, 100, 90, 60, 30, 10, 10])
     assert templado["motivo"] == "más avistamientos" and templado["meses"] == [5, 6, 7, 8, 9]
+
+
+def test_area_imposible():
+    paises = {"Q45": {"area_km2": 92_000}}
+    assert area_plausible({"area_m2": 72e6, "pais": "Q45"}, paises) == 72
+    # Alvão con la coma decimal mal importada: 72 027 km² en un país de 92 000
+    assert area_plausible({"area_m2": 72_027e6, "pais": "Q45"}, paises) is None
+    assert area_plausible({"area_m2": None, "pais": "Q45"}, paises) is None

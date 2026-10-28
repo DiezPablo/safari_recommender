@@ -76,3 +76,13 @@ def test_operadores_desde_la_ciudad_de_acceso(monkeypatch):
     assert parques[1]["operadores_ciudad"]["lista"][0]["nombre"] == "Safaris Arusha"
     assert "operadores_ciudad" not in parques[2]
     assert parques[2]["acceso"]["ciudad"] == "Mwanza"
+
+
+def test_monumentos_y_especies_comunes():
+    # una sinagoga o una iglesia con lobos alrededor no es un destino de fauna
+    assert nivel({"nombre": "Sinagoga de Cafarnaúm", "estrella": {"1": 80}}) == "C"
+    assert nivel({"nombre": "iglesia de San Pedro", "estrella": {"1": 5, "2": 5, "3": 5}}) == "C"
+    # koala y equidna, comunísimos en Nueva Gales del Sur, no bastan
+    comunes = {"k": "Phascolarctos cinereus", "e": "Tachyglossus aculeatus", "b": "Eubalaena australis"}
+    assert nivel({"nombre": "Bouddi", "estrella": {"k": 900, "e": 900}}, comunes) == "C"
+    assert nivel({"nombre": "Bouddi", "estrella": {"k": 900, "e": 900, "b": 60}}, comunes) == "B"

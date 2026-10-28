@@ -19,7 +19,7 @@ const KM_CAMINO = 1.3;
 const KMH = 45;
 
 function epocaDe(p: ParqueMundo): number[] {
-  return buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses }) ?? [];
+  return buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses, em: p.epoca?.motivo }) ?? [];
 }
 
 export function CincoGrandes({ p, mundo }: { p: ParqueMundo; mundo: Mundo }) {

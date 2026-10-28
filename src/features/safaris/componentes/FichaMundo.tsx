@@ -51,8 +51,8 @@ export default function FichaMundo({
   conFicha: Record<string, string>;
 }) {
   const pais = p.pais ? mundo.paises[p.pais] : undefined;
-  const epoca = buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses });
-  const motivo = p.epoca?.motivo ?? (epoca ? "estación seca" : null);
+  const epoca = buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses, em: p.epoca?.motivo });
+  const motivo = epoca ? (p.epoca?.motivo ?? "estación seca") : null;
   const estrella = Object.entries(p.estrella)
     .filter(([, n]) => n >= 3)
     .sort((a, b) => b[1] - a[1]);

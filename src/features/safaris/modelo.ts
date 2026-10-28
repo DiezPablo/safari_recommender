@@ -287,9 +287,17 @@ export const CLASE: Record<string, string> = {
   "reserva natural": "Reserva natural",
 };
 
+/** «Los meses con más avistamientos» solo valen si forman una estación: de 2 a 6 meses en 1 o 2 tramos. En
+ * parques templados con observaciones repartidas salían cosas como «enero» o «mar-may, sep-dic» (ruido). */
+export function estacionClara(meses: number[]): boolean {
+  const si = new Set(meses);
+  const tramos = meses.filter((m) => !si.has(m === 1 ? 12 : m - 1)).length || 1;
+  return meses.length >= 2 && meses.length <= 6 && tramos <= 2;
+}
+
 /** Buena época: la calculada para cada parque; en datos antiguos, la temporada escrita a mano o los meses secos. */
-export function buenaEpoca(f: Pick<FilaIndice, "t" | "sec" | "la" | "ep">): number[] | null {
-  if (f.ep?.length) return f.ep;
+export function buenaEpoca(f: Pick<FilaIndice, "t" | "sec" | "la" | "ep" | "em">): number[] | null {
+  if (f.ep?.length) return f.em === "más avistamientos" && !estacionClara(f.ep) ? null : f.ep;
   if (f.t?.length) return f.t;
   if (Math.abs(f.la) <= 23.5 && f.sec.length > 0 && f.sec.length < 12) return f.sec;
   return null;
@@ -302,7 +310,26 @@ export function capitalizar(nombre: string): string {
 
 export function nombreEspecieMundo(m: Pick<Mundo, "especies">, clave: number | string): string {
   const e = m.especies[String(clave)];
-  return e?.n ?? e?.c ?? "Especie sin nombre común";
+  return e?.n ? limpiarNombre(e.n) : (e?.c ?? "Especie sin nombre común");
+}
+
+/** Erratas frecuentes en los nombres comunes en español de GBIF: «Damán de el cabo», «Facόquero» (con una ó
+ * griega), «Bífalo africano», «Equidna de hocico corto equidna australiano». */
+export function limpiarNombre(n: string): string {
+  return n
+    .normalize("NFC")
+    .replace(/ό/g, "ó")
+    .replace(/ά/g, "á")
+    .replace(/έ/g, "é")
+    .replace(/ί/g, "í")
+    .replace(/ύ/g, "ú")
+    .replace(/\bde el\b/gi, "del")
+    .replace(/\bde de\b/gi, "de")
+    .replace(/^Bífalo\b/, "Búfalo")
+    .replace(/Facóqero/g, "Facóquero")
+    .replace(/^Equidna de hocico corto.*$/, "Equidna de hocico corto")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 // ---- Frecuencia de avistamientos (‰ de las fotos de su grupo ese mes): niveles para la web

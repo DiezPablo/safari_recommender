@@ -433,3 +433,23 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
   «campamentos» los deja, a ×0,4, con aviso); la ficha lo dice en «Cuándo ir» y, si es este mes, arriba; el
   comparador marca «Cerrado» y no lo cuenta como en su mejor época; «Safari en agosto» tiene «Cerrados en
   agosto». India en agosto: solo queda Sundarbans, fuera de su época, con los avisos.
+
+## 28-10-2026 · Revisión de 40 fichas del mundo (nivel B) y arreglos sistemáticos
+
+Muestra aleatoria de 40 parques de nivel B. Errores encontrados y arreglo:
+- Superficies de Wikidata ×100 o ×1000 (comas decimales mal importadas: Alvão 72 km² figura con 72 027,
+  Udawalawe 308 con 30 821, Varangerhalvøya con 1,8 millones). Con radio = √(área/π) hasta 80 km, reservas
+  pequeñas heredaban la fauna de toda la región. Ahora: radio máximo 40 km fuera del catálogo (los 65
+  destacados llevan el suyo) y superficie descartada si es más de la mitad del país (`area_plausible`, con la
+  superficie del país de Wikidata). Los radios nuevos piden otra vez GBIF: entran por tandas en las ejecuciones
+  diarias.
+- Australia: 353 de 883 parques B, casi todos bosques con koala y equidna (comunísimos en Nueva Gales del Sur).
+  Koala, equidna y canguro gris occidental ya no cuentan para el nivel B (`COMUNES`): quedan 13.
+- Monumentos con lobos alrededor (sinagoga de Cafarnaúm, iglesia de San Pedro, paisaje de la viña del Pico):
+  `NO_NATURALEZA` los deja en nivel C.
+- «Mejor época» por «más avistamientos» en parques templados sin estación («enero», «mar-may, sep-dic»): en la
+  web solo vale si son 2-6 meses en 1-2 tramos (`estacionClara`); si no, «Sin una estación marcada».
+- Nombres de GBIF: «Damán de el cabo», «Facόquero» (ó griega), «Bífalo africano», «Equidna de hocico corto
+  equidna australiano»: `limpiarNombre`. Las especies estrella ya salían bien (nombres del catálogo) y las de
+  menos de 3 observaciones (orcas en Israel) ya no se mostraban.
+- Bases militares como ciudad de acceso («Oakey Army Aviation Centre»): fuera de los aeropuertos regulares.

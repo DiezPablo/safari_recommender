@@ -49,7 +49,9 @@ CLASES_TODAS = {
 CLASES_GRANDES = {"Q473972": "área protegida", "Q179049": "reserva natural"}
 AREA_MIN_GRANDES_M2 = 100e6
 MIN_ESPECIES, MIN_OBS = 10, 50
-RADIO_MIN_KM, RADIO_MAX_KM = 4.0, 80.0
+# 40 km como mucho fuera del catálogo: muchas superficies de Wikidata vienen ×100 o ×1000 (comas decimales mal
+# importadas: Alvão, 72 km², figura con 72 027) y con 80 km una reserva pequeña heredaba la fauna de toda la región
+RADIO_MIN_KM, RADIO_MAX_KM = 4.0, 40.0
 RADIO_SIN_AREA_KM = {"parque nacional": 15.0}
 DESDE_ANO = 2010
 MAMIFEROS, AVES = 359, 212
@@ -261,11 +263,12 @@ def detalles(qids: list[str], lote: int = 250) -> dict[str, dict]:
 
 
 def paises(qids: list[str]) -> dict[str, dict]:
-    """Nombre en español, código ISO, continente, moneda e idiomas oficiales de cada país."""
+    """Nombre en español, código ISO, continente, moneda, idiomas oficiales y superficie de cada país."""
     valores = " ".join(f"wd:{q}" for q in sorted(set(qids)))
     filas = _sparql(
-        f"""SELECT ?p ?n ?iso ?cont ?mon ?idi WHERE {{
+        f"""SELECT ?p ?n ?iso ?cont ?mon ?idi ?ar WHERE {{
           VALUES ?p {{ {valores} }}
+          OPTIONAL {{ ?p p:P2046/psn:P2046/wikibase:quantityAmount ?ar }}
           OPTIONAL {{ ?p rdfs:label ?n FILTER(lang(?n) = "es") }}
           OPTIONAL {{ ?p wdt:P297 ?iso }}
           OPTIONAL {{ ?p wdt:P30 ?c. ?c rdfs:label ?cont FILTER(lang(?cont) = "es") }}
@@ -279,6 +282,8 @@ def paises(qids: list[str]) -> dict[str, dict]:
         for campo in ("n", "iso", "cont", "mon"):
             if campo in b and campo not in d:
                 d[campo] = b[campo]["value"]
+        if "ar" in b and "area_km2" not in d:
+            d["area_km2"] = float(b["ar"]["value"]) / 1e6
         if "idi" in b and b["idi"]["value"] not in d["idiomas"]:
             d["idiomas"].append(b["idi"]["value"])
     return salida

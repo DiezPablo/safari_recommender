@@ -54,7 +54,9 @@ export default async function PaginaComparar({ searchParams }: Props) {
   // época de cada parque: la curada en los destacados; si no, la calculada
   const epoca = (p: ParqueMundo) => {
     const curada = getParque(p.id)?.meses;
-    return curada?.length ? curada : buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses });
+    return curada?.length
+      ? curada
+      : buenaEpoca({ la: p.lat, sec: p.meses_secos, ep: p.epoca?.meses, em: p.epoca?.motivo });
   };
   // frecuencia de una especie estrella ese mes (solo en los destacados): ‰ de las fotos de su grupo
   const frecuencia = (p: ParqueMundo, k: string) => {

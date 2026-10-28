@@ -57,6 +57,18 @@ def claves_estrella(curados: list[dict]) -> dict[int, str]:
     return salida
 
 
+def area_plausible(x: dict, paises: dict) -> int | None:
+    """Superficie en km², o None si es imposible: más de la mitad del país (comas decimales mal importadas en
+    Wikidata dan parques ×100 o ×1000 más grandes que el real)."""
+    if not x.get("area_m2"):
+        return None
+    km2 = x["area_m2"] / 1e6
+    pais = paises.get(x.get("pais") or "", {}).get("area_km2")
+    if pais and km2 > pais / 2:
+        return None
+    return round(km2)
+
+
 def quitar_duplicados(parques: list[dict]) -> list[dict]:
     """El mismo parque con dos elementos de Wikidata (p. ej. parque nacional y reserva de la biosfera)."""
     parques = sorted(parques, key=lambda p: -p["puntuacion"])
@@ -149,7 +161,7 @@ def calcular(hilos: int = 4, osm_max: int = 1500, limite: int | None = None) -> 
                 "lat": round(x["lat"], 4),
                 "lon": round(x["lon"], 4),
                 "radio_km": x["radio_km"],
-                "area_km2": round(x["area_m2"] / 1e6) if x.get("area_m2") else None,
+                "area_km2": area_plausible(x, paises),
                 "iucn": d.get("iucnl"),
                 "unesco": bool(d.get("unesco")),
                 "wdpa": d.get("wdpa"),
