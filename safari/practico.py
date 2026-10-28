@@ -129,10 +129,10 @@ class Aeropuertos:
         return salida
 
 
-def clima(lat: float, lon: float) -> dict | None:
-    """Lluvia (mm al mes) y máxima media (°C) de cada mes, climatología de la NASA."""
+def _power(lat: float, lon: float, parametros: str) -> dict | None:
+    """Climatología mensual de la NASA (POWER) para un punto, con caché."""
     params = {
-        "parameters": "PRECTOTCORR,T2M_MAX",
+        "parameters": parametros,
         "community": "AG",
         "latitude": round(lat, 2),
         "longitude": round(lon, 2),
@@ -159,12 +159,35 @@ def clima(lat: float, lon: float) -> dict | None:
             break
         else:
             return None
-    lluvia, tmax = d.get("PRECTOTCORR", {}), d.get("T2M_MAX", {})
-    if not lluvia or any(lluvia.get(m) is None or lluvia[m] < -900 for m in MESES_POWER):
+    return d
+
+
+def _valido(serie: dict, m: str) -> bool:
+    return serie.get(m) is not None and serie[m] > -900
+
+
+def clima(lat: float, lon: float, con_maxima: bool = False) -> dict | None:
+    """Lluvia (mm al mes) de cada mes, climatología de la NASA; con_maxima, también la máxima media (°C).
+
+    La máxima va aparte (otra petición): en la climatología de POWER, T2M_MAX es la máxima absoluta del mes (el
+    Mara salía a 35 °C), así que la media de las máximas diarias se estima como T2M + T2M_RANGE / 2 (cuadra con
+    ERA5 a ±1-2 °C). Los parques del mundo solo usan la lluvia: su petición y su caché no cambian.
+    """
+    d = _power(lat, lon, "PRECTOTCORR,T2M_MAX")
+    if d is None:
         return None
+    lluvia = d.get("PRECTOTCORR", {})
+    if not lluvia or not all(_valido(lluvia, m) for m in MESES_POWER):
+        return None
+    tmax: list[int | None] = [None] * 12
+    if con_maxima and (t := _power(lat, lon, "T2M,T2M_RANGE")):
+        media, rango = t.get("T2M", {}), t.get("T2M_RANGE", {})
+        tmax = [
+            round(media[m] + rango[m] / 2) if _valido(media, m) and _valido(rango, m) else None for m in MESES_POWER
+        ]
     return {
         "lluvia_mm": [round(lluvia[m] * dias) for m, dias in zip(MESES_POWER, DIAS_MES, strict=True)],
-        "tmax": [round(tmax[m]) if tmax.get(m) is not None and tmax[m] > -900 else None for m in MESES_POWER],
+        "tmax": tmax,
     }
 
 

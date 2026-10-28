@@ -82,7 +82,8 @@ export default function PaginaTemporadaVerde() {
           Ahorro: el mes más barato frente al más caro, en la mediana de los lodges de cada parque (por persona y noche
           en doble). Tarifas copiadas a mano de las que publican los lodges, consultadas el {CONSULTADO}; dos son de
           agentes, y se dice en cada ficha. Animales: nivel de avistamiento ese mes según las fotos de iNaturalist.
-          Lluvia: ERA5. Muchos campamentos cierran en lo peor de las lluvias (abril-mayo en África oriental).
+          Lluvia: climatología de la NASA (POWER). Muchos campamentos cierran en lo peor de las lluvias (abril-mayo en
+          África oriental).
         </p>
       </section>
       <section className="seccion">

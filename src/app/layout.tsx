@@ -88,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="https://power.larc.nasa.gov/" rel="noopener">
                   NASA POWER
                 </a>
-                , ERA5 (Open-Meteo),{" "}
+                ,{" "}
                 <a href="https://ourairports.com/" rel="noopener">
                   OurAirports
                 </a>{" "}

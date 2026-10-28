@@ -241,7 +241,7 @@ export default async function PaginaParque({ params }: Props) {
           <TemporadaVerde p={p} mesActual={mesHoy} />
           <p className="nota-pie">
             Temporada: la recomendada para ver fauna. Mamíferos vistos: observaciones de iNaturalist por mes (reflejan
-            también cuándo va más gente). Clima: medias de ERA5 de dos años.
+            también cuándo va más gente). Clima: climatología de la NASA (POWER).
           </p>
           <Suscribir
             ruta={`/parque/${p.id}/calendario.ics`}
@@ -401,7 +401,7 @@ export default async function PaginaParque({ params }: Props) {
           {
             que: "Frecuencia por mes, especies, clima y alojamientos",
             cuando: datos.generado,
-            fuente: "iNaturalist, ERA5 y OpenStreetMap (cada semana)",
+            fuente: "iNaturalist, NASA POWER y OpenStreetMap (cada semana)",
           },
           ...(TARIFAS_LODGES.some((t) => t.parque === p.id)
             ? [

@@ -15,7 +15,7 @@ from pathlib import Path
 
 import requests
 
-from safari import entorno, inat
+from safari import entorno, inat, practico
 from safari.catalogo import cargar
 from safari.comun.ficheros import escribir_json
 from safari.frecuencia import frecuencia
@@ -95,7 +95,7 @@ def calcular(parques: list[dict], con_clima: bool = True, con_alojamientos: bool
             print(f"  {p['nombre']}: sin iNaturalist ({e})", flush=True)
         try:
             if con_clima:
-                x["clima"] = entorno.clima(p["lat"], p["lon"])
+                x["clima"] = practico.clima(p["lat"], p["lon"], con_maxima=True)
         except _ERRORES as e:
             print(f"  {p['nombre']}: sin clima ({e})", flush=True)
         try:
@@ -192,7 +192,7 @@ def main(argv: list[str] | None = None) -> None:
             "fuentes": {
                 "parques": "Selección propia; foto, web y artículo de Wikidata y Wikipedia",
                 "especies": "iNaturalist (observaciones verificables; fotos con licencia Creative Commons)",
-                "clima": f"ERA5 vía Open-Meteo ({entorno.ANOS_CLIMA[0]}-{entorno.ANOS_CLIMA[1]})",
+                "clima": "NASA POWER (climatología mensual de lluvia y máxima)",
                 "alojamientos": "OpenStreetMap (ODbL)",
             },
             **datos,

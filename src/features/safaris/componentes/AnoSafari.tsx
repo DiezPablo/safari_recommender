@@ -1,5 +1,5 @@
 // El año de un parque: temporada recomendada (escrita a mano), mamíferos observados en iNaturalist por mes y
-// clima (lluvia y máxima media de ERA5). Una columna por mes.
+// clima (lluvia y máxima media de la climatología de la NASA, POWER). Una columna por mes.
 import { INICIALES, MESES } from "@/lib/fechas";
 import type { Parque } from "@/features/safaris/modelo";
 

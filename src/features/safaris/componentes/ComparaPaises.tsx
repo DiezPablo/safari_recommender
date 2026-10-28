@@ -125,7 +125,8 @@ export default function ComparaPaises({ a, b, mes }: { a: string; b: string; mes
         </div>
         <p className="nota-pie">
           Mejor época: la recomendada para cada parque. Probable: especies con al menos un 2 % de las fotos de su grupo
-          ese mes en iNaturalist. Lluvia: ERA5. Visados y salud revisados a mano: confírmalos antes de viajar.
+          ese mes en iNaturalist. Lluvia: climatología de la NASA (POWER). Visados y salud revisados a mano: confírmalos
+          antes de viajar.
         </p>
       </section>
 

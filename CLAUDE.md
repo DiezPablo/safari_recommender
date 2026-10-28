@@ -9,7 +9,7 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
 ## Piezas
 - Pipeline Python, paquete `safari/` (`python -m safari …`):
   - `catalogo` (65 destacados escritos a mano en `recursos/safaris.csv`), `inat` (iNaturalist), `entorno`
-    (Wikidata, ERA5 vía Open-Meteo, alojamientos de OSM) → `safaris.json`; `--recientes` → `safaris_recientes.json`.
+    (Wikidata, clima de NASA POWER, alojamientos de OSM) → `safaris.json`; `--recientes` → `safaris_recientes.json`.
   - `--mundo`: `mundo` (candidatos de Wikidata cribados con GBIF), `practico` (aeropuertos de OurAirports, lluvia
     de NASA POWER, época, OSM por tandas, operadores de la ciudad de acceso), `mundo_cli` → `safaris_mundo.json` y
     `safaris_indice.json`. Incremental: `--minutos` fija el tiempo de peticiones nuevas; después solo caché.
@@ -34,7 +34,7 @@ problemas en `docs/decisiones.md` (añade ahí lo nuevo); análisis de mercado y
 - `npm run build && npx playwright test` (móvil y escritorio, capturas en `capturas/`).
 - En el contenedor de Claude Code la salida va por proxy: Playwright sirve en la IP de la máquina (ver
   `playwright.config.ts`); Python necesita `REQUESTS_CA_BUNDLE=/root/.ccr/ca-bundle.crt`. Desde el contenedor
-  GBIF, Overpass, Open-Meteo y Commons limitan mucho: el cálculo real corre en Actions.
+  GBIF, Overpass y Commons limitan mucho: el cálculo real corre en Actions.
 
 ## Convenciones
 - Python 3.12; código, comentarios y textos de la web en español. ruff y Prettier deciden el formato.

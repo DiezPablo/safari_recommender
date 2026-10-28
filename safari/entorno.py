@@ -1,12 +1,9 @@
-"""Lo que rodea a cada parque: ficha de Wikidata, clima de cada mes (Open-Meteo, ERA5) y alojamientos de OSM."""
+"""Lo que rodea a cada parque: ficha de Wikidata y alojamientos de OSM (el clima, en safari.practico)."""
 
 from __future__ import annotations
 
-import json
 import re
 import time
-from collections import defaultdict
-from datetime import date
 from urllib.parse import unquote
 
 import requests
@@ -19,11 +16,6 @@ from safari.practico import url_web
 CACHE = CacheJson(prefijo="safaris_", max_edad_s=25 * 86400)
 _SESION = sesion()
 WIKIDATA = "https://query.wikidata.org/sparql"
-ARCHIVO = "https://archive-api.open-meteo.com/v1/archive"
-# Dos años: suficiente para la forma del año. Open-Meteo cuenta una llamada por cada 14 días pedidos (~52 por
-# parque): con la pausa entre parques no se pasa del límite por minuto ni por hora (5000).
-ANOS_CLIMA = (2023, 2024)
-PAUSA_CLIMA_S = 8
 OVERPASS = (
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
@@ -103,50 +95,6 @@ def fotos_commons(urls: list[str]) -> dict[str, dict]:
                 "licencia": texto_plano(meta.get("LicenseShortName", {}).get("value")),
             }
     return {u: info[t] for u, t in titulos.items() if t in info}
-
-
-def clima(lat: float, lon: float) -> dict:
-    """Lluvia media (mm) y máxima media (°C) de cada mes con ERA5 (Open-Meteo, sin clave)."""
-    params = {
-        "latitude": round(lat, 2),
-        "longitude": round(lon, 2),
-        "start_date": f"{ANOS_CLIMA[0]}-01-01",
-        "end_date": f"{ANOS_CLIMA[1]}-12-31",
-        "daily": "precipitation_sum,temperature_2m_max",
-        "timezone": "UTC",
-    }
-
-    def pedir():
-        for intento in range(3):
-            time.sleep(PAUSA_CLIMA_S)
-            try:
-                r = _SESION.get(ARCHIVO, params=params, timeout=120)
-            except (requests.ConnectionError, requests.Timeout):
-                time.sleep(10 * (intento + 1))
-                continue
-            if r.status_code == 429:  # límite por minuto u hora: se espera un poco; si sigue, sin clima
-                time.sleep(30 * (intento + 1))
-                continue
-            r.raise_for_status()
-            return r.json()["daily"]
-        raise requests.ConnectionError("Open-Meteo no responde")
-
-    d = _cache("clima:" + json.dumps(params, sort_keys=True), pedir)
-    lluvia, tmax = defaultdict(list), defaultdict(list)
-    for t, p, x in zip(d["time"], d["precipitation_sum"], d["temperature_2m_max"], strict=True):
-        f = date.fromisoformat(t)
-        if p is not None:
-            lluvia[(f.year, f.month)].append(p)
-        if x is not None:
-            tmax[f.month].append(x)
-    anos = ANOS_CLIMA[1] - ANOS_CLIMA[0] + 1
-    return {
-        "lluvia_mm": [
-            round(sum(sum(lluvia[(a, m)]) for a in range(ANOS_CLIMA[0], ANOS_CLIMA[1] + 1)) / anos)
-            for m in range(1, 13)
-        ],
-        "tmax": [round(sum(tmax[m]) / len(tmax[m])) if tmax[m] else None for m in range(1, 13)],
-    }
 
 
 def _nombre_util(nombre: str) -> bool:

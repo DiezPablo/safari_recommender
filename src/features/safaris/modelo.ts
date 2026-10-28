@@ -1,4 +1,4 @@
-// Safaris en todo el mundo: parques curados a mano y enriquecidos con iNaturalist, Wikidata, ERA5 y OSM.
+// Safaris en todo el mundo: parques curados a mano y enriquecidos con iNaturalist, Wikidata, NASA POWER y OSM.
 // Servidor y navegador.
 
 export interface FotoSafari {

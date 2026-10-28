@@ -394,3 +394,14 @@ proyecto; las rutas de código citadas allí (`rasante/safaris/…`, `/safaris/�
 - Se probó a encarecer las horas de carretera (6 o 5 h por noche en vez de 8) y desordenaba otros casos: se
   deja en 8.
 - Las especies sin nombre en `/especies.json` ya no salen como un número en «En agosto: …».
+
+## 28-10-2026 · Clima del catálogo: NASA POWER en vez de dos años de ERA5
+
+- La lluvia de los destacados salía de ERA5 (Open-Meteo) en 2023-2024, dos años con El Niño y lluvias anómalas
+  en África oriental: el Mara daba 19 mm en febrero y 43 en mayo (la climatología, 69 y 103). Ahora sale de la
+  climatología de NASA POWER (décadas de datos), como en el resto de parques: una petición por parque y sin
+  límite por hora.
+- La máxima: en la climatología de POWER, `T2M_MAX` es la máxima absoluta del mes (el Mara salía a 35 °C). La
+  media de las máximas diarias se estima como `T2M + T2M_RANGE / 2`, que cuadra con ERA5 a ±1-2 °C (Mara 27-29,
+  Ngorongoro 20-25). Va en una petición aparte solo para el catálogo; los parques del mundo solo usan la lluvia y
+  su caché no cambia.
